@@ -6,7 +6,7 @@
 		<?= form_open('users/register'); ?>
 		<div class="form-group">
 			<label>Brugernavn:</label>
-			<input type="text" id="input_username" name="username" placeholder="Brugernavn" class="form-control" />
+			<input type="text" name="username" placeholder="Brugernavn" class="form-control" />
 		</div>
 		<div class="form-group">
 			<label>Email:</label>

@@ -28,6 +28,7 @@
                     users.username,
                     users.email,
                     users.permissions,
+                    departments.id as d_id,
                     departments.name')
                 ->from('users')
                 ->join('departments','departments.id = users.department_id');
@@ -40,6 +41,8 @@
                 users.username,
                 users.email,
                 users.permissions,
+                users.created_at,
+                departments.id as d_id,
                 departments.name')
                 ->where('users.id', $id)
                 ->from('users')

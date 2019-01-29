@@ -27,15 +27,33 @@
 </div>
 <div class="row">
     <div class="col-md-1">
-        <label><strong>Email:</strong></label>
+        <label class=""><strong>Email:</strong></label>
     </div>
     <div class="col-md-11">
         <p><?= $user['email'] ?></p>
     </div>
 </div>
-    <?= form_open('users/delete/'.$user['user_id']); ?>
-        <input type="submit" value="Slet bruger" class="btn btn-danger" />
-    <?= form_close(); ?>
+<div class="row">
+    <div class="col-md-1">
+        <label><strong>Oprettet:</strong></label>
+    </div>
+    <div class="col-md-11">
+        <p><?= $user['created_at'] ?></p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="md-col-1" style="margin-left:1.2%;">
+        <?= form_open('users/edit/'.$user['user_id']); ?>
+            <input type="submit" value="Rediger bruger" class="btn btn-secondary" />
+        <?= form_close(); ?>
+    </div>
+    <div class="md-col-1" style="margin-left:1%;">
+        <?= form_open('users/delete/'.$user['user_id']); ?>
+            <input type="submit" value="Slet bruger" class="btn btn-danger" />
+        <?= form_close(); ?>
+    </div>
+</div>
 <hr>
 
 <div class="row">

@@ -67,6 +67,23 @@
                 redirect('users');
             }
         }
+
+        public function edit($id){
+            $data['title'] = 'Rediger bruger';
+            $data['user'] = $this->user_model->get_user($id);
+            $data['departments'] = $this->department_model->get_department();
+
+            $this->form_validation->set_rules('username','"brugernavn"','required|callback_check_space|callback_check_user_exists');
+            $this->form_validation->set_rules('email','"email"','valid_email|callback_check_space|callback_check_email_exists');
+
+            if($this->form_validation->run()=== FALSE){
+                $this->load->view('templates/header');
+                $this->load->view('users/edit', $data);
+                $this->load->view('templates/footer');
+            } else {
+                redirect('users/view/'.$id);
+            }
+        }
         
         public function delete($id){
             $this->user_model->delete_user($id);
@@ -112,16 +129,34 @@
 
         function check_user_exists($username){
             $this->form_validation->set_message('check_user_exists','Det brugernavn findes allerede i systemet.');
-            if($this->user_model->check_user_exists($username)){
-                return false;
-            } else {
-                return true;
+            //This part is used when editing an existing user
+            //If the "new" username address is still the same as the old one, it'll pass
+            if($this->input->post('old_username')){
+                if($this->input->post('old_username') === $username){
+                    return true;
+                }
             }
+            //This part is used when a new user is being registered OR when an existing user's username is changed
+            //Ensure the new email address does not already exist within the DB
+             if($this->user_model->check_user_exists($username)){
+                 return false;
+             } else {
+                 return true;
+             }
         }
 
         function check_email_exists($email){
             $this->form_validation->set_message('check_email_exists','Den email findes allerede i systemet.');
-            if($this->user_model->check_email_exists($email)){
+            //This part is used when an existing user is being edited
+            //If the "new" email address is still the same as the old one, it'll pass
+            if($this->input->post('old_email')){
+                if($this->input->post('old_email') === $email){
+                    return true;
+                }
+            }
+            //This part is used when a new user is being registered OR when an existing user's email is changed
+            //Ensure the new email address does not already exist within the DB
+             if($this->user_model->check_email_exists($email)){
                 return false;
             } else {
                 return true;
