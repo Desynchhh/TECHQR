@@ -25,9 +25,13 @@
 		<!-- create a <tr> with <td> children for each user in the database -->
 		<?php foreach($users as $user): ?>
 		<tr>
-			<td><a href="<?= base_url('users/view/'.$user['user_id']); ?>"><?= $user['username'] ?></a></td>
+			<td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
 			<td><?= $user['permissions'] ?></td>
-			<td><?= $user['name'] ?></td>
+			<td>
+				<?php foreach($departments as $department):?>
+					<?= $department ?>
+				<?php endforeach;?>
+			</td>
 			<td><!-- INSERT LAST_ACTION --></td>
 			<td><?= $user['email'] ?></td>
 		</tr>

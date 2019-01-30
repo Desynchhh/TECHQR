@@ -5,14 +5,22 @@
         }
 
         public function create_user($enc_pass){
+            //Insert the user data into the users table
             $data = array(
-                'department_id' => $this->input->post('department_id'),
                 'username' => $this->input->post('username'),
                 'password' => $enc_pass,
                 'email' => $this->input->post('email'),
                 'permissions' => $this->input->post('permissions')
             );
-            return $this->db->insert('users', $data);
+            $this->db->insert('users', $data);
+
+            //Establish relation between user and department in user_departments table
+            $user_id = $this->db->insert_id();
+            $data = array(
+                'user_id' => $user_id,
+                'department_id' => $this->input->post('d_id')
+            );
+            $this->db->insert('user_departments', $data);
         }
 
         public function get_user($id = NULL){
@@ -24,29 +32,25 @@
                 $query = $this->db->get();
                 return $query->result_array();*/
                 $this->db->select('
-                    users.id as user_id,
+                    users.id as u_id,
                     users.username,
                     users.email,
-                    users.permissions,
-                    departments.id as d_id,
-                    departments.name')
-                ->from('users')
-                ->join('departments','departments.id = users.department_id');
+                    users.permissions
+                    ')
+                ->from('users');
                 $query = $this->db->get();
                 return $query->result_array();      
             } else {
                 //Get specific user
                 $this->db->select('
-                users.id as user_id,
+                users.id as u_id,
                 users.username,
                 users.email,
                 users.permissions,
-                users.created_at,
-                departments.id as d_id,
-                departments.name')
+                users.created_at
+                ')
                 ->where('users.id', $id)
-                ->from('users')
-                ->join('departments','departments.id = users.department_id');
+                ->from('users');
                 $query = $this->db->get();
                 return $query->row_array();
             }
@@ -56,8 +60,7 @@
             $data = array(
                 'username' => $this->input->post('username'),
                 'email' => $this->input->post('email'),
-                'permissions' => $this->input->post('permissions'),
-                'department_id' => $this->input->post('department_id')
+                'permissions' => $this->input->post('permissions')
                 );
             $this->db->where('id',$id)
             ->update('users', $data);
@@ -67,6 +70,9 @@
         public function delete_user($id){
             $this->db->where('id', $id);
             $this->db->delete('users');
+
+            $this->db->where('user_id', $id)
+            ->delete('user_departments');
             return true;
         }
 

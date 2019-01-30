@@ -4,8 +4,12 @@
 <div>
     <dt>Brugernavn:</dt>
     <dd class="user-dd"><?= $user['username'] ?></dd>
-    <dt>Afdeling:</dt>
-    <dd class="user-dd"><?= $user['name'] ?></dd>
+    <dt>Afdelinger:</dt>
+    <?php foreach($departments as $department): ?>
+        <dd class="user-dd">
+            <?= $department['name'] ?>
+        </dd>
+    <?php endforeach; ?>
     <dt>Rolle:</dt>
     <dd class="user-dd"><?= $user['permissions'] ?></dd>
     <dt>Email:</dt>
@@ -18,12 +22,12 @@
 
 <div class="row">
     <div class="md-col-1" style="margin-left:1.33%;">
-        <?= form_open('users/edit/'.$user['user_id']); ?>
+        <?= form_open('users/edit/'.$user['u_id']); ?>
             <input type="submit" value="Rediger bruger" class="btn btn-secondary" />
         <?= form_close(); ?>
     </div>
     <div class="md-col-1" style="margin-left:1%;">
-        <?= form_open('users/delete/'.$user['user_id']); ?>
+        <?= form_open('users/delete/'.$user['u_id']); ?>
             <input type="submit" value="Slet bruger" class="btn btn-danger" />
         <?= form_close(); ?>
     </div>
@@ -37,7 +41,7 @@
     <div class="col-md-4">
         <?= validation_errors(); ?>
         <?= form_open('users/change_password'); ?>
-        <input type="hidden" name="id" value="<?= $user['user_id'] ?>" />
+        <input type="hidden" name="id" value="<?= $user['u_id'] ?>" />
         <div class="form-group">
             <label>Gammelt kodeord:</label>
             <input type="password" name="old_password" placeholder="Gammelt kodeord" class="form-control" />

@@ -5,8 +5,8 @@ Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.
 <div class="row">
 	<div class="col-md-4 offset-md-1">
 		<?= validation_errors(); ?>
-		<?= form_open('users/edit/'.$user['user_id']); ?>
-        <input type="hidden" name="id" value="<?= $user['user_id'] ?>"/>
+		<?= form_open('users/edit/'.$user['u_id']); ?>
+        <input type="hidden" name="u_id" value="<?= $user['u_id'] ?>"/>
         <input type="hidden" name="old_username" value="<?= $user['username'] ?>" />
         <input type="hidden" name="old_email" value="<?= $user['email'] ?>" />
 		<div class="form-group">
@@ -39,8 +39,8 @@ Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.
 		</div>
 		<div>
 			<label>Tildel afdeling:</label>
-			<select name="department_id">
-				<option selected hidden value="<?= $user['d_id'] ?>"><?= $user['name'] ?></option>
+			<select name="d_id">
+				<option selected value="0"></option>
 				<?php foreach($departments as $department):?>
 					<option value="<?= $department['id'] ?>"><?= $department['name'] ?></option>
 				<?php endforeach;?>
@@ -51,4 +51,4 @@ Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.
 	</div>
 </div>
 
-<a type="button" class="btn btn-primary" href="<?= base_url('users/view/'.$user['user_id']); ?>">Tilbage til bruger</a>
+<a type="button" class="btn btn-primary" href="<?= base_url('users/view/'.$user['u_id']); ?>">Tilbage til bruger</a>

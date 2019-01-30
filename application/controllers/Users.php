@@ -3,6 +3,10 @@
         public function index(){
             $data['title'] = 'Bruger oversigt';
             $data['users'] = $this->user_model->get_user();
+            var_export($data['users']);
+            foreach($users as $user){
+                $data['departments'] = $this->user_department_model->get_user_departments($user['u_id']);
+            }
 
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
@@ -18,6 +22,7 @@
             } else {   
                 //Get user
                 $data['user'] = $this->user_model->get_user($id);
+                $data['departments'] = $this->user_department_model->get_user_departments($id);
 
                 $this->load->view('templates/header');
                 $this->load->view('users/view', $data);
@@ -73,6 +78,7 @@
             $data['user'] = $this->user_model->get_user($id);
             $data['departments'] = $this->department_model->get_department();
             $newpass = FALSE;
+            $newdepart = FALSE;
 
             $this->form_validation->set_rules('username','"brugernavn"','required|callback_check_space|callback_check_user_exists');
             $this->form_validation->set_rules('email','"email"','valid_email|callback_check_space|callback_check_email_exists');
@@ -91,6 +97,12 @@
                 if($newpass){
                     $enc_pass = $this->hash_password($this->input->post('password'));
                     $this->user_model->change_password($id, $enc_pass);
+                }
+                if(!empty($this->input->post('d_id'))){
+                    
+                    if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
+                        $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
+                    }
                 }
                 $this->session->set_flashdata('user_edited','Brugeren blev succesfuldt opdateret');
                 redirect('users/view/'.$id);

@@ -59,6 +59,12 @@
         public function delete($id){
             $department = $this->department_model->get_department($id);
             $this->department_model->delete_department($id);
+            $users = $this->user_model->get_user();
+            foreach($user['id'] as $u_id){
+                if(empty($this->user_department_model($u_id))){
+                    $this->user_department_model->assign_user_to_department($u_id, 1);
+                }
+            }
             $this->session->set_flashdata('department_deleted',$department['name'].' succesfuldt slettet.');
             redirect('departments');
         }

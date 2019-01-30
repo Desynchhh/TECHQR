@@ -41,6 +41,9 @@
         public function delete_department($id){
             $this->db->where('id', $id);
             $this->db->delete('departments');
+
+            $this->db->where('department_id', $id)
+            ->delete('user_departments');
             return true;
         }
     }
