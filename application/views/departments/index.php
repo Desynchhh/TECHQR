@@ -1,17 +1,17 @@
 <h2><?= $title ?></h2>
-<a href="<?= base_url('departments/create'); ?>">Ny afdeling</a>
-<span class="same-line">|</span>
-<a href="<?= base_url('departments/edit'); ?>" class="same-line">Rediger afdelinger</a>
 <hr>
-
+<div>
+    <a type="button" class="btn btn-primary" href="<?= base_url('departments/create'); ?>">Ny afdeling</a>
+    <a type="button" class="btn btn-warning" href="<?= base_url('departments/edit'); ?>" class="same-line">Rediger afdelinger</a>
+</div>
+<br>
 <div>
 <?php foreach($departments as $department): ?>
-    <div>
-        <strong><?= $department['name'] ?></strong>
-        <span class="same-line">|</span>
-        <a class="same-line" href="<?= base_url('departments/delete/'.$department['id']); ?>">Slet</a>
-        <span class="same-line">|</span>
-        <a class="same-line" href="<?= base_url('departments/edit/'.$department['id']); ?>">Rediger</a>
+    <div style="margin-bottom:1%;">
+        <a href="<?= base_url('departments/view/'.$department['id']); ?>" ><strong><?= $department['name'] ?>:</strong></a>
+        <a type="button" class="same-line btn btn-danger btn-sm" href="<?= base_url('departments/delete/'.$department['id']); ?>">Slet</a>
+        <!--<span class="same-line">|</span>-->
+        <a type="button" class="same-line btn btn-warning btn-sm" href="<?= base_url('departments/edit/'.$department['id']); ?>">Omdøb</a>
     </div>
 <?php endforeach; ?>
 </div>

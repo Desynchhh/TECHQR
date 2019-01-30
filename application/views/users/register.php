@@ -23,8 +23,8 @@
 		<div>
 			<label>Bruger type:</label>
 			<select name="permissions">
-				<option selected value="user">Bruger</option>
-				<option value="admin">Admin</option>
+				<option selected value="Bruger">Bruger</option>
+				<option value="Admin">Admin</option>
 			</select>
 		</div>
 		<div>
@@ -41,4 +41,4 @@
 	</div>
 </div>
 
-<a href="<?= base_url('users'); ?>">Tilbage til oversigt</a>
+<a type="button" class="btn btn-primary" href="<?= base_url('users'); ?>">Tilbage til oversigt</a>

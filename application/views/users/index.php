@@ -1,11 +1,12 @@
 <h2><?= $title ?></h2>
+<h5>Oversigt over alle brugere.<br/>Klik på en brugers brugernavn for at se flere detaljer eller redigere dem.</h5>
 <hr>
 <!-- link to register new user -->
-<a href="<?= base_url('users/register');?>">Opret ny bruger</a>
+<a type="button" class="btn btn-primary" href="<?= base_url('users/register');?>">Opret ny bruger</a>
 <!-- form to search for a specific user in the table below -->
 <?= form_open('users/search');?>
 <div>
-	<label>Søg på navn og afdeling:</label>
+	<label>Søg på brugernavn og afdeling:</label>
 	<input type="text" name="search_string" />
 	<input type="submit" value="Søg" class="btn btn-secondary" />
 </div>
@@ -15,12 +16,11 @@
 <table class="table">
 	<tbody>
 		<tr>
-			<th>Bruger navn</th>
+			<th>Brugernavn</th>
 			<th>Roller</th>
 			<th>Afdelinger</th>
 			<th>Sidste handling</th>
 			<th>Email</th>
-			<th>Værktøj</th> <!-- consists of an "Edit" and "Delete" button separated by a pipe ( | ) -->
 		</tr>
 		<!-- create a <tr> with <td> children for each user in the database -->
 		<?php foreach($users as $user): ?>
@@ -30,9 +30,6 @@
 			<td><?= $user['name'] ?></td>
 			<td><!-- INSERT LAST_ACTION --></td>
 			<td><?= $user['email'] ?></td>
-			<td>
-				<a href="<?= base_url('users/view/'.$user['user_id']); ?>">Vis</a>
-			</td>
 		</tr>
 		<?php endforeach;?>
 	</tbody>

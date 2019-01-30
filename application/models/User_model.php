@@ -53,7 +53,15 @@
         }
 
         public function edit_user($id){
-
+            $data = array(
+                'username' => $this->input->post('username'),
+                'email' => $this->input->post('email'),
+                'permissions' => $this->input->post('permissions'),
+                'department_id' => $this->input->post('department_id')
+                );
+            $this->db->where('id',$id)
+            ->update('users', $data);
+            return true;
         }
 
         public function delete_user($id){

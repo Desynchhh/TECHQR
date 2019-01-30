@@ -61,7 +61,7 @@
                 $this->load->view('users/register', $data);
                 $this->load->view('templates/footer');
             } else {
-                $enc_pass = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
+                $enc_pass = $this->hash_password($this->input->post('password'));
                 $this->user_model->create_user($enc_pass);
                 $this->session->set_flashdata('user_created','Brugeren '.$this->input->post('username').' er succesfuldt oprettet!');
                 redirect('users');
@@ -72,15 +72,27 @@
             $data['title'] = 'Rediger bruger';
             $data['user'] = $this->user_model->get_user($id);
             $data['departments'] = $this->department_model->get_department();
+            $newpass = FALSE;
 
             $this->form_validation->set_rules('username','"brugernavn"','required|callback_check_space|callback_check_user_exists');
             $this->form_validation->set_rules('email','"email"','valid_email|callback_check_space|callback_check_email_exists');
+            if(!empty($this->input->post('password'))){
+                $this->form_validation->set_rules('password','"nyt kodeord"','required');
+                $this->form_validation->set_rules('password2','"bekræft kodeord"','matches[password]|callback_check_space');
+                $newpass = TRUE;
+            }
 
             if($this->form_validation->run()=== FALSE){
                 $this->load->view('templates/header');
                 $this->load->view('users/edit', $data);
                 $this->load->view('templates/footer');
             } else {
+                $this->user_model->edit_user($id);
+                if($newpass){
+                    $enc_pass = $this->hash_password($this->input->post('password'));
+                    $this->user_model->change_password($id, $enc_pass);
+                }
+                $this->session->set_flashdata('user_edited','Brugeren blev succesfuldt opdateret');
                 redirect('users/view/'.$id);
             }
         }
@@ -91,7 +103,7 @@
             redirect('users');
         }
 
-        public function user_change_password(){
+        public function change_password(){
             $this->form_validation->set_rules('old_password','"gammelt kodeord"','required|callback_check_space');
             $this->form_validation->set_rules('new_password','"nyt kodeord"','required|callback_check_space');
             $this->form_validation->set_rules('new_password2','"bekræft kodeord"','matches[new_password]');
@@ -113,6 +125,11 @@
             redirect('users/view/'.$this->input->post('id'));
         }
 
+
+        //Hash password function
+        private function hash_password($password){
+            return password_hash($password, PASSWORD_DEFAULT);
+        }
 
         //CUSTOM VALIDATION RULES BELOW THIS POINT
         function check_space($str){
@@ -154,7 +171,7 @@
                     return true;
                 }
             }
-            //This part is used when a new user is being registered OR when an existing user's email is changed
+            //This part is used when a new user is being registered OR when an existing user's email is æchanged
             //Ensure the new email address does not already exist within the DB
              if($this->user_model->check_email_exists($email)){
                 return false;

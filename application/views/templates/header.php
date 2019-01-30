@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>QE-Master</title>
+	<title>TECHQR</title>
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/bootstrap.min.css')?>">
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/styles.css')?>"/>
 </head>
@@ -36,14 +36,20 @@
 		<br/>
 		
 		<!-- flashdata messages -->
-	<?php if($this->session->flashdata('organisation_created')): ?>
-		<?= '<p class="alert alert-success">'.$this->session->flashdata('organisation_created').'</p>'; ?>
+	<?php if($this->session->flashdata('department_created')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('department_created').'</p>'; ?>
 	<?php endif; ?>
-	<?php if($this->session->flashdata('organisation_deleted')): ?>
-		<?= '<p class="alert alert-success">'.$this->session->flashdata('organisation_deleted').'</p>'; ?>
+	<?php if($this->session->flashdata('department_edited')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('department_edited').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('department_deleted')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('department_deleted').'</p>'; ?>
 	<?php endif; ?>
 	<?php if($this->session->flashdata('user_created')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_created').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('user_edited')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_edited').'</p>'; ?>
 	<?php endif; ?>
 	<?php if($this->session->flashdata('user_deleted')): ?>
 		<?= '<p class="alert alert-warning">'.$this->session->flashdata('user_deleted').'</p>'; ?>

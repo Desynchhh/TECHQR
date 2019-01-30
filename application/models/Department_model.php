@@ -15,6 +15,15 @@
             return $this->db->insert('departments', $data);
         }
 
+        public function edit_department($id = NULL){
+            $data = array(
+                'name' => $this->input->post('name')
+            );
+            $this->db->where('id', $id);
+            $this->db->update('departments', $data);
+            return true;
+        }
+
         public function get_department($id = NULL){
             if($id == NULL){
                 //Get all departments

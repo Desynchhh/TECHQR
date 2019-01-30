@@ -25,6 +25,15 @@
             }
         }
 
+        public function view($id){
+            $data['title'] = 'Afdelings detajler';
+            $data['department'] = $this->department_model->get_department($id);
+
+            $this->load->view('templates/header');
+            $this->load->view('departments/view', $data);
+            $this->load->view('templates/footer');
+        }
+
         public function edit($id = NULL){
             if($id === NULL){
                 //Modify any department and its members
@@ -40,6 +49,8 @@
                     $this->load->view('departments/edit', $data);
                     $this->load->view('templates/footer');
                 } else {
+                    $this->department_model->edit_department($id);
+                    $this->session->set_flashdata('department_edited','Afdeling opdateret');
                     redirect('departments');
                 }
             }

@@ -1,49 +1,23 @@
 <h2><?= $title ?></h2>
 <hr>
 
-<div class="row">
-    <div class="col-md-1">
-        <label><strong>Brugernavn:</strong></label>
-    </div>
-    <div class="col-md-11">
-        <p><?= $user['username'] ?></p>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-1">
-        <label><strong>Afdeling:</strong></label>
-    </div>
-    <div class="col-md-11">
-        <p><?= $user['name'] ?></p>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-1">
-        <label><strong>Rolle:</strong></label>
-    </div>
-    <div class="col-md-11">
-        <p><?= $user['permissions'] ?></p>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-1">
-        <label class=""><strong>Email:</strong></label>
-    </div>
-    <div class="col-md-11">
-        <p><?= $user['email'] ?></p>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-1">
-        <label><strong>Oprettet:</strong></label>
-    </div>
-    <div class="col-md-11">
-        <p><?= $user['created_at'] ?></p>
-    </div>
+<div>
+    <dt>Brugernavn:</dt>
+    <dd class="user-dd"><?= $user['username'] ?></dd>
+    <dt>Afdeling:</dt>
+    <dd class="user-dd"><?= $user['name'] ?></dd>
+    <dt>Rolle:</dt>
+    <dd class="user-dd"><?= $user['permissions'] ?></dd>
+    <dt>Email:</dt>
+    <dd class="user-dd"><?= $user['email'] ?></dd>
+    <dt>Oprettet:</dt>
+    <dd class="user-dd"><?= $user['created_at'] ?></dd>
 </div>
 
+<br/>
+
 <div class="row">
-    <div class="md-col-1" style="margin-left:1.2%;">
+    <div class="md-col-1" style="margin-left:1.33%;">
         <?= form_open('users/edit/'.$user['user_id']); ?>
             <input type="submit" value="Rediger bruger" class="btn btn-secondary" />
         <?= form_close(); ?>
@@ -54,14 +28,16 @@
         <?= form_close(); ?>
     </div>
 </div>
+<a type="button" class="btn btn-primary" href="<?= base_url('users'); ?>">Tilbage til oversigt</a>
 <hr>
 
+<h3>Ændr kodeord</h3>
+<h6>Kontakt en adminitstrator hvis du ikke kan huske dit kodeord.</h6>
 <div class="row">
     <div class="col-md-4">
         <?= validation_errors(); ?>
-        <?= form_open('users/user_change_password'); ?>
+        <?= form_open('users/change_password'); ?>
         <input type="hidden" name="id" value="<?= $user['user_id'] ?>" />
-        <h3>Ændr kodeord</h3>
         <div class="form-group">
             <label>Gammelt kodeord:</label>
             <input type="password" name="old_password" placeholder="Gammelt kodeord" class="form-control" />
@@ -78,4 +54,3 @@
 <?= form_close(); ?>
     </div>
 </div>
-<a href="<?= base_url('users'); ?>">Tilbage til oversigt</a>
