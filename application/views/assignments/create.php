@@ -5,15 +5,15 @@
             $('#answerAmount').change(function(){
                 //Selected value
 				var optionsAmount = $(this).val();
-				var title = $('#title').val();
-				var location = $('#location').val();
                 window.location = '<?= base_url("assignments/create/"); ?>'+optionsAmount;
             });
         });
         </script>
 
 <h2><?= $title ?></h2>
+<h5>NOTE: det er indtil videre IKKE muligt at oprette en opgave med mere end 1 svarmulighed</h5>
 <hr>
+<?= validation_errors(); ?>
 <?= form_open('assignments/create'); ?>
 <div class="row">
 	<div class="col-md-3 offset-md-1">
@@ -26,14 +26,18 @@
 			<input type="text" id="location" name="location" placeholder="Lokation" value="<?= $assLocation ?>" class="form-control"/>
 		</div>
 		<div>
+		<!-- NOTE: THE NAMES OF THE ANSWER CHOICES ARE CURRENTLY HARDCODED. -->
+		<!-- NO MORE THAN ONE ANSWER PER ASSIGNMENT CAN BE CREATED -->
 			<label>Antal svarmuligheder:</label>
+			<!-- fill the combobox with available number of answers an assignment can have -->
 			<select id="answerAmount">
 				<option selected hidden><?= $optionsAmount ?></option>
-				<?php foreach(range(1, $maxOptions) as $option):?>
+				<?php foreach(range($minOptions, $maxOptions) as $option):?>
 					<option value="<?=$option?>"><?=$option?></option>
 				<?php endforeach; ?> 
 			</select>
 		</div>
+		<!-- Create as many input fields as the user wants -->
 		<?php foreach(range(1, $optionsAmount) as $option):?>
 		<div class="form-group">
 			<label>Svarmulighed <?= $option ?>:</label>
@@ -48,4 +52,4 @@
 </div>
 <?= form_close(); ?>
 
-<a href="<?= base_url('assignments'); ?>">Tilbage til oversigt</a>
+<a type="button" class="btn btn-primary" href="<?= base_url('assignments'); ?>">Tilbage til oversigt</a>

@@ -3,10 +3,6 @@
         public function index(){
             $data['title'] = 'Bruger oversigt';
             $data['users'] = $this->user_model->get_user();
-            var_export($data['users']);
-            foreach($users as $user){
-                $data['departments'] = $this->user_department_model->get_user_departments($user['u_id']);
-            }
 
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
@@ -66,8 +62,12 @@
                 $this->load->view('users/register', $data);
                 $this->load->view('templates/footer');
             } else {
+                $assign_department = FALSE;
+                if(!empty($this->input->post('d_id'))){
+                    $assign_department = TRUE;
+                }
                 $enc_pass = $this->hash_password($this->input->post('password'));
-                $this->user_model->create_user($enc_pass);
+                $this->user_model->create_user($enc_pass, $assign_department);
                 $this->session->set_flashdata('user_created','Brugeren '.$this->input->post('username').' er succesfuldt oprettet!');
                 redirect('users');
             }
@@ -101,6 +101,9 @@
                 if(!empty($this->input->post('d_id'))){
                     
                     if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
+                        //if(empty($this->user_department_model->get_user_departments($this->input->post('u_id')))){
+                        //    $this->user_department_model->delete_user_from_department($this->input->post('u_id'), 0);   
+                        //}
                         $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
                     }
                 }

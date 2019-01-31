@@ -16,3 +16,4 @@
 <?php else:?>
 <!-- if the user is trying to get an overview of all departments -->
 <?php endif;?>
+<a type="button" class="btn btn-primary" href="<?= base_url('departments'); ?>">Tilbage til oversigt</a>

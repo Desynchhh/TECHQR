@@ -5,11 +5,17 @@
     <dt>Brugernavn:</dt>
     <dd class="user-dd"><?= $user['username'] ?></dd>
     <dt>Afdelinger:</dt>
-    <?php foreach($departments as $department): ?>
-        <dd class="user-dd">
-            <?= $department['name'] ?>
-        </dd>
-    <?php endforeach; ?>
+    <dd class="user-dd">
+    <!-- Dispaly all the users departments, if there are any -->
+    <?php if($departments): ?>
+        <?php foreach($departments as $department): ?>
+                <?= $department['name'] ?><br>
+        <?php endforeach; ?>
+        <!-- or this, if the user has no departments -->
+    <?php else: ?>
+        Ingen afdeling
+    <?php endif;?>
+    </dd>
     <dt>Rolle:</dt>
     <dd class="user-dd"><?= $user['permissions'] ?></dd>
     <dt>Email:</dt>

@@ -27,9 +27,11 @@
 		<tr>
 			<td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
 			<td><?= $user['permissions'] ?></td>
+			<!-- get all departments for each individual user and show them in the table -->
+			<?php $u_departments = $this->user_department_model->get_user_departments($user['u_id'])?>
 			<td>
-				<?php foreach($departments as $department):?>
-					<?= $department ?>
+				<?php foreach($u_departments as $department):?>
+					<?= $department['name'] ?><br>
 				<?php endforeach;?>
 			</td>
 			<td><!-- INSERT LAST_ACTION --></td>

@@ -12,4 +12,4 @@
 	</div>
 </div>
 <?= form_close(); ?>
-<a href="<?= base_url('departments'); ?>">Tilbage til oversigt</a>
+<a type="button" class="btn btn-primary" href="<?= base_url('departments'); ?>">Tilbage til oversigt</a>

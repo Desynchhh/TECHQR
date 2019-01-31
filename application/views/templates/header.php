@@ -42,6 +42,9 @@
 	<?php if($this->session->flashdata('department_edited')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('department_edited').'</p>'; ?>
 	<?php endif; ?>
+	<?php if($this->session->flashdata('department_user_added')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('department_user_added').'</p>'; ?>
+	<?php endif; ?>
 	<?php if($this->session->flashdata('department_deleted')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('department_deleted').'</p>'; ?>
 	<?php endif; ?>

@@ -28,7 +28,6 @@
             if($id == NULL){
                 //Get all departments
                 $this->db->order_by('name');
-                $this->db->where('id >', '1');
                 $query = $this->db->get('departments');
                 return $query->result_array();
             } else {
@@ -45,5 +44,14 @@
             $this->db->where('department_id', $id)
             ->delete('user_departments');
             return true;
+        }
+
+        public function check_department_exists($d_name){
+            $result = $this->db->get_where('departments',array('name' => $d_name));
+            if(empty($result->row_array())){
+                return false;
+            } else {
+                return true;
+            }
         }
     }

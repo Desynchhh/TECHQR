@@ -4,7 +4,7 @@
             $this->load->database();
         }
 
-        public function create_user($enc_pass){
+        public function create_user($enc_pass, $assign_department){
             //Insert the user data into the users table
             $data = array(
                 'username' => $this->input->post('username'),
@@ -14,32 +14,30 @@
             );
             $this->db->insert('users', $data);
 
-            //Establish relation between user and department in user_departments table
-            $user_id = $this->db->insert_id();
-            $data = array(
-                'user_id' => $user_id,
-                'department_id' => $this->input->post('d_id')
-            );
-            $this->db->insert('user_departments', $data);
+            if($assign_department){
+                //Establish relation between user and department in user_departments table
+                $user_id = $this->db->insert_id();
+                $data = array(
+                    'user_id' => $user_id,
+                    'department_id' => $this->input->post('d_id')
+                );
+                $this->db->insert('user_departments', $data);
+            }
         }
 
         public function get_user($id = NULL){
             if($id === NULL){
                 //Get all users
-                /*$this->db->join('departments','departments.id = users.department_id', 'full');
-                $query = $this->db->get('users');
-                return $query->result_array();
-                $query = $this->db->get();
-                return $query->result_array();*/
                 $this->db->select('
                     users.id as u_id,
                     users.username,
                     users.email,
                     users.permissions
                     ')
-                ->from('users');
+                ->from('users')
+                ->order_by('users.username', 'ASC');
                 $query = $this->db->get();
-                return $query->result_array();      
+                return $query->result_array();
             } else {
                 //Get specific user
                 $this->db->select('
