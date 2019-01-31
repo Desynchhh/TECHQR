@@ -4,11 +4,11 @@
 <div>
     <dl class="dl-horizontal">
         <dt>Afdelingsnavn:</dt>
-        <dd class="department-dd"><?= $department['name'] ?></dd>
+        <dd class="department-dd"><?= $department['name'] ?><br></dd>
         <dt>Medlemmer:</dt>
-        <dd class="department-dd"><?= count($users) ?></dd>
+        <dd class="department-dd"><?= count($users) ?><br></dd>
         <dt>Oprettet:</dt>
-        <dd class="department-dd"><?= $department['created_at'] ?></dd>
+        <dd class="department-dd"><?= $department['created_at'] ?><br></dd>
     </dl>
 </div>
 
@@ -39,7 +39,7 @@
                     <td><?= $user['username'] ?></td>
                     <td><?= $user['permissions'] ?></td>
                     <td><?= $user['email'] ?></td>
-                    <td><a href="<?= base_url('departments/remove/'.$user['u_id'].'/'.$department['id']); ?>">Fjern</a></td>
+                    <td><a class="btn btn-sm btn-outline-danger" href="<?= base_url('departments/remove/'.$user['u_id'].'/'.$department['id']); ?>">Fjern</a></td>
                 </tr>
             <?php endforeach;?>
         </tbody>

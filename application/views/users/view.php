@@ -3,7 +3,7 @@
 
 <div>
     <dt>Brugernavn:</dt>
-    <dd class="user-dd"><?= $user['username'] ?></dd>
+    <dd class="user-dd"><?= $user['username'] ?><br></dd>
     <dt>Afdelinger:</dt>
     <dd class="user-dd">
     <!-- Dispaly all the users departments, if there are any -->
@@ -17,11 +17,11 @@
     <?php endif;?>
     </dd>
     <dt>Rolle:</dt>
-    <dd class="user-dd"><?= $user['permissions'] ?></dd>
+    <dd class="user-dd"><?= $user['permissions'] ?><br></dd>
     <dt>Email:</dt>
-    <dd class="user-dd"><?= $user['email'] ?></dd>
+    <dd class="user-dd"><?= $user['email'] ?><br></dd>
     <dt>Oprettet:</dt>
-    <dd class="user-dd"><?= $user['created_at'] ?></dd>
+    <dd class="user-dd"><?= $user['created_at'] ?><br></dd>
 </div>
 
 <br/>
