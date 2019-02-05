@@ -1,6 +1,10 @@
 <?php
     class Events extends CI_Controller{
         public function index(){
+            if(!$this->session->userdata('logged_in')){
+            redirect('login');
+        }
+        
             $data['title'] = "Event oversigt";
 
             $this->load->view('templates/header');

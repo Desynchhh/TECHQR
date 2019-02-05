@@ -9,7 +9,7 @@
         <input type="hidden" value="<?= $department['id'] ?>"/>
         <label>Afdelingsnavn:</label>
         <input type="text" name="name" placeholder="Afdelingsnavn" value="<?= $department['name'] ?>"/>
-        <input type="submit" value="Bekræft" class="btn btn-secondary"/>
+        <input type="submit" value="Gem" class="btn btn-secondary"/>
     </div>
 </div>
 <?= form_close(); ?>

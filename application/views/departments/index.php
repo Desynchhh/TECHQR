@@ -2,7 +2,6 @@
 <hr>
 <div>
     <a type="button" class="btn btn-primary" href="<?= base_url('departments/create'); ?>">Opret ny afdeling</a>
-    <a type="button" class="btn btn-warning" href="<?= base_url('departments/edit'); ?>" class="same-line">Rediger afdelinger</a>
 </div>
 <br>
 <div>

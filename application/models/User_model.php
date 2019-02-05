@@ -74,10 +74,10 @@
             return true;
         }
 
-        public function get_password($id){
+        public function get_password(){
             $this->db->select('users.password')
             ->from('users')
-            ->where('id', $id);
+            ->where('username', $this->input->post('username'));
             $query = $this->db->get();
             return $query->row(0)->password;
         }
@@ -89,6 +89,21 @@
             $this->db->where('id', $id)
             ->update('users', $data);
             return true;
+        }
+
+        public function login($username){
+            $query = $this->db->select('
+                id,
+                permissions
+            ')
+            ->from('users')
+            ->where('username', $username)
+            ->get();
+            if($query->num_rows() == 1){
+                return $query->row_array();
+            } else {
+                return false;
+            }
         }
 
         public function check_user_exists($username){

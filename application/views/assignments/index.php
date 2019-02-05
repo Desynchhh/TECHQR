@@ -3,7 +3,7 @@
 <a type="button" class="btn btn-primary" href="<?= base_url('assignments/create'); ?>">Opret ny opgave</a>
 <?= form_open('assignments/index'); ?>
 <div>
-	<label>Søg på opgave navn, brugernavn eller lokation:</label>
+	<label>Søg på opgavenavn, brugernavn eller lokation:</label>
 	<input type="text" name="search_string" />
 	<input type="submit" value="Søg" class="btn btn-secondary" />
 </div>
@@ -13,7 +13,7 @@
 	<table class="table">
 		<tbody>
 			<tr>
-				<th>Opgave navn</th>
+				<th>Opgavenavn</th>
 				<th>Lokation</th>
 				<th>Oprettet af</th>
 			</tr>

@@ -14,7 +14,10 @@
 
         //Get all departments of which the user is a member of
         public function get_user_departments($u_id){
-            $this->db->select('departments.name')
+            $this->db->select('
+                departments.id as d_id,
+                departments.name
+            ')
             ->where('user_id', $u_id)
             ->join('departments','departments.id = user_departments.department_id')
             ->from('user_departments');

@@ -1,6 +1,10 @@
 <?php
     class Departments extends CI_Controller{
         public function index(){
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+
             $data['title'] = 'Afdelings oversigt';
             $data['departments'] = $this->department_model->get_department();
 
@@ -10,6 +14,10 @@
         }
 
         public function create(){
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+
             $data['title'] = 'Opret afdeling';
 
             $this->form_validation->set_rules('name','"Afdelingsnavn"','required|callback_check_department_exists');
@@ -27,6 +35,10 @@
 
         //Open a page with details about a department
         public function view($id = NULL){
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+
             $data['title'] = 'Afdelings detajler';
             $data['department'] = $this->department_model->get_department($id);
             $data['users'] = $this->user_department_model->get_department_members($id);
@@ -42,11 +54,25 @@
 
         //Remove a user from the department
         public function remove($u_id, $d_id){
-            $this->user_department_model->delete_user_from_department($u_id, $d_id);
-            $this->view($d_id);
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+
+            if(count($this->user_department_model->get_user_departments($u_id)) <= 1){
+                //If the user only has 1 department
+                $this->session->set_flashdata('department_user_remove_fail','Brugere skal have minimum én afdeling');
+            } else {
+                $this->session->set_flashdata('department_user_remove_success','Brugeren er blevet fjernet fra afdelingen');
+                $this->user_department_model->delete_user_from_department($u_id, $d_id);
+            }
+            redirect('departments/view/'.$d_id);
         }
 
         public function add($d_id){
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+
             $data['department'] = $this->department_model->get_department($d_id);
             $data['title'] = 'Tilføj bruger til '.$data['department']['name'];
             $data['users'] = $this->user_department_model->get_department_not_members($d_id);
@@ -66,6 +92,10 @@
 
         //It's called edit, but it is only used to rename departments
         public function edit($id = NULL){
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+
             if($id === NULL){
                 //Modify any department and its members
             } else {
@@ -88,12 +118,26 @@
         }
 
         public function delete($id){
+            if($this->session->userdata('permissions') != 'Admin'){
+                redirect('home');
+            }
+            
+            //Check if the department has users who only have 1 department
+            //DO NOT DELETE DEPARTMENT IF THIS IS TRUE
+            $dep_users = $this->user_department_model->get_department_members($id);
+            foreach($dep_users as $user){
+                if(count($this->user_department_model->get_user_departments($user['u_id'])) <= 1){
+                    $this->session->set_flashdata('department_delete_fail','Afdelingen kunne ikke slettes, da <strong>'.$user['username'].'</strong> kun har 1 afdeling');//Denne afdeling har en eller flere brugere som kun har en afdeling. En bruger skal som minimum have én afdeling!
+                    redirect('departments/view/'.$id);
+                }
+            }
+
             $this->department_model->delete_department($id);
-            $this->session->set_flashdata('department_deleted','Afdeling succesfuldt slettet.');
+            $this->session->set_flashdata('department_delete_success','Afdeling succesfuldt slettet.');
             redirect('departments');
         }
 
-        //Custom form_validations rules below
+        //CUSTOM VALIDATION RULES BELOW THIS POINT
         function check_department_exists($d_name){
             $this->form_validation->set_message('check_department_exists','Der findes allerede en afdeling med det navn');
             if($this->department_model->check_department_exists($d_name)){

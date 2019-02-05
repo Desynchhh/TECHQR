@@ -30,7 +30,6 @@
 		<div>
 			<label>Tildel afdeling:</label>
 			<select name="d_id">
-				<option selected hidden></option>
 				<?php foreach($departments as $department):?>
 					<option value="<?= $department['id'] ?>"><?= $department['name'] ?></option>
 				<?php endforeach;?>

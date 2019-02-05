@@ -5,8 +5,9 @@
 <a type="button" class="btn btn-primary" href="<?= base_url('users/register');?>">Opret ny bruger</a>
 <!-- form to search for a specific user in the table below -->
 <?= form_open('users/search');?>
+<br>
 <div>
-	<label>Søg på brugernavn og afdeling:</label>
+	<label>Søg på brugernavn:</label>
 	<input type="text" name="search_string" />
 	<input type="submit" value="Søg" class="btn btn-secondary" />
 </div>
@@ -17,7 +18,7 @@
 	<tbody>
 		<tr>
 			<th>Brugernavn</th>
-			<th>Roller</th>
+			<th>Type</th>
 			<th>Afdelinger</th>
 			<th>Sidste handling</th>
 			<th>Email</th>

@@ -46,7 +46,7 @@ Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.
 				<?php endforeach;?>
 			</select>
 		</div>
-		<input type="submit" value="Bekræft" class="btn btn-secondary" />
+		<input type="submit" value="Gem" class="btn btn-secondary" />
 		<?= form_close(); ?>
 	</div>
 </div>
