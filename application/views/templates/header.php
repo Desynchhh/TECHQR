@@ -89,6 +89,9 @@
 	<?php if($this->session->flashdata('ass_created')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('ass_created').'</p>'; ?>
 	<?php endif; ?>
+	<?php if($this->session->flashdata('ass_edited')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('ass_edited').'</p>'; ?>
+	<?php endif; ?>
 	<?php if($this->session->flashdata('ass_delete_fail')): ?>
 		<?= '<p class="alert alert-warning">'.$this->session->flashdata('ass_delete_fail').'</p>'; ?>
 	<?php endif; ?>

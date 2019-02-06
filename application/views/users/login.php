@@ -6,7 +6,7 @@
 	<?= form_open('users/login'); ?>
 	<div class="form-group">
 		<label>Brugernavn:</label>
-		<input type="text" name="username" placeholder="Brugernavn (eks: lmkr)" class="form-control" />
+		<input type="text" name="username" placeholder="Brugernavn (eks: jodo)" class="form-control" />
 	</div>
 	<div class="form-group">
 		<label>Kodeord:</label>

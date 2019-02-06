@@ -1,4 +1,6 @@
 <h2><?= $title ?></h2>
+<h5>Oversigt over alle afdelinger.<br/>
+Klik på en afdelings navn for at se flere detaljer.</h5>
 <hr>
 <div>
     <a type="button" class="btn btn-primary" href="<?= base_url('departments/create'); ?>">Opret ny afdeling</a>

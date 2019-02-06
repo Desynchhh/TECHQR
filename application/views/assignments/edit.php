@@ -4,7 +4,7 @@
                 $('#answerAmount').change(function(){
                     //Selected value
                     var optionsAmount = $(this).val();
-                    window.location = '<?= base_url("assignments/edit/"); ?>'+optionsAmount;
+                    window.location = '<?= base_url("assignments/edit/".$ass["ass_id"]); ?>/'+optionsAmount;
                 });
             });
         </script>
@@ -14,18 +14,18 @@
 Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
 <hr>
 <?= validation_errors(); ?>
-<?= form_open('assignments/edit/'.$ass['ass_id']); ?>
+<?= form_open('assignments/edit/'.$ass['ass_id'].'/'.$options['optionsAmount']); ?>
 <div class="row">
-		<!--<div class="col-md-2">
+		<div class="col-md-2">
 			<label>Antal svarmuligheder:</label>
-			<!-- fill the combobox with available number of answers an assignment can have 
+			<!-- fill the combobox with available number of answers an assignment can have -->
 			<select id="answerAmount" class="form-control">
-				<option selected hidden><?= count($ass[1]) ?></option>
+				<option selected hidden><?= $options['optionsAmount'] ?></option>
 				<?php foreach(range(1, $options['maxOptions']) as $option):?>
 					<option value="<?=$option?>"><?=$option?></option>
 				<?php endforeach; ?> 
 			</select>
-		</div>-->
+		</div>
 	<div class="col-md-3 offset-md-2">
 		<div class="form-group">
 			<label>Opgave titel:</label>
@@ -41,17 +41,18 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 </div>
 		<!-- Create as many input fields as the assignment has answers -->
 <div class="row">
-	<?php $count = 1; foreach($ass[1] as $answer):?>
+	<?php $count = 1; foreach(range(1, $options['optionsAmount']) as $option):?>
 		<div class="col-md-4">
 			<div class="form-group">
 				<label>Svarmulighed <?= $count ?>:</label>
-				<input type="text" name="answer<?= $count ?>" placeholder="Svarmulighed <?= $count ?>" value="<?= $answer['answer'] ?>" class="form-control"/>
-				<label style="padding-top:1.8%;">Point <?= $count ?>:</label>
-				<input type="text" name="points<?= $count ?>" placeholder="Point <?= $count ?>" value="<?= $answer['points'] ?>" class="form-control"/>
+				<!-- check if the answer's index exists. if it does, insert it in the value attribute -->
+				<input type="text" name="answer<?= $count ?>" placeholder="Svarmulighed <?= $count ?>" value="<?= (isset($ass[1][$count-1]) ? $ass[1][$count-1]['answer'] : '')?>" class="form-control"/>
+				<label style="padding-top:1.8%;">Point <?= $count ?>:</label>	<!-- subtract one from $count in the above and below input fields value attribute to get the correct index for the answer -->
+				<input type="text" name="points<?= $count ?>" placeholder="Point <?= $count ?>" value="<?= (isset($ass[1][$count-1]) ? $ass[1][$count-1]['points'] : '')?>" class="form-control"/>
 			</div>
 			<br>
 		</div>
-	<?php $count = $count+1; endforeach; ?>
+	<?php $count++; endforeach; ?>
 </div>
 <input type="submit" value="Gem" class="btn btn-secondary"/>
 <?= form_close(); ?>

@@ -1,4 +1,6 @@
 <h2><?= $title ?></h2>
+<h5>Oversigt over alle opgaver.<br/>
+Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 <hr>
 <a type="button" class="btn btn-primary" href="<?= base_url('assignments/create'); ?>">Opret ny opgave</a>
 <?= form_open('assignments/index'); ?>

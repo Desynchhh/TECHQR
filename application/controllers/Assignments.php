@@ -58,11 +58,36 @@
 				}
 		}
 
+		public function confirm_delete($ass_id){
+			if(!$this->session->userdata['logged_in']){
+				redirect('login');
+			}
+			
+			$data['title'] = "SLET OPGAVE?";
+			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
+			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
+				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
+					$ismember = true;
+					break;
+				}
+			} 
+			if($ismember){
+				$this->load->view('templates/header');
+				$this->load->view('assignments/confirm_delete', $data);
+				$this->load->view('templates/footer');
+			} else {
+				redirect('assignments');
+			}
+		
+
+		}
+
 		public function delete($ass_id){
 			if(!$this->session->userdata['logged_in']){
 				redirect('login');
 			}
 			
+			//Check if the logged in user is a member of the assignments department
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
 				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
@@ -71,10 +96,12 @@
 				}
 			}
 			if($ismember){
+				//Delete if they are a member
 				$this->assignment_model->delete_ass($ass_id);
 				$this->session->set_flashdata('ass_delete_success','Opgave slettet');
 				redirect('assignments');
 			} else {
+				//Redirect if they are not
 				$this->session->set_flashdata('ass_delete_fail', 'is member: '.$ismember);//'Du kan kun slette opgaver fra din egne afdelinger!'
 				redirect('assignments');
 			}
@@ -108,20 +135,24 @@
 			}
 		}
 
-		public function edit($ass_id){
+		public function edit($ass_id, $optionsAmount = NULL){
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
 
 			$data['title'] = "Rediger opgave";
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
-			$data['options'] = $this->set_answer_amount(count($data['ass'][1]));
+			if($optionsAmount){
+				$data['options'] = $this->set_answer_amount($optionsAmount);
+			} else {
+				$data['options'] = $this->set_answer_amount(count($data['ass'][1]));
+			}
 			$this->form_validation->set_rules('title','"opgave titel"','required');
+			//Set validation rules for all generated 'answer' and 'points' fields
 			for($i = 1; $i<= $data['options']['optionsAmount']; $i++){
 				$this->form_validation->set_rules('answer'.$i,'"svar mulighed '.$i.'"','required');
 				$this->form_validation->set_rules('points'.$i,'"point '.$i.'"','required|numeric');
 			}
-			
 			if($this->form_validation->run() === FALSE){
 				//If validation failed or didn't run
 				$this->load->view('templates/header');
@@ -130,7 +161,7 @@
 			} else {
 				//If validation succeeded
 				$this->assignment_model->edit_ass($ass_id, $data['options']['optionsAmount']);
-				$this->session->set_flashdata('ass_edited','Opgaven blev redigeret');
+				$this->session->set_flashdata('ass_edited','Opgaven er blevet redigeret');
 				redirect('assignments/view/'.$ass_id);
 			}
 		}
@@ -138,7 +169,7 @@
 		public function set_answer_amount($answerAmount = 1){
 			$minOptions = 1;
 			//increase $maxOptions to increase the max amount of answers an assignment can have
-			$maxOptions = 10;
+			$maxOptions = 9;
 			//Ensure the user didn't somehow request a too large or too small amount of fields
 			if($answerAmount < $minOptions){
 				$answerAmount = $minOptions;

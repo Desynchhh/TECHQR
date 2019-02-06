@@ -194,7 +194,7 @@
         }
 
         public function change_password(){
-            $this->form_validation->set_rules('old_password','"gammelt kodeord"','required|callback_check_space');
+            $this->form_validation->set_rules('old_password','"nuværende kodeord"','required|callback_check_space');
             $this->form_validation->set_rules('new_password','"nyt kodeord"','required|callback_check_space');
             $this->form_validation->set_rules('new_password2','"bekræft kodeord"','matches[new_password]');
             if($this->input->post('new_password') === $this->input->post('new_password2') && !empty($this->input->post('new_password'))){

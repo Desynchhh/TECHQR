@@ -1,5 +1,6 @@
 <h2><?= $title ?></h2>
-<h5>Oversigt over alle brugere.<br/>Klik på en brugers brugernavn for at se flere detaljer eller redigere dem.</h5>
+<h5>Oversigt over alle brugere.<br/>
+Klik på en brugers brugernavn for at se flere detaljer eller redigere dem.</h5>
 <hr>
 <!-- link to register new user -->
 <a type="button" class="btn btn-primary" href="<?= base_url('users/register');?>">Opret ny bruger</a>
