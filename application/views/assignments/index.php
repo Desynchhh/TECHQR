@@ -17,6 +17,7 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 			<tr>
 				<th>Opgavenavn</th>
 				<th>Lokation</th>
+				<th>Afdeling</th>
 				<th>Oprettet af</th>
 			</tr>
 			<!-- create <tr> with <td> children for each assignment in the DB -->
@@ -24,6 +25,7 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 				<tr>
 					<td><a href="<?= base_url('assignments/view/'.$ass['id']); ?>"><?= $ass['title'] ?></a></td>
 					<td><?= $ass['location'] ?></td>
+					<td><?= $ass['name'] ?></td>
 					<td><?= $ass['username'] ?></td>
 				</tr>
 			<?php endforeach;?>

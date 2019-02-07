@@ -14,19 +14,11 @@
         <dt>Sidst redigeret:</dt>
         <dd class="ass-dd"><?= $ass['edited_at'] ?><br></dd>
         <dt>Redigeret af:</dt>
-        <dd class="ass-dd"><?= $ass[0]['ass_edited_by'] ?><br></dd>
+        <dd class="ass-dd"><?= $ass['ass_edited_by'] ?><br></dd>
         <dt>Oprettet:</dt>
         <dd class="ass-dd"><?= $ass['ass_created_at'] ?><br></dd>
         <dt>Oprettet af:</dt>
         <dd class="ass-dd"><?= $ass['ass_created_by'] ?><br></dd>
-        <!-- view each answer to the user -->
-        <!-- <?php $count = 1; foreach($ass[1] as $answer):?>
-            <br>
-            <dt>Svarmulighed <?= $count ?></dt>
-            <dd class="ass-dd"><?= $answer['answer'] ?><br></dd>
-            <dt>Point <?= $count ?></dt>
-            <dd class="ass-dd"><?= $answer['points'] ?><br></dd>
-        <?php $count++; endforeach;?> -->
     </dl>
 </div>
 
@@ -54,7 +46,7 @@
                 <th>Point</th>
             </tr>
             <!-- create a <tr> with <td> children for each answer in this assignment -->
-            <?php $count = 1; foreach($ass[1] as $answer):?>
+            <?php $count = 1; foreach($ass[0] as $answer):?>
                 <tr>
                     <td><?= $count ?></td>
                     <td><?= $answer['answer'] ?></td>

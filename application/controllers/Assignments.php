@@ -18,7 +18,7 @@
 			$tokeep = array();
 			for($i = 0; $i < count($data['asses']); $i++){
 				for($o = 0; $o < count($this->session->userdata('departments')); $o++){
-					if($data['asses'][$i]['d_id'] == $this->session->userdata['departments'][$o]['d_id']){
+					if($data['asses'][$i]['name'] == $this->session->userdata['departments'][$o]['name']){
 						//Keep the assignment if any of the users departments match the assignments department
 						$tokeep[] = $data['asses'][$i];
 					}
@@ -145,7 +145,7 @@
 			if($optionsAmount){
 				$data['options'] = $this->set_answer_amount($optionsAmount);
 			} else {
-				$data['options'] = $this->set_answer_amount(count($data['ass'][1]));
+				$data['options'] = $this->set_answer_amount(count($data['ass'][0]));
 			}
 			$this->form_validation->set_rules('title','"opgave titel"','required');
 			//Set validation rules for all generated 'answer' and 'points' fields

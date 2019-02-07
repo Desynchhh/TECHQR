@@ -9,9 +9,9 @@
 			'title' => $this->input->post('title'),
 			'location' => $this->input->post('location'),
 			//Change this when a user is able to pick which of their departments they want the assignment in
-			'department_id' => $this->session->userdata['departments'][0]['d_id'],
-			'created_by' => $this->session->userdata('u_id'),
-			'edited_by' => $this->session->userdata('u_id')
+			'department_id' => $this->input->post('d_id'),
+			'created_by' => $this->session->userdata('username'),
+			'edited_by' => $this->session->userdata('username')
 			//add the creating users "id" in the "created_by" column
 			//add the creating users departments "id" in the "department_id" column
 			);
@@ -26,7 +26,7 @@
 			$data = array(
 				'title' => $this->input->post('title'),
 				'location' => $this->input->post('location'),
-				'edited_by' => $this->session->userdata('u_id'),
+				'edited_by' => $this->session->userdata('username'),
 				'edited_at' => $edited_at
 			);
 			$this->db->where('id', $ass_id)
@@ -56,28 +56,19 @@
 				assignments.id as ass_id,
 				assignments.title as ass_title,
 				assignments.edited_at,
+				assignments.edited_by as ass_edited_by,
 				assignments.created_at as ass_created_at,
+				assignments.created_by as ass_created_by,
 				assignments.location,
-				departments.name as department,
-				users.username as ass_created_by
+				departments.id as d_id,
+				departments.name as department
 			')
 			->where('assignments.id', $ass_id)
 			->join('departments','departments.id = assignments.department_id')
-			->join('users','users.id = assignments.created_by')
 			->from('assignments')
 			->get();
 			$returnarray = $query->row_array();
-
-			//Get the editors username
-			$query = $this->db->select('
-				users.username as ass_edited_by
-			')
-			->where('assignments.id', $ass_id)
-			->join('users', 'users.id = assignments.edited_by')
-			->from('assignments')
-			->get();
-			$returnarray[] = $query->row_array();
-
+			
 			//Get all answers
 			$query = $this->db->select('
 				answers.id as ans_id,
@@ -98,10 +89,10 @@
 			assignments.id,
 			assignments.title,
 			assignments.location,
-			assignments.department_id as d_id,
-			users.username
+			assignments.created_by as username,
+			departments.name
 			')
-			->join('users','users.id = assignments.created_by')
+			->join('departments', 'departments.id = assignments.department_id')
 			->from('assignments')
 			->get();
 			return $query->result_array();
@@ -118,5 +109,37 @@
 			//Delete from answers table
 			$this->db->where('assignment_id', $ass_id)
 			->delete('answers');
+		}
+
+		public function check_created_by($oldname){
+			$query = $this->db->get_where('assignments',array('created_by' => $oldname));
+			if(empty($query->row_array())){
+				//Username has not created any assignments
+                return false;
+            } else {
+				//Username has created assignments
+                return true;
+            }
+		}
+		
+		public function update_created_by($newname, $oldname){
+			$this->db->where('created_by', $oldname)
+			->update('assignments', array('created_by' => $newname));
+		}
+
+		public function check_edited_by($oldname){
+			$query = $this->db->get_where('assignments', array('edited_by' => $oldname));
+			if(empty($query->row_array())){
+				//Username has not edited any assignments
+                return false;
+            } else {
+				//Username has edited assignments
+                return true;
+            }
+		}
+
+		public function update_edited_by($newname, $oldname){
+			$this->db->where('edited_by', $oldname)
+			->update('assignments', array('edited_by' => $newname));
 		}
 	}

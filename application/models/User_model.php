@@ -4,7 +4,7 @@
             $this->load->database();
         }
 
-        public function create_user($enc_pass, $assign_department){
+        public function create_user($enc_pass){
             //Insert the user data into the users table
             $data = array(
                 'username' => $this->input->post('username'),
@@ -13,16 +13,14 @@
                 'permissions' => $this->input->post('permissions')
             );
             $this->db->insert('users', $data);
-
-            if($assign_department){
-                //Establish relation between user and department in user_departments table
-                $user_id = $this->db->insert_id();
-                $data = array(
-                    'user_id' => $user_id,
-                    'department_id' => $this->input->post('d_id')
-                );
-                $this->db->insert('user_departments', $data);
-            }
+            
+            //Establish relation between user and department in user_departments table
+            $user_id = $this->db->insert_id();
+            $data = array(
+                'user_id' => $user_id,
+                'department_id' => $this->input->post('d_id')
+            );
+            $this->db->insert('user_departments', $data);
         }
 
         public function get_user($id = NULL){

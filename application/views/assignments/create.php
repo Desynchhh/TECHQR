@@ -1,4 +1,3 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script>
             $(document).ready(function(){
 				$('#answerAmount').change(function(){
@@ -16,7 +15,7 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 <?= validation_errors(); ?>
 <?= form_open('assignments/create/'.$options['optionsAmount']); ?>
 <div class="row">
-		<div class="col-md-2">
+		<div class="col-md-3">
 			<label>Antal svarmuligheder:</label>
 			<!-- fill the combobox with available number of answers an assignment can have -->
 			<select id="answerAmount" class="form-control">
@@ -32,10 +31,21 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 			<input type="text" id="title" name="title" placeholder="Opgave titel" class="form-control"/>
 		</div>
 	</div>
-	<div class="col-md-3 offset-md-1">
+	<div class="col-md-3">
 		<div class="form-group">
 			<label>Lokation:</label>
 			<input type="text" id="location" name="location" placeholder="Lokation" class="form-control"/>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="form-group">
+			<label>Afdeling:</label>
+			<select name="d_id" class="form-control">
+				<option selected hidden value="<?= $this->session->userdata['departments'][0]['d_id'] ?>"><?= $this->session->userdata['departments'][0]['name'] ?></option>
+				<?php foreach($this->session->userdata('departments') as $department):?>
+					<option value="<?= $department['d_id'] ?>"><?= $department['name'] ?></option>
+				<?php endforeach;?>
+			</select>
 		</div>
 	</div>
 </div>

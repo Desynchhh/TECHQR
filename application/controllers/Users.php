@@ -69,6 +69,8 @@
                     redirect('events');
                 } else {
                     //Login details does not match with the DB
+                    $this->session->set_flashdata('user_login_fail','Den indtastede bruger findes ikke');
+                    redirect('login');
                 }
             }
         }
@@ -96,7 +98,6 @@
 
             $data['title'] = 'Opret Bruger';
             $data['departments'] = $this->department_model->get_department();
-
             
             $this->form_validation->set_rules('username','"brugernavn"','required|callback_check_space|callback_check_user_exists');
             $this->form_validation->set_rules('email','"email"','required|valid_email|callback_check_email_exists');
@@ -111,13 +112,9 @@
                 $this->load->view('users/register', $data);
                 $this->load->view('templates/footer');
             } else {
-                $assign_department = FALSE;
-                if(!empty($this->input->post('d_id'))){
-                    $assign_department = TRUE;
-                }
                 $enc_pass = $this->hash_password($this->input->post('password'));
-                $this->user_model->create_user($enc_pass, $assign_department);
-                $this->session->set_flashdata('user_created','Brugeren '.$this->input->post('username').' er succesfuldt oprettet!');
+                $this->user_model->create_user($enc_pass);
+                $this->session->set_flashdata('user_created','Brugeren '.$this->input->post('username').' er blevet oprettet!');
                 redirect('users');
             }
         }
@@ -148,15 +145,25 @@
                 $this->load->view('users/edit', $data);
                 $this->load->view('templates/footer');
             } else {
-                $this->user_model->edit_user($id);
-                if($newpass){
-                    $enc_pass = $this->hash_password($this->input->post('password'));
-                    $this->user_model->change_password($id, $enc_pass);
-                }
-                if(!empty($this->input->post('d_id'))){
-                    
-                    if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
-                        $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
+                if($this->input->post('username') != $this->input->post('old_username') || $this->input->post('email') != $this->input->post('old_email')){
+                    if($this->assignment_model->check_created_by($this->input->post('old_username'))){
+                        $this->assignment_model->update_created_by($this->input->post('username'), $this->input->post('old_username'));
+                    }
+                    if($this->assignment_model->check_edited_by($this->input->post('old_username'))){
+                        $this->assignment_model->update_edited_by($newname, $oldname);
+                    }
+                    if($this->input->post('u_id') == $this->session->userdata('u_id')){
+                        $this->session->userdata['username'] = $this->input->post('username');
+                    }
+                    $this->user_model->edit_user($id);
+                    if($newpass){
+                        $enc_pass = $this->hash_password($this->input->post('password'));
+                        $this->user_model->change_password($id, $enc_pass);
+                    }
+                    if(!empty($this->input->post('d_id'))){
+                        if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
+                            $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
+                        }
                     }
                 }
                 $this->session->set_flashdata('user_edited','Brugeren blev succesfuldt opdateret');

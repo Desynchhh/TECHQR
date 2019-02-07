@@ -3,6 +3,7 @@
 
 <head>
 	<title>TECHQR</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/bootstrap.min.css')?>">
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/styles.css')?>"/>
 </head>
@@ -75,7 +76,10 @@
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_edited').'</p>'; ?>
 	<?php endif; ?>
 	<?php if($this->session->flashdata('user_deleted')): ?>
-		<?= '<p class="alert alert-warning">'.$this->session->flashdata('user_deleted').'</p>'; ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_deleted').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('user_login_fail')): ?>
+		<?= '<p class="alert alert-danger">'.$this->session->flashdata('user_login_fail').'</p>'; ?>
 	<?php endif; ?>
 	<?php if($this->session->flashdata('old_password_mismatch')): ?>
 		<?= '<p class="alert alert-danger">'.$this->session->flashdata('old_password_mismatch').'</p>'; ?>
