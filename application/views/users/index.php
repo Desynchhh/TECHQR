@@ -3,7 +3,7 @@
 Klik på en brugers brugernavn for at se flere detaljer eller redigere dem.</h5>
 <hr>
 <!-- link to register new user -->
-<a type="button" class="btn btn-primary" href="<?= base_url('users/register');?>">Opret ny bruger</a>
+<a type="button" class="btn btn-warning" href="<?= base_url('users/register');?>">Opret ny bruger</a>
 <!-- form to search for a specific user in the table below -->
 <?= form_open('users/search');?>
 <br>

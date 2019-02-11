@@ -66,7 +66,7 @@
                         'logged_in' => true
                     );
                     $this->session->set_userdata($userdata);
-                    redirect('events');
+                    redirect('home');
                 } else {
                     //Login details does not match with the DB
                     $this->session->set_flashdata('user_login_fail','Den indtastede bruger findes ikke');
@@ -145,28 +145,35 @@
                 $this->load->view('users/edit', $data);
                 $this->load->view('templates/footer');
             } else {
+                //Check if the username was changed
                 if($this->input->post('username') != $this->input->post('old_username') || $this->input->post('email') != $this->input->post('old_email')){
+                    //Check if the user has created any assignments, and change its "created_by" field accordingly
                     if($this->assignment_model->check_created_by($this->input->post('old_username'))){
                         $this->assignment_model->update_created_by($this->input->post('username'), $this->input->post('old_username'));
                     }
+                    //Check if the user has created any assignments, and change its "edited_by" field accordingly
                     if($this->assignment_model->check_edited_by($this->input->post('old_username'))){
                         $this->assignment_model->update_edited_by($newname, $oldname);
                     }
+                    //Update the sessions userdata with the new username, if an admin changed their own username
                     if($this->input->post('u_id') == $this->session->userdata('u_id')){
                         $this->session->userdata['username'] = $this->input->post('username');
                     }
+                    //Update 'users' table in DB
                     $this->user_model->edit_user($id);
-                    if($newpass){
-                        $enc_pass = $this->hash_password($this->input->post('password'));
-                        $this->user_model->change_password($id, $enc_pass);
-                    }
-                    if(!empty($this->input->post('d_id'))){
-                        if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
-                            $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
-                        }
+                }
+                //Change password if validation for new password passed
+                if($newpass){
+                    $enc_pass = $this->hash_password($this->input->post('password'));
+                    $this->user_model->change_password($id, $enc_pass);
+                }
+                //Assign a department to the user IF the department field is filled out (combo-box)
+                if(!empty($this->input->post('d_id'))){
+                    if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
+                        $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
                     }
                 }
-                $this->session->set_flashdata('user_edited','Brugeren blev succesfuldt opdateret');
+                $this->session->set_flashdata('user_edited','Brugeren er blevet opdateret');
                 redirect('users/view/'.$id);
             }
         }
@@ -182,9 +189,15 @@
             $data['title'] = "SLET BRUGER?";
             $data['user'] = $this->user_model->get_user($u_id);
 
-            $this->load->view('templates/header');
-            $this->load->view('users/confirm_delete', $data);
-            $this->load->view('templates/footer');
+            $this->form_validation->set_rules('username','"brugernavn"','required');
+
+            if($this->form_validation->run() === FALSE || $this->input->post('username') != $data['user']['username']){
+                $this->load->view('templates/header');
+                $this->load->view('users/confirm_delete', $data);
+                $this->load->view('templates/footer');
+            } else {
+                $this->delete($u_id);
+            }
         }
 
         public function delete($id){

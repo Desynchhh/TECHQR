@@ -21,7 +21,7 @@
 </div>
 
 <br/>
-<?php if($this->session->userdata('permissions') == 'Admin'): ?><!--  && $this->session->userdata('u_id') != $user['u_id'] -->
+<?php if($this->session->userdata('permissions') == 'Admin'): ?>
 <div class="row">
     <div class="md-col-1" style="margin-left:1.33%;">
         <a href="<?= base_url('users/edit/'.$user['u_id']); ?>"><button type="button" class="btn btn-warning">Rediger bruger</button></a>
@@ -34,8 +34,7 @@
         </div>
     <?php endif;?>
 </div>
-<br>
-<div>
+<div><br>
     <a type="button" class="btn btn-primary" href="<?= base_url('users'); ?>">Tilbage til oversigt</a>
 </div>
 <?php else:?>

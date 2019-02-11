@@ -47,7 +47,7 @@
         }
 
         public function check_department_exists($d_name){
-            $result = $this->db->get_where('departments',array('name' => $d_name));
+            $result = $this->db->get_where('departments', array('name' => $d_name));
             if(empty($result->row_array())){
                 return false;
             } else {

@@ -19,3 +19,13 @@ dt {
 .ass-dd{
     margin-left: 14%;
 }
+
+.event-dd{
+    margin-left:10%;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}

@@ -68,24 +68,31 @@
             redirect('departments/view/'.$d_id);
         }
 
-        public function add($d_id){
+        public function add($d_id, $u_id = NULL){
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
 
             $data['department'] = $this->department_model->get_department($d_id);
-            $data['title'] = 'Tilføj bruger til '.$data['department']['name'];
+            $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
             $data['users'] = $this->user_department_model->get_department_not_members($d_id);
 
             $this->form_validation->set_rules('u_id','"bruger"','required');
 
-            if($this->form_validation->run() === FALSE){
+            if($u_id === NULL){
+                for($i = 0; $i < count($data['users']); $i++){
+                    if(!$this->user_department_model->is_already_member($data['users'][$i]['u_id'], $d_id)){
+                        $temp[] = ($data['users'][$i]);
+                    }
+                }
+                $data['users'] = $temp;
+            
                 $this->load->view('templates/header');
                 $this->load->view('departments/add', $data);
                 $this->load->view('templates/footer');
             } else {
-                $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $d_id);
-                $this->session->set_flashdata('department_user_added',$this->input->post('u_id').' er blevet tilføjet til '.$data['department']['name']);
+                $this->user_department_model->assign_user_to_department($u_id, $d_id);
+                $this->session->set_flashdata('department_user_added','Brugeren er blevet tilføjet til '.$data['department']['name']);
                 $this->view($d_id);
             }
         }

@@ -102,3 +102,12 @@
 	<?php if($this->session->flashdata('ass_delete_success')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('ass_delete_success').'</p>'; ?>
 	<?php endif; ?>
+	<?php if($this->session->flashdata('team_created')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('team_created').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('event_created')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_created').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('event_deleted')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_deleted').'</p>'; ?>
+	<?php endif; ?>

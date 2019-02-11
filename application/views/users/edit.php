@@ -1,6 +1,7 @@
 <h2><?= $title ?></h2>
 <h5>Hvis du ændre en brugers brugernavn, skal de bruge det nye brugenavn til at logge ind med.<br/>
-Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.</h5>
+Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.<br>
+Efterlad afdelings feltet tomt hvis du ikke ønsker at tildele brugeren endnu en afdeling.</h5>
 <hr>
 <div class="row">
 	<div class="col-md-4 offset-md-1">
@@ -25,9 +26,9 @@ Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.
 			<label>Bekræft kodeord:</label>
 			<input type="password" name="password2" placeholder="Bekræft kodeord" class="form-control" />
 		</div>
-		<div>
+		<div class="form-group">
 			<label>Bruger type:</label>
-			<select name="permissions">
+			<select name="permissions" class="form-control">
 				<?php if($user['permissions'] == 'Admin'):?>
 				<option selected value="Admin">Admin</option>
 				<option value="Bruger">Bruger</option>
@@ -37,9 +38,9 @@ Efterlad kodeord felterne tomme hvis du ikke ønsker at ændre brugeres kodeord.
 				<?php endif; ?>
 			</select>
 		</div>
-		<div>
+		<div class="form-group">
 			<label>Tildel afdeling:</label>
-			<select name="d_id">
+			<select name="d_id" class="form-control">
 				<option selected value="0"></option>
 				<?php foreach($departments as $department):?>
 					<option value="<?= $department['id'] ?>"><?= $department['name'] ?></option>

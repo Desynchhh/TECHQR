@@ -20,16 +20,16 @@
 			<label>Bekræft kodeord:</label>
 			<input type="password" name="password2" placeholder="Bekræft kodeord" class="form-control" />
 		</div>
-		<div>
+		<div class="form-group">
 			<label>Bruger type:</label>
-			<select name="permissions">
+			<select name="permissions" class="form-control">
 				<option selected value="Bruger">Bruger</option>
 				<option value="Admin">Admin</option>
 			</select>
 		</div>
-		<div>
+		<div class="form-group">
 			<label>Tildel afdeling:</label>
-			<select name="d_id">
+			<select name="d_id" class="form-control">
 				<?php foreach($departments as $department):?>
 					<option value="<?= $department['id'] ?>"><?= $department['name'] ?></option>
 				<?php endforeach;?>

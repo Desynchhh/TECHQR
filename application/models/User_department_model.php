@@ -47,9 +47,11 @@
                 users.username,
                 users.permissions,
                 users.email,
+                departments.name
             ')
             ->where('department_id !=', $d_id)
             ->join('users', 'users.id = user_departments.user_id')
+            ->join('departments', 'departments.id = user_departments.department_id')
             ->from('user_departments')
             ->order_by('users.username', 'ASC')
             ->get();
