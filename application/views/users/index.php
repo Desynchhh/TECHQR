@@ -9,7 +9,7 @@ Klik på en brugers brugernavn for at se flere detaljer eller redigere dem.</h5>
 <br>
 <div>
 	<label>Søg på brugernavn:</label>
-	<input type="text" name="search_string" />
+	<input type="text" name="search_string" placeholder="Brugernavn" />
 	<input type="submit" value="Søg" class="btn btn-secondary" />
 </div>
 <?= form_close(); ?>
