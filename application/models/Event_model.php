@@ -31,6 +31,7 @@
                 $query = $this->db->select('
                     events.id as e_id,
                     events.name as e_name,
+                    departments.id as d_id,
                     departments.name as d_name
                 ')
                 ->join('departments', "departments.id = events.department_id")

@@ -7,8 +7,8 @@
     <dt>Afdeling:</dt>
     <dd class="event-dd"><?= $event['d_name'] ?></dd>
     <dt>Opgaver:</dt>
-    <dd class="event-dd">[Not yet implemented] - <a class="btn btn-sm btn-outline-primary" href="<?= base_url('events/assignments/view/'.$event['e_id']); ?>">Vis</a></dd>
-    <dt>Max point:</dt>
+    <dd class="event-dd"><?= count($event_asses) ?> - <a class="btn btn-sm btn-outline-primary" href="<?= base_url('events/assignments/view/'.$event['e_id']); ?>">Vis</a></dd>
+    <dt>Maks point:</dt>
     <dd class="event-dd">[Not yet implemented]</dd>
     <dt>Hold:</dt>
     <dd class="event-dd"><?= count($teams) ?> - <a class="btn btn-sm btn-outline-primary" href="<?= base_url('teams/view/'.$event['e_id']); ?>">Vis</a></dd>
