@@ -51,13 +51,6 @@
                 //The user is a part of the events department
                 //Get the events teams
                 $data['teams'] = $this->team_model->get_teams($id);
-                //Get the id's for each member in each team
-                foreach($data['teams'] as $team){
-                    $s_id_array[] = $this->team_model->get_team_members($team['t_id']);
-                }
-                //Store the id's in the $data array
-                $data['s_id'] = $s_id_array;
-
                 //Load the page
                 $this->load->view('templates/header');
                 $this->load->view('events/view', $data);
@@ -68,11 +61,99 @@
             }
         }
 
+        public function assignments($viewadd, $e_id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            $event = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $event['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+
+            if($ismember){
+                $data['e_id'] = $e_id;
+                //Check whether to load the view page or the add page
+                if($viewadd == "view") {
+                    //Load view page
+                    $data['title'] = 'Opgave oversigt - '.$event['e_name'];
+                    $data['asses'] = $this->event_assignment_model->get_ass($e_id);
+                    
+                    $this->load->view('templates/header');
+                    $this->load->view('events/assignments_view', $data);
+                    $this->load->view('templates/footer');
+                } elseif($viewadd == "add"){
+                    //Load add page
+                    $data['title'] = "Tilføj opgave - ".$event['e_name'];
+                    $data['asses'] = $this->assignment_model->get_ass_index();
+                    
+                    $this->load->view('templates/header');
+                    $this->load->view('events/assignments_add', $data);
+                    $this->load->view('templates/footer');
+                
+                } else {
+                    //The value of $addview is hardcoded, therefore you will only end up with a 404 if you misspelled something
+                    $this->load->view('templates/header');
+                    show_404();
+                    $this->load->view('templates/footer');
+                }
+            } else {
+                redirect('events');
+            }
+        }
+
+        public function remove_ass($e_id, $ass_id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            $event = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $event['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+
+            if($ismember){
+                $this->event_assignment_model->remove_ass($e_id, $ass_id);
+                $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
+                redirect('events/view/'.$e_id);
+            } else {
+                redirect('events');
+            }
+        }
+
+        public function add_ass($e_id, $ass_id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            $event = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $event['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+
+            if($ismember){
+                $this->event_assignment_model->add_ass($e_id, $ass_id);
+                $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
+                redirect('events/view/'.$e_id);
+            } else {
+                redirect('events');
+            }
+        }
+
         public function delete($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
-            $data['event'] = $this->event_model->get_event($id);
+            $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
@@ -84,6 +165,7 @@
             if($ismember){
                 //Delete the event
                 $this->event_model->delete_event($e_id);
+                $this->team_model->delete_team($e_id);
                 $this->session->set_flashdata('event_deleted','Event slettet');
             }
             redirect('events');

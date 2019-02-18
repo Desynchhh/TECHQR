@@ -46,6 +46,13 @@
             ->delete('events');
         }
 
+        public function delete_department_event($d_id){
+            $query = $this->db->get_where('events', array('department_id' => $d_id));
+			if(!empty($query->row_array())){
+				$this->db->delete('events');
+			}
+        }
+
         public function create_team($e_id){
             $data = array(
                 'event_id' => $e_id

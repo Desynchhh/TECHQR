@@ -17,7 +17,7 @@
     <a type="button" class="btn btn-warning" href="<?= base_url('departments/add/'.$department['id']); ?>">Tilføj bruger</a>
     </div>
     <div class="md-col-1" style="margin-left:1%;">
-    <?= form_open('departments/delete/'.$department['id']); ?>
+    <?= form_open('departments/confirm_delete/'.$department['id']); ?>
         <input type="submit" value="Slet afdeling" class="btn btn-danger" />
     <?= form_close(); ?>
     </div>

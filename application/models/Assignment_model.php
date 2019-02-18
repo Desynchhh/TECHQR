@@ -111,6 +111,13 @@
 			->delete('answers');
 		}
 
+		public function delete_department_ass($d_id){
+			$query = $this->db->get_where('assignments',array('department_id' => $d_id));
+			if(!empty($query->row_array())){
+				$this->db->delete('assignments');
+			}
+		}
+
 		public function check_created_by($oldname){
 			$query = $this->db->get_where('assignments',array('created_by' => $oldname));
 			if(empty($query->row_array())){

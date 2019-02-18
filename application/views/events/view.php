@@ -7,9 +7,11 @@
     <dt>Afdeling:</dt>
     <dd class="event-dd"><?= $event['d_name'] ?></dd>
     <dt>Opgaver:</dt>
-    <dd class="event-dd">[Not yet implemented] - <a class="btn btn-sm btn-outline-warning" href="<?= base_url('events/assignments/'.$event['e_id']); ?>">Tilføj</a></dd>
+    <dd class="event-dd">[Not yet implemented] - <a class="btn btn-sm btn-outline-primary" href="<?= base_url('events/assignments/view/'.$event['e_id']); ?>">Vis</a></dd>
+    <dt>Max point:</dt>
+    <dd class="event-dd">[Not yet implemented]</dd>
     <dt>Hold:</dt>
-    <dd class="event-dd">[Not yet implemented] - <a class="btn btn-sm btn-outline-warning" href="<?= base_url('teams/create/'.$event['e_id']); ?>">Tilføj</a></dd>
+    <dd class="event-dd"><?= count($teams) ?> - <a class="btn btn-sm btn-outline-primary" href="<?= base_url('teams/view/'.$event['e_id']); ?>">Vis</a></dd>
 </div>
 
 <br/>
@@ -27,25 +29,4 @@
 
 <div>
     <a class="btn btn-primary" href="<?= base_url('events'); ?>">Tilbage til oversigt</a>
-</div>
-
-<br>
-
-<div>
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Hold #</th>
-                <th>Medlemmer</th>
-                <th>Score</th>
-            </tr>
-            <?php $count = 0; foreach($teams as $team):?>
-            <tr>
-                <td><?= $count+1 ?></td>
-                <td><?= count($s_id[$count]) ?></td>
-                <td><?= $team['score'] ?></td>
-            </tr>
-            <?php $count++; endforeach;?>
-        </tbody>
-    </table>
 </div>

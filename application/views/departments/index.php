@@ -10,7 +10,7 @@ Klik på en afdelings navn for at se flere detaljer.</h5>
 <?php foreach($departments as $department): ?>
     <div style="margin-bottom:1%;">
         <a href="<?= base_url('departments/view/'.$department['id']); ?>" ><strong><?= $department['name'] ?>:</strong></a>
-        <a type="button" class="same-line btn btn-danger btn-sm" href="<?= base_url('departments/delete/'.$department['id']); ?>">Slet</a>
+        <a type="button" class="same-line btn btn-danger btn-sm" href="<?= base_url('departments/confirm_delete/'.$department['id']); ?>">Slet</a>
         <!--<span class="same-line">|</span>-->
         <a type="button" class="same-line btn btn-warning btn-sm" href="<?= base_url('departments/edit/'.$department['id']); ?>">Omdøb</a>
     </div>

@@ -111,3 +111,6 @@
 	<?php if($this->session->flashdata('event_deleted')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_deleted').'</p>'; ?>
 	<?php endif; ?>
+	<?php if($this->session->flashdata('teams_deleted')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('teams_deleted').'</p>'; ?>
+	<?php endif; ?>

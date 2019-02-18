@@ -124,6 +124,28 @@
             }
         }
 
+        public function confirm_delete($d_id){
+            if(!$this->session->userdata('logged_in')){
+                if($this->session->userdata('permissions') != 'Admin'){
+                    redirect('users/view/'.$this->session->userdata('u_id'));
+                }
+                redirect('login');
+            }
+            
+            $data['title'] = "SLET AFDELING?";
+            $data['department'] = $this->department_model->get_department($d_id);
+
+            $this->form_validation->set_rules('department','"afdelingsnavn"','required');
+
+            if($this->form_validation->run() === FALSE || $this->input->post('department') != $data['department']['name']){
+                $this->load->view('templates/header');
+                $this->load->view('departments/confirm_delete', $data);
+                $this->load->view('templates/footer');
+            } else {
+                $this->delete($d_id);
+            }
+        }
+
         public function delete($id){
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
@@ -134,13 +156,16 @@
             $dep_users = $this->user_department_model->get_department_members($id);
             foreach($dep_users as $user){
                 if(count($this->user_department_model->get_user_departments($user['u_id'])) <= 1){
-                    $this->session->set_flashdata('department_delete_fail','Afdelingen kunne ikke slettes, da <strong>'.$user['username'].'</strong> kun har 1 afdeling');//Denne afdeling har en eller flere brugere som kun har en afdeling. En bruger skal som minimum have én afdeling!
+                    //Denne afdeling har en eller flere brugere som kun har en afdeling. En bruger skal som minimum have én afdeling!
+                    $this->session->set_flashdata('department_delete_fail','Afdelingen kunne ikke slettes, da <strong>'.$user['username'].'</strong> kun har 1 afdeling');
                     redirect('departments/view/'.$id);
                 }
             }
 
+            $this->assignment_model->delete_department_ass($id);
+            $this->event_model->delete_department_event($id);
             $this->department_model->delete_department($id);
-            $this->session->set_flashdata('department_delete_success','Afdeling succesfuldt slettet.');
+            $this->session->set_flashdata('department_delete_success','Afdeling slettet.');
             redirect('departments');
         }
 
