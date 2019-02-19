@@ -56,16 +56,7 @@
                 $username = $this->input->post('username');
                 if(password_verify($this->input->post('password'), $this->user_model->get_password())){
                     //Password and username matches with the DB
-                    $dbinfo = $this->user_model->login($username);
-                    $departments = $this->user_department_model->get_user_departments($dbinfo['id']);
-                    $userdata = array(
-                        'u_id' => $dbinfo['id'],
-                        'username' => $username,
-                        'permissions' => $dbinfo['permissions'],
-                        'departments' => $departments,
-                        'logged_in' => true
-                    );
-                    $this->session->set_userdata($userdata);
+                    $this->update_userdata($username);
                     redirect('home');
                 } else {
                     //Login details does not match with the DB
@@ -171,6 +162,9 @@
                 if(!empty($this->input->post('d_id'))){
                     if(!$this->user_department_model->is_already_member($this->input->post('u_id'), $this->input->post('d_id'))){
                         $this->user_department_model->assign_user_to_department($this->input->post('u_id'), $this->input->post('d_id'));
+                        if($this->input->post('u_id') == $this->session->userdata('u_id')){
+                            $this->update_userdata($this->input->post('username'));
+                        }
                     }
                 }
                 $this->session->set_flashdata('user_edited','Brugeren er blevet opdateret');
@@ -237,6 +231,20 @@
         //Hash password function
         private function hash_password($password){
             return password_hash($password, PASSWORD_DEFAULT);
+        }
+
+        //Update userdata function
+        private function update_userdata($username){
+            $dbinfo = $this->user_model->login($username);
+            $departments = $this->user_department_model->get_user_departments($dbinfo['id']);
+            $userdata = array(
+                'u_id' => $dbinfo['id'],
+                'username' => $username,
+                'permissions' => $dbinfo['permissions'],
+                'departments' => $departments,
+                'logged_in' => true
+            );
+            $this->session->set_userdata($userdata);
         }
 
         //CUSTOM VALIDATION RULES BELOW THIS POINT

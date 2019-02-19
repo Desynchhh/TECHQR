@@ -9,7 +9,9 @@
 </head>
 
 <body>
-<!--<?php var_export($this->session->userdata()); ?>-->
+<!--	USED FOR DEBUGGING
+	<?php var_export($this->session->userdata()); ?>
+	-->
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<a class="navbar-brand" href="<?= base_url(); ?>">TECHQR</a>

@@ -58,7 +58,7 @@
             $data['title'] = "Event detaljer";
             $data['event'] = $this->event_model->get_event($id);
             $data['event_asses'] = $this->event_assignment_model->get_event_ass($id);
-            $data['points'] = $this->calc_max_points($data['event_asses']);
+            $data['max_points'] = $this->calc_max_points($data['event_asses']);
             //Check if the user is in the same department as the event
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
@@ -224,10 +224,35 @@
         }
 
         //Helper function
-        function calc_max_points($event_asses){
-            $bigpoints = array();
+        private function calc_max_points($event_asses){
+            $max_points = 0;
+            $ass_points = array();
+            $ass_max_points;
+            
             foreach($event_asses as $event_ass){
-                
+                //For each assignment in the event.. get the assignments answers
+                $answers = $this->assignment_model->get_ass_answers($event_ass['ass_id']);
+                foreach($answers as $answer){
+                    //Get the points for each individual answer, and store them in an array
+                    $ass_points[] = $answer['points'];
+                }
+                //Set the max point for this assignment as the first answer (default, only to avoid possible errors)
+                $ass_max_points = $ass_points[0];
+                foreach($ass_points as $ass_point){
+                    //Compare each answers points to the currently highest answer
+                    if($ass_max_points < $ass_point){
+                        //Replace the max points with a new max
+                        $ass_max_points = $ass_point;
+                    }
+                }
+                if($ass_max_points > 0){
+                    //Only add to the max number of points IF the points are positive
+                    //Negative points != higher max
+                    $max_points += $ass_max_points;
+                }
+                //Reset array
+                $ass_points = array();
             }
+            return $max_points;
         }
     }

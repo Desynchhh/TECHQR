@@ -101,6 +101,17 @@
 			}
 		}
 
+		public function get_ass_answers($ass_id){
+			$query = $this->db->select('
+				answers.answer,
+				answers.points
+			')
+			->where('answers.assignment_id', $ass_id)
+			->from('answers')
+			->get();
+			return $query->result_array();
+		}
+
 		public function delete_ass($ass_id){
 			//Delete from assignments table
 			$this->db->where('id', $ass_id)
