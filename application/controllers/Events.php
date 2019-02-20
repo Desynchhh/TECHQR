@@ -8,20 +8,25 @@
             $data['title'] = "Event oversigt";
             $events = $this->event_model->get_event();
 
-            //Find all events that have the same department as the logged in user
-            //Create array to temporarily store events in
-            $events_to_keep = array();
-            //Check through all the users departments and all events, and compare them
-            foreach($this->session->userdata('departments') as $user_deps){
-                foreach($events as $event){
-                    if($user_deps['d_id'] == $event['d_id']){
-                        //Add matching event to the array
-                        $events_to_keep[] = $event;
+            if($this->session->userdata('permissions') != 'Admin'){
+
+                //Find all events that have the same department as the logged in user
+                //Create array to temporarily store events in
+                $events_to_keep = array();
+                //Check through all the users departments and all events, and compare them
+                foreach($this->session->userdata('departments') as $user_deps){
+                    foreach($events as $event){
+                        if($user_deps['d_id'] == $event['d_id']){
+                            //Add matching event to the array
+                            $events_to_keep[] = $event;
+                        }
                     }
                 }
+                //Add all matching events to the $data array
+                $data['events'] = $events_to_keep;
+            } else {
+                $data['events'] = $events;
             }
-            //Add all matching events to the $data array
-            $data['events'] = $events_to_keep;
 
             //Load page
             $this->load->view('templates/header');
@@ -50,23 +55,61 @@
             }
         }
 
-        public function view($id){
+        public function edit($e_id){
+            //Check the user is logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
-
-            $data['title'] = "Event detaljer";
-            $data['event'] = $this->event_model->get_event($id);
-            $data['event_asses'] = $this->event_assignment_model->get_event_ass($id);
-            $data['max_points'] = $this->calc_max_points($data['event_asses']);
-            //Check if the user is in the same department as the event
+            
+            $data['title'] = "Rediger event";
+            $data['event'] = $this->event_model->get_event($e_id);
+            $data['e_id'] = $e_id;
+            //Check the user is part of the events department
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
                     $ismember = TRUE;
                     break;
                 }
             }
-            if($ismember){
+
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Set rules for form input fields
+                $this->form_validation->set_rules('e_name','"event navn"','required');
+
+                if($this->form_validation->run() === FALSE){
+                    //Load the page if the validation failed OR didn't run
+                    $this->load->view('templates/header');
+                    $this->load->view('events/edit', $data);
+                    $this->load->view('templates/footer');
+                } else {
+                    //Update/rename the event if validation is successful
+                    $this->event_model->edit_event($e_id);
+                    $this->session->set_flashdata('event_edited','Eventet er blevet omdøbt');
+                    redirect('events');
+                }
+            }
+        }
+
+        public function view($id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+
+            $data['event'] = $this->event_model->get_event($id);
+            //Check if the user is in the same department as the event
+            $ismember = false;
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $data['event']['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                $data['title'] = "Event detaljer";
+                //Calculate the maximum score of the event
+                $data['event_asses'] = $this->event_assignment_model->get_event_ass($id);
+                $data['max_points'] = $this->calc_max_points($data['event_asses']);
                 //The user is a part of the events department
                 //Get the events teams
                 $data['teams'] = $this->team_model->get_teams($id);
@@ -93,7 +136,7 @@
                 }
             }
 
-            if($ismember){
+            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
                 //Run if the user is a member of the events department
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
@@ -144,7 +187,7 @@
                 }
             }
 
-            if($ismember){
+            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
                 $data['asses'] = $this->event_assignment_model->get_ass($e_id);
@@ -170,7 +213,7 @@
                 }
             }
 
-            if($ismember){
+            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->remove_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_removed_ass','Opgave fjernet fra eventet');
                 redirect('events/assignments/view/'.$e_id);
@@ -192,7 +235,7 @@
                 }
             }
 
-            if($ismember){
+            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->add_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
                 redirect('events/assignments/add/'.$e_id);
@@ -214,7 +257,7 @@
                 }
             }
             
-            if($ismember){
+            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
                 //Delete the event
                 $this->event_model->delete_event($e_id);
                 $this->team_model->delete_team($e_id);
@@ -230,7 +273,7 @@
             $ass_max_points;
             
             foreach($event_asses as $event_ass){
-                //For each assignment in the event.. get the assignments answers
+                //For each assignment in the event.. get the answers to the assignment
                 $answers = $this->assignment_model->get_ass_answers($event_ass['ass_id']);
                 foreach($answers as $answer){
                     //Get the points for each individual answer, and store them in an array

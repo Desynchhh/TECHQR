@@ -3,7 +3,7 @@
 <hr>
 
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('events/create'); ?>">Opret nyt event</a>
+    <a type="button" class="btn btn-warning" href="<?= base_url('events/create'); ?>">Opret nyt event</a>
 </div>
 
 <br>

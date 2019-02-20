@@ -1,6 +1,6 @@
 <?php
     class Event_model extends CI_Model{
-        public function __contsruct(){
+        public function __construct(){
             $this->load->database();
         }
 
@@ -18,8 +18,8 @@
                 $query = $this->db->select('
                     events.id as e_id,
                     events.name as e_name,
-                    departments.name as d_name,
-                    departments.id as d_id
+                    departments.id as d_id,
+                    departments.name as d_name
                 ')
                 ->join('departments', 'departments.id = events.department_id')
                 ->from('events')
@@ -40,6 +40,14 @@
                 ->get();
                 return $query->result_array();
             }
+        }
+
+        public function edit_event($e_id){
+            $data = array(
+                'name' => $this->input->post('e_name')
+            );
+            $this->db->where('id', $e_id)
+            ->update('events', $data);
         }
 
         public function delete_event($e_id){
