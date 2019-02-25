@@ -106,11 +106,11 @@
             }
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //The user is a part of the events department
                 $data['title'] = "Event detaljer";
                 //Calculate the maximum score of the event
-                $data['event_asses'] = $this->event_assignment_model->get_event_ass($id);
+                $data['event_asses'] = $this->event_assignment_model->get_ass($id);//get_event_ass($id);
                 $data['max_points'] = $this->calc_max_points($data['event_asses']);
-                //The user is a part of the events department
                 //Get the events teams
                 $data['teams'] = $this->team_model->get_teams($id);
                 //Load the page
@@ -141,7 +141,7 @@
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
                 $asses = $this->assignment_model->get_ass_index();
-                $event_asses = $this->event_assignment_model->get_event_ass($e_id);
+                $event_asses = $this->event_assignment_model->get_ass($e_id);//get_event_ass($e_id);
                 
                 //Only show the user assignments that have NOT been added to the event, as you shouldn't add the same assignment twice
                 //Create array to temporarily store assignments in
@@ -266,6 +266,27 @@
             redirect('events');
         }
 
+        public function pdf($e_id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            $data['event'] = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $data['event']['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+            
+            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
+                $data['title'] = $data['event']['e_name'].' PDF';
+                $this->load->view('templates/header');
+                $this->load->view('events/pdf', $data);
+                $this->load->view('templates/footer');            
+            }
+        }
+
         //Helper function
         private function calc_max_points($event_asses){
             $max_points = 0;
@@ -297,5 +318,95 @@
                 $ass_points = array();
             }
             return $max_points;
+        }
+
+        //Create team pdf - WIP
+        public function create_team_pdf($e_id){
+            require_once 'vendor\autoload.php';
+
+            $event = $this->event_model->get_event($e_id);
+            $eventfolder = url_title($event['e_name']);
+            $teams = $this->team_model->get_teams($e_id);
+
+            //Check if folders for the event exists. Create them if they don't.
+            $path = APPPATH.'../assets/gen-files/'.$eventfolder;
+            if(!is_dir($path)){
+                mkdir($path, 0777, true);
+                mkdir($path.'/team-qr', 0777, true);
+                mkdir($path.'/ass-qr', 0777, true);
+            }
+            //Double check the team-qr folder exists. Maybe it was deleted, but the 'root' event folder was not.
+            if(!is_dir($path.'/team-qr')){
+                mkdir($path.'/team-qr', 0777, true);
+            }
+
+            //Create a QR Code for each team in the event, with a correct URL that calls the correct Controller when scanned.
+            foreach($teams as $team){
+                //Set the URL to the 'join()' function in the 'Events' Controller. 
+                //event_id and team_id are given as parameters.
+                $url = base_url('events/join/'.$e_id.'/'.$team['number']);
+                //Instantiate a new Endroid\QrCode object. Takes the URL the Code takes you to as a parameter
+                $qrcode = new Endroid\QrCode\QrCode($url);
+                //Qr Code settings
+                $qrcode->setMargin(10);
+                $qrcode->setEncoding('UTF-8');
+                $qrcode->setLabel('Tilføj min mobil til hold '.$team['number']);
+
+                //Set the path to subfolders in the 'assets' folder corresponding to the team in the event
+                $path = APPPATH.'../assets/gen-files/'.$eventfolder.'/team-qr/team-number-'.$team['number'].'.png';
+                //Save the QR Code
+                $qrcode->writeFile($path);
+            }
+            redirect('events/pdf/'.$event['e_id']);
+        }
+
+        //Create assignment pdf - WIP
+        public function create_ass_pdf($e_id){
+            require_once 'vendor\autoload.php';
+
+            $event = $this->event_model->get_event($e_id);
+            $eventfolder = url_title($event['e_name']);
+            $path = APPPATH.'../assets/gen-files/'.$eventfolder;
+            if(!is_dir($path)){
+                mkdir($path, 0777, true);
+                mkdir($path.'/team-qr', 0777, true);
+                mkdir($path.'/ass-qr', 0777, true);
+            }
+            if(!is_dir($path.'/ass-qr')){
+                mkdir($path.'/ass-qr', 0777, true);
+            }
+
+            $asses = $this->event_assignment_model->get_ass($e_id);
+            
+            foreach($asses as $ass){
+                //Create a folder with the name of the assignment
+                $assfolder = url_title($ass['title']);
+                $path = APPPATH.'../assets/gen-files/'.$eventfolder.'/ass-qr/'.$assfolder;
+                if(!is_dir($path)){
+                    mkdir($path, 0777, true);
+                }
+                
+                $ass_url = base_url('events/answer/'.$e_id.'/'.$ass['ass_id'].'/');
+                //Get all answers for the current assignment
+                $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
+                //Store each answer for the current assignment in another array
+                $answers_array = array();
+                foreach($ass_answers as $answer){
+                    $answers_array[] = $answer;
+                }
+                //Create and save a QR code for each answer
+                foreach($answers_array as $answer){
+                    //URL the QR leads to
+                    $url = $ass_url . url_title($answer['id']);
+                    $qrcode = new Endroid\QrCode\QrCode($url);
+                    $qrcode->setMargin(10);
+                    $qrcode->setEncoding('UTF-8');
+                    $qrcode->setLabel($answer['answer']);
+                    
+                    $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.'/ass-qr/'.$assfolder.'/'.url_title($answer['answer']).'.png';
+                    $qrcode->writeFile($qrpath);
+                }
+            }
+            redirect('events/pdf/'.$event['e_id']);
         }
     }

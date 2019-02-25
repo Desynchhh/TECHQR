@@ -19,7 +19,8 @@
             return $query->result_array();
         }
 
-        public function get_event_ass($e_id){
+        //Deprecated
+        /*public function get_event_ass($e_id){
             $query = $this->db->select('
                 event_assignments.assignment_id as ass_id
             ')
@@ -27,7 +28,7 @@
             ->from('event_assignments')
             ->get();
             return $query->result_array();
-        }
+        }*/
 
         public function get_event_points($ass_id){
             $query = $this->db->select('

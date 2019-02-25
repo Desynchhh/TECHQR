@@ -17,8 +17,8 @@
                 teams.id as t_id,
                 teams.number,
                 teams.score,
-                teams.created_at as t_created_at,
-                events.name as e_name
+                events.name as e_name,
+                teams.created_at as t_created_at
             ')
             ->join('events', 'events.id = teams.event_id')
             ->from('teams')

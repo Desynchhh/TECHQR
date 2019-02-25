@@ -83,6 +83,9 @@
 	<?php if($this->session->flashdata('user_login_fail')): ?>
 		<?= '<p class="alert alert-danger">'.$this->session->flashdata('user_login_fail').'</p>'; ?>
 	<?php endif; ?>
+	<?php if($this->session->flashdata('user_login_success')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_login_success').'</p>'; ?>
+	<?php endif; ?>
 	<?php if($this->session->flashdata('old_password_mismatch')): ?>
 		<?= '<p class="alert alert-danger">'.$this->session->flashdata('old_password_mismatch').'</p>'; ?>
 	<?php endif; ?>

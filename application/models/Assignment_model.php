@@ -103,6 +103,7 @@
 
 		public function get_ass_answers($ass_id){
 			$query = $this->db->select('
+				answers.id,
 				answers.answer,
 				answers.points
 			')

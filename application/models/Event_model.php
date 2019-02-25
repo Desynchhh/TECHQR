@@ -69,7 +69,8 @@
             $this->db->insert('teams', $data);
         }
 
-        public function get_teams($e_id){
+        //Possibly deprecated
+        /*public function get_teams($e_id){
             $query = $this->db->select('
                 teams.score,
                 students.id as s_id
@@ -79,5 +80,5 @@
             ->where('teams.event_id', $e_id)
             ->get();
             return $query->result_array();
-        }
+        }*/
     }

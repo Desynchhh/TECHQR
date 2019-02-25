@@ -57,6 +57,7 @@
                 if(password_verify($this->input->post('password'), $this->user_model->get_password())){
                     //Password and username matches with the DB
                     $this->update_userdata($username);
+                    $this->session->set_flashdata('user_login_success','Du er nu logget ind!');
                     redirect('home');
                 } else {
                     //Login details does not match with the DB

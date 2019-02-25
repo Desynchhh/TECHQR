@@ -12,7 +12,8 @@
     <dd class="event-dd"><?= $max_points ?></dd>
     <dt>Hold:</dt>
     <dd class="event-dd"><?= count($teams) ?> - <a class="btn btn-sm btn-outline-primary" href="<?= base_url('teams/view/'.$event['e_id']); ?>">Vis</a></dd>
-    <dd><a class="btn btn-primary" href="<?= base_url('events/actions/'.$event['e_id']); ?>">Se alle handlinger</a></dd>
+    <dd><a class="btn btn-primary" href="<?= base_url('events/actions/'.$event['e_id']); ?>">Se alle handlinger</a> 
+    <a class="btn btn-warning" href="<?= base_url('events/pdf/'.$event['e_id']); ?>">Se PDF</a></dd>
 </div>
 
 <br/>
