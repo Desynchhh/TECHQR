@@ -1,0 +1,31 @@
+.same-line{
+    display:inline-block;
+}
+
+dt {
+    text-align: end;
+    float: left;
+    padding-bottom: 0;
+}
+
+.department-dd {
+    margin-left: 11%;
+}
+
+.user-dd {
+    margin-left: 10%;
+}
+
+.ass-dd{
+    margin-left: 14%;
+}
+
+.event-dd{
+    margin-left:10%;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
