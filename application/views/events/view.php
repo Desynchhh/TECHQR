@@ -16,18 +16,18 @@
     <a class="btn btn-warning" href="<?= base_url('events/pdf/'.$event['e_id']); ?>">Se PDF</a></dd>
 </div>
 
-<br/>
 
-<div class="row">
+<!--<div class="row">
     <div class="md-col-1" style="margin-left:1.33%;">
         <a href="<?= base_url('events/edit/'.$event['e_id']); ?>"><button type="button" class="btn btn-warning">Rediger event</button></a>
     </div>
-        <div class="md-col-1" style="margin-left:1%;">
-            <?= form_open('events/delete/'.$event['e_id']); ?>
-                <input type="submit" value="Slet event" class="btn btn-danger" />
-            <?= form_close(); ?>
-        </div>
+</div>-->
+
+<div><!-- class="md-col-1" style="margin-left:1%;" -->
+    <a href="<?= base_url('events/manage/'.$event['e_id']); ?>"><button type="button" class="btn btn-primary">Manage</button></a>
 </div>
+
+<br>
 
 <div>
     <a class="btn btn-primary" href="<?= base_url('events'); ?>">Tilbage til oversigt</a>

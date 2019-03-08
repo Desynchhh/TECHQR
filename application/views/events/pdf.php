@@ -1,4 +1,6 @@
 <h2><?= $title ?></h2>
+<h5>Benyt "Lav" knapperne hvis Holdene eller Opgaverne er blevet ændret siden Eventet sidst var brugt<br>
+OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller opgaver</h5>
 <hr>
 
 <div class="row">

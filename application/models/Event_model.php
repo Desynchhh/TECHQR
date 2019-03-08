@@ -4,6 +4,7 @@
             $this->load->database();
         }
 
+        //Creates an event and stores it in the DB
         public function create_event(){
             $data = array(
                 'department_id' => $this->input->post('d_id'),
@@ -12,6 +13,7 @@
             $this->db->insert('events', $data);
         }
 
+        //Gets either a single event or all events
         public function get_event($id = NULL){
             if($id){
                 //Get specific event
@@ -42,6 +44,7 @@
             }
         }
 
+        //Renames an event
         public function edit_event($e_id){
             $data = array(
                 'name' => $this->input->post('e_name')
@@ -50,11 +53,13 @@
             ->update('events', $data);
         }
 
+        //Deletes a single event
         public function delete_event($e_id){
             $this->db->where('id', $e_id)
             ->delete('events');
         }
 
+        //Deletes all events created by the specified department
         public function delete_department_event($d_id){
             $query = $this->db->get_where('events', array('department_id' => $d_id));
 			if(!empty($query->row_array())){
@@ -62,23 +67,22 @@
 			}
         }
 
-        public function create_team($e_id){
+        //Updates the message to be sent to all teams
+        public function update_message($e_id, $msg){
             $data = array(
-                'event_id' => $e_id
+                'message' => $msg
             );
-            $this->db->insert('teams', $data);
+            $this->db->where('id', $e_id)
+            ->update('events', $data);
         }
 
-        //Possibly deprecated
-        /*public function get_teams($e_id){
+        //Gets the events message
+        public function get_message($e_id){
             $query = $this->db->select('
-                teams.score,
-                students.id as s_id
+                events.message
             ')
-            ->join('students', 'students.team_id = teams.id')
-            ->from('teams')
-            ->where('teams.event_id', $e_id)
+            ->where('id', $e_id)
             ->get();
-            return $query->result_array();
-        }*/
+            return $query->row_array();
+        }
     }

@@ -95,6 +95,7 @@
 			')
 			->join('departments', 'departments.id = assignments.department_id')
 			->from('assignments')
+			->order_by('assignments.created_at', 'DESC')
 			->get();
 			return $query->result_array();
 			} else {
@@ -102,16 +103,28 @@
 			}
 		}
 
-		public function get_ass_answers($ass_id){
-			$query = $this->db->select('
-				answers.id,
-				answers.answer,
-				answers.points
-			')
-			->where('answers.assignment_id', $ass_id)
-			->from('answers')
-			->get();
-			return $query->result_array();
+		public function get_ass_answers($ass_id, $ans_id = NULL){
+			if($ans_id){
+				$query = $this->db->select('
+					answers.id,
+					answers.answer,
+					answers.points
+				')
+				->where('answers.assignment_id', $ass_id)
+				->from('answers')
+				->get();
+				return $query->row_array();
+			} else {
+				$query = $this->db->select('
+					answers.id,
+					answers.answer,
+					answers.points
+				')
+				->where('answers.assignment_id', $ass_id)
+				->from('answers')
+				->get();
+				return $query->result_array();
+			}
 		}
 
 		public function delete_ass($ass_id){

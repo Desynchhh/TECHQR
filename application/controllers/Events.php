@@ -123,6 +123,21 @@
             }
         }
 
+        public function manage($e_id){
+            $data['title'] = 'Manage';
+            $data['e_id'] = $e_id;
+            $data['teams'] = $this->team_model->get_teams($e_id);
+            $this->load->view('templates/header');
+            $this->load->view('events/manage', $data);
+            $this->load->view('templates/footer');
+        }
+
+        public function message($e_id){
+            $msg = $this->input->post('message');
+            $this->event_model->update_message($e_id, $msg);
+            $this->manage($e_id);
+        }
+
         public function assignments_add($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -318,6 +333,10 @@
         }
 
         public function open_pdf($eventfolder, $path_location){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            
             $filename = $this->input->post('filename');
             $path_location = APPPATH.'../assets/gen-files/'.$eventfolder.'/'.$path_location.'/'.$filename;
             
@@ -330,168 +349,227 @@
             @readfile($path_location);
         }
         
-        //Create team pdf - WIP
+        //Create team pdf
         public function create_team_pdf($e_id){
-            require_once 'vendor/autoload.php';
-            $teamfolder = '/team-pdf';
-            
-            $event = $this->event_model->get_event($e_id);
-            $eventfolder = url_title($event['e_name']);
-            $teams = $this->team_model->get_teams($e_id);
-            
-            $path = APPPATH.'../assets/gen-files/'.$eventfolder;
-            $this->check_dir_exists($path, $teamfolder);
-            $this->delete_folder_contents($path.$teamfolder);
-            
-            //PDF settings
-            $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
-            $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetTitle('Team PDF');
-            $font_FrutigerBlack = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
-            $pdf->SetFont($font_FrutigerBlack,'', 12);
-            $pdf->SetAutoPageBreak(true, 10);
-            //Create a QR Code for each team in the event, with a correct URL that calls the correct Controller when scanned.
-            foreach($teams as $team){
-                $pdf->AddPage();
-                $pdf->LastPage();
-                //Set the URL to the 'join()' function in the 'Events' Controller. 
-                //event_id and team_id are given as parameters.
-                $url = base_url('events/join/'.$e_id.'/'.$team['number']);
-                //Instantiate a new Endroid\QrCode object. Takes the URL the Code takes you to as a parameter
-                $qrcode = new Endroid\QrCode\QrCode($url);
-                //Qr Code settings
-                $qrcode->setSize(150);
-                $qrcode->setMargin(10);
-                $qrcode->setEncoding('UTF-8');
-
-                //Set the path to subfolders in the 'assets' folder corresponding to the team in the event
-                $path = APPPATH.'../assets/gen-files/'.$eventfolder.'/team-pdf/Hold-'.$team['number'].'.png';
-                //Save the QR Code
-                $qrcode->writeFile($path);
-                $content = '	
-                    <div align="center">
-                        <h1>Tilføj min mobil til hold '.$team["number"].'</h1>
-                        <div>
-                            <img src="'.$path.'" />
-                        </div>
-                    </div>
-                ';
-                $pdf->writeHTML($content);
-                unlink($path);
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
             }
-            $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/team-pdf/Hold.pdf', 'F');
-            $this->session->set_flashdata('pdf_team_created',"Hold PDF'er oprettet!");
-            redirect('events/pdf/'.$event['e_id']);
+            
+            $data['event'] = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            $ismember = false;
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $data['event']['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+            
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Enable QR and PDF libraries
+                require_once 'vendor/autoload.php';
+                $teamfolder = '/team-pdf';
+                $event = $data['event'];
+
+                $eventfolder = url_title($event['e_name']);
+                $teams = $this->team_model->get_teams($e_id);
+                
+                $path = APPPATH.'../assets/gen-files/'.$eventfolder;
+                $this->check_dir_exists($path, $teamfolder);
+                $this->delete_folder_contents($path.$teamfolder);
+                
+                //Set the path for where the PDF is to be saved (../assets/gen-files/..)
+                $qr_path = $path.'/team-pdf/qr/';
+                $pdf_path = $path.'/team-pdf/';
+                $url_template = base_url('teams/join/'.$e_id.'/');
+                
+                //Create a QR Code for each team in the event, with a correct URL that calls the correct Controller when scanned.
+                mkdir($qr_path);
+                $content_array = array();
+                foreach($teams as $team){
+                    //Set the URL to the 'join()' function in the 'Teams' Controller.
+                    //event_id and team_id are given as parameters.
+                    $url = $url_template.$team['t_num'];
+                    
+                    //Instantiate a new Endroid\QrCode object. Takes the URL the Code takes you to as a parameter
+                    $qrcode = new Endroid\QrCode\QrCode($url);
+                    //Qr Code settings
+                    $qrcode->setSize(150);
+                    $qrcode->setMargin(10);
+                    $qrcode->setEncoding('UTF-8');
+
+                    //Save the QR Code
+                    $qr_filename = 'Hold-'.$team['t_num'].'.png';
+                    $qrcode->writeFile($qr_path.$qr_filename);
+                    
+                    $content = '	
+                        <div align="center">
+                            <h1>Tilføj min mobil til hold '.$team["t_num"].'</h1>
+                            <div>
+                                <img src="'.$qr_path.$qr_filename.'" />
+                            </div>
+                        </div>
+                    ';
+                    $content_array[] = $content;
+                    //unlink($path.$qr_filename);
+                }
+                
+                //PDF settings
+                $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
+                $pdf->SetCreator(PDF_CREATOR);
+                $pdf->SetTitle('Team PDF');
+                $font_FrutigerBlack = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
+                $pdf->SetFont($font_FrutigerBlack,'', 12);
+                $pdf->SetAutoPageBreak(true, 10);
+                $pdf->SetPrintHeader(false);
+                $pdf->SetPrintFooter(false);
+
+                //Create a PDF containing all QR Codes (1 per page)
+                foreach($teams as $team){
+                    $qr_filename = 'Hold-'.$team['t_num'].'.png';
+                    //Add a new page for each team
+                    $pdf->AddPage();
+                    //Go the the last page
+                    $pdf->LastPage();
+                    
+                    $pdf->writeHTML($content_array[$team['t_num']-1]);
+                  //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+                    //$pdf->MultiCell(55, 5, 'Tilføj min mobil til hold '.$team['t_num'], 0, 'C', 0, 1);
+                    //$pdf->Image($qr_path.$qr_filename);
+                    //unlink($path.$qr_filename);
+                }
+                //$pdf->writeHTML($content);
+                $pdf->Output($pdf_path.'Hold.pdf', 'F');
+                $this->deleteDir($qr_path);
+                $this->session->set_flashdata('pdf_team_created',"Hold PDF'er oprettet!");
+                redirect('events/pdf/'.$e_id);
+            }
         }
 
         //Create assignment pdf - WIP
         public function create_ass_pdf($e_id){
-            //Enable PDF and QR libraries
-            require_once 'vendor\autoload.php';
-            $assfolder = '/assignment-pdf';
-            $event = $this->event_model->get_event($e_id);
-            $eventfolder = url_title($event['e_name']);
-            
-            $path = APPPATH.'../assets/gen-files/'.$eventfolder;
-            $this->check_dir_exists($path, $assfolder);            
-            $this->delete_folder_contents($path.$assfolder);
-
-            //Create a PDF for each assignment containing a QR code for each answer
-            $asses = $this->event_assignment_model->get_ass($e_id);
-            foreach($asses as $ass){
-                //PDF settings
-                $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
-                $pdf->SetCreator(PDF_CREATOR);
-                $pdf->SetTitle('Assignment PDF');
-                $pdf->SetAutoPageBreak(true, 10);
-                $pdf->setCellPaddings(1, 1, 1, 1);
-                $pdf->setCellMargins(1, 1, 1, 1);
-                $pdf->SetPrintHeader(false);
-                $pdf->SetPrintFooter(false);
-                //MUST add a new page, otherwise it will throw an error due to not containing any pages
-                $pdf->AddPage();
-
-                //URL template for each assignment (used later)
-                $ass_url = base_url('events/answer/'.$e_id.'/'.$ass['ass_id'].'/');
-                //Get all answers for the current assignment
-                $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
-
-                //Create and save a QR Code for each answer
-                //Set a title with the assignments title in the PDF
-                $font_FrutigerBlack = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
-                $pdf->SetFont($font_FrutigerBlack,'', 12);
-                $ass_title = '<h1>'.$ass['title'].'</h1>';
-                $pdf->MultiCell(180, 20, $ass_title, 0, 'L', 0, 1, '15', '15', true, 0, true);
-                $font_FrutigerLight = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Light.ttf','TrueTypeUnicode','',96);
-                $pdf->SetFont($font_FrutigerLight, '', 20);
-                
-                //Create PDF
-                //Check amount of answers for the assignment
-                $answer_amount = count($ass_answers);
-                $answers_per_line = $answer_amount;
-                $qr_answer_index = 0;
-                //Calculate amount of rows for each assignment
-                $rows = ceil($answer_amount/3);
-
-                //Create 1-3 rows
-                for($i = 0; $i <= $rows; $i++){
-                    //Figure out how many times to iterate the loops
-                    if($answers_per_line >= 3){
-                        $loops = 3;
-                    } else {
-                        $loops = $answers_per_line;
-                    }
-
-                    //Write out up to 3 answer choices per line
-                    for($o = 0; $o < $loops; $o++){
-                        if($o == $loops-1){
-                            $pdf->MultiCell(60, 10, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 1, '', '', true);
-                        } else {
-                            $pdf->MultiCell(60, 10, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 0, '', '', true);
-                        }
-                    }
-                    //Create and input QR codes for each answer
-                    for($o = 0; $o < $loops; $o++){
-                        $content = '';
-                        //URL the QR leads to
-                        $url = $ass_url . $ass_answers[$qr_answer_index+$o]['id'];
-                        //Instantiate new object with the URL as parameter
-                        $qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$ass_answers[$qr_answer_index+$o]['answer']."\nTryk 'åben link' for at svare\n".$url);
-                        //QR Settings
-                        $qrcode->setSize(125);
-                        $qrcode->setMargin(10);
-                        $qrcode->setEncoding('UTF-8');
-
-                        //Set path+filename for the QR
-                        $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.$ass_answers[$qr_answer_index+$o]['id'].'-'.$o.'.png';
-                        //Save QR to machine
-                        $qrcode->writeFile($qrpath);
-
-                        $content .= '
-                        <div>
-                        <img src="'.$qrpath.'" />
-                        </div>
-                        ';
-
-                        //Ensure the QR Code is placed beneath the relevant Answer
-                        if($o == $loops-1){
-                            $pdf->MultiCell(60, 25, $content, 0, 'C', 0, 1, '', '', true, 0, true);
-                        } else {
-                            $pdf->MultiCell(60, 25, $content, 0, 'C', 0, 0, '', '', true, 0, true);
-                        }
-                        //Delete the .png file from the machine
-                        unlink($qrpath);
-                    }
-                    $qr_answer_index += 3;
-                    $answers_per_line -= 3;
-                }
-
-                // Multicell params
-                //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
-                $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.url_title($ass['title']).'.pdf','F');
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
             }
-            $this->session->set_flashdata('pdf_ass_created',"Opgaver PDF'er oprettet!");
-            redirect('events/pdf/'.$event['e_id']);
+            $data['event'] = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            $ismember = false;
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $data['event']['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+            
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Enable PDF and QR libraries
+                require_once 'vendor\autoload.php';
+                $event = $data['event'];
+
+                $assfolder = '/assignment-pdf';
+                $eventfolder = url_title($event['e_name']);
+                
+                $path = APPPATH.'../assets/gen-files/'.$eventfolder;
+                $this->check_dir_exists($path, $assfolder);            
+                $this->delete_folder_contents($path.$assfolder);
+
+                //Create a PDF for each assignment containing a QR code for each answer
+                $asses = $this->event_assignment_model->get_ass($e_id);
+                foreach($asses as $ass){
+                    //PDF settings
+                    $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
+                    $pdf->SetCreator(PDF_CREATOR);
+                    $pdf->SetTitle('Assignment PDF');
+                    $pdf->SetAutoPageBreak(true, 10);
+                    $pdf->setCellPaddings(1, 1, 1, 1);
+                    $pdf->setCellMargins(1, 1, 1, 1);
+                    $pdf->SetPrintHeader(false);
+                    $pdf->SetPrintFooter(false);
+                    //MUST add a new page, otherwise it will throw an error due to not containing any pages
+                    $pdf->AddPage();
+
+                    //URL template for each assignment (used later)
+                    $ass_url = base_url('teams/answer/'.$e_id.'/'.$ass['ass_id'].'/');
+                    //Get all answers for the current assignment
+                    $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
+
+                    //Create and save a QR Code for each answer
+                    //Set a title with the assignments title in the PDF
+                    $font_FrutigerBlack = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
+                    $pdf->SetFont($font_FrutigerBlack,'', 12);
+                    $ass_title = '<h1>'.$ass['title'].'</h1>';
+                    $pdf->MultiCell(180, 20, $ass_title, 0, 'L', 0, 1, '15', '15', true, 0, true);
+                    $font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
+                    $pdf->SetFont($font, '', 12);
+                    
+                    //Create PDF
+                    //Check amount of answers for the assignment
+                    $answer_amount = count($ass_answers);
+                    $answers_per_line = $answer_amount;
+                    $qr_answer_index = 0;
+                    //Calculate amount of rows for each assignment
+                    $rows = ceil($answer_amount/3);
+
+                    //Create 1-3 rows
+                    for($i = 0; $i <= $rows; $i++){
+                        //Figure out how many times to iterate the loops
+                        if($answers_per_line >= 3){
+                            $loops = 3;
+                        } else {
+                            $loops = $answers_per_line;
+                        }
+
+                        //Write out up to 3 answer choices per line
+                        for($o = 0; $o < $loops; $o++){
+                            if($o == $loops-1){
+                                $pdf->MultiCell(60, 20, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 1, '', '', true);
+                            } else {
+                                $pdf->MultiCell(60, 20, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 0, '', '', true);
+                            }
+                        }
+                        //Create and input QR codes for each answer
+                        for($o = 0; $o < $loops; $o++){
+                            $content = '';
+                            //URL the QR leads to
+                            $url = $ass_url . $ass_answers[$qr_answer_index+$o]['id'];
+                            //Instantiate new object with the URL as parameter
+                            $qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$ass_answers[$qr_answer_index+$o]['answer']."\nTryk 'åben link' for at svare\n\n".$url);
+                            //QR Settings
+                            $qrcode->setSize(125);
+                            //$qrcode->setMargin(10);
+                            $qrcode->setEncoding('UTF-8');
+
+                            //Set path+filename for the QR
+                            $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.$ass_answers[$qr_answer_index+$o]['id'].'-'.$o.'.png';
+                            //Save QR to machine
+                            $qrcode->writeFile($qrpath);
+
+                            $content .= '
+                            <div>
+                            <img src="'.$qrpath.'" />
+                            </div>
+                            ';
+
+                            //Ensure the QR Code is placed beneath the relevant Answer
+                            if($o == $loops-1){
+                                $pdf->MultiCell(60, 25, $content, 0, 'C', 0, 1, '', '', true, 0, true);
+                            } else {
+                                $pdf->MultiCell(60, 25, $content, 0, 'C', 0, 0, '', '', true, 0, true);
+                            }
+                            //Delete the .png file from the machine
+                            unlink($qrpath);
+                        }
+                        $qr_answer_index += 3;
+                        $answers_per_line -= 3;
+                    }
+
+                    // Multicell params
+                    //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+                    $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.url_title($ass['title']).'.pdf','F');
+                }
+                $this->session->set_flashdata('pdf_ass_created',"Opgaver PDF'er oprettet!");
+                redirect('events/pdf/'.$e_id);
+            }
         }
 
 
@@ -507,7 +585,7 @@
             }
         }
 
-        //Deletes only the files within a folder
+        //Deletes all files in a folder
         private function delete_folder_contents($dirpath){
             if (substr($dirpath, strlen($dirpath) - 1, 1) != '/') {
                 $dirpath .= '/';
@@ -518,7 +596,7 @@
             }
         }
 
-        //Recursive function to delete all files within a folder and the folder itself
+        //Recursive function to delete all files in a folder and the folder itself
         private function deleteDir($dirpath){
             if (substr($dirpath, strlen($dirpath) - 1, 1) != '/') {
                 $dirpath .= '/';

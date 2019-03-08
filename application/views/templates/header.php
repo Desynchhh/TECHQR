@@ -12,9 +12,14 @@
 <!--	USED FOR DEBUGGING
 	<?php var_export($this->session->userdata()); ?>
 	-->
-
+	
+<!-- students and teachers/admins get different navbars, for security reasons -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<a class="navbar-brand" href="<?= base_url(); ?>">TECHQR</a>
+	<a class="navbar-brand" href="<?= base_url(); ?>">TECHQR</a>
+	<?php if(isset($_COOKIE['teamcookie'])):?>
+	<!-- the user has a cookie, which means they are a student -->
+	<?php else:?>
+	<!-- the user is a teacher or admin -->
 		<ul class="navbar-nav mr-auto">
 			<!-- gets the base_url from /config/config.php -->
 			<!-- enable base_url by adding 'url' to the 'helper' array in /config/autoload.php -->
@@ -45,9 +50,10 @@
 				<li class="nav-item"><a href="<?= base_url('users/login'); ?>" class="nav-link">Log ind</a></li>
 			<?php endif;?>
 		</ul>
-	</nav>
-	<div class="container">
-		<br/>
+	<?php endif;?>
+</nav>
+<div class="container">
+	<br/>
 		
 		<!-- flashdata messages -->
 	<?php if($this->session->flashdata('department_created')): ?>

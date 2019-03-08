@@ -30,10 +30,10 @@
             </tr>
             <?php $count = 1; foreach($teams as $team):?>
             <tr>
-                <td><?= $team['number'] ?></td>
-                <td><?= $team['score'] ?></td>
+                <td><?= $team['t_num'] ?></td>
+                <td><?= $team['t_score'] ?></td>
                 <td>[Not yet implemented]</td>
-                <td><?= count($students[$team['number']-1]) ?></td>
+                <td><?= count($students[$team['t_num']-1]) ?></td>
             </tr>
             <?php $count++; endforeach;?>
         </tbody>
