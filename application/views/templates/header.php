@@ -16,7 +16,7 @@
 <!-- students and teachers/admins get different navbars, for security reasons -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<a class="navbar-brand" href="<?= base_url(); ?>">TECHQR</a>
-	<?php if(isset($_COOKIE['teamcookie'])):?>
+	<?php if(isset($_COOKIE['TechQR'])):?>
 	<!-- the user has a cookie, which means they are a student -->
 	<?php else:?>
 	<!-- the user is a teacher or admin -->
@@ -130,4 +130,19 @@
 	<?php endif; ?>
 	<?php if($this->session->flashdata('event_removed_ass')): ?>
 		<?= '<p class="alert alert-danger">'.$this->session->flashdata('event_removed_ass').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('pdf_ass_created')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('pdf_ass_created').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('pdf_team_created')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('pdf_team_created').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('manage_points_success')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('manage_points_success').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('manage_points_failed')): ?>
+		<?= '<p class="alert alert-danger">'.$this->session->flashdata('manage_points_failed').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('team_already_answered')): ?>
+		<?= '<p class="alert alert-danger">'.$this->session->flashdata('team_already_answered').'</p>'; ?>
 	<?php endif; ?>

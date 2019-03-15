@@ -38,7 +38,7 @@
                 <td><?= $count ?></td>
                 <td><?= $team['e_name'] ?></td>
                 <td><?= $team['t_created_at'] ?></td>
-                <td><a class="btn btn-sm btn-outline-danger" href="<?= base_url('teams/delete/'.$event['e_id'].'/'.$team['t_id']); ?>">Slet</a></td>
+                <td><a class="btn btn-sm btn-danger" href="<?= base_url('teams/delete/'.$event['e_id'].'/'.$team['t_id']); ?>">Slet</a></td>
             </tr>
             <?php $count++; endforeach;?>
         </tbody>

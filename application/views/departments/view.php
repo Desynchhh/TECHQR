@@ -42,7 +42,7 @@
                     <td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
                     <td><?= $user['permissions'] ?></td>
                     <td><?= $user['email'] ?></td>
-                    <td><a class="btn btn-sm btn-outline-danger" href="<?= base_url('departments/remove/'.$user['u_id'].'/'.$department['id']); ?>">Fjern</a></td>
+                    <td><a class="btn btn-sm btn-danger" href="<?= base_url('departments/remove/'.$user['u_id'].'/'.$department['id']); ?>">Fjern</a></td>
                 </tr>
             <?php endforeach;?>
         </tbody>

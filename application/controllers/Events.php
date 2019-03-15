@@ -1,13 +1,28 @@
 <?php
     class Events extends CI_Controller{
-        public function index(){
+        
+        public function index($offset = 0){
             if(!$this->session->userdata('logged_in')){
             redirect('login');
             }
-        
-            $data['title'] = "Event oversigt";
-            $events = $this->event_model->get_event();
+            $isAdmin = ($this->session->userdata('permissions')) ? true : false;
+            $total_rows = 0;
+            $user_depts = $this->session->userdata('departments');
+            foreach($user_depts as $department){
+                $total_rows += $this->db->where('events.department_id', $department['d_id'])->count_all_results('events');
+            }
 
+            //Pagination config
+            $config['base_url'] = base_url() . 'events/index/';
+            $config['total_rows'] = $total_rows;
+            $config['per_page'] = 10;
+            $config['uri_segment'] = 3;
+            $this->pagination->initialize($config);
+
+            $data['title'] = "Event oversigt";
+            $data['events'] = $this->event_model->get_event($user_depts, $isAdmin, $config['per_page'], $offset);
+
+            /*
             if($this->session->userdata('permissions') != 'Admin'){
 
                 //Find all events that have the same department as the logged in user
@@ -27,6 +42,7 @@
             } else {
                 $data['events'] = $events;
             }
+            */
 
             //Load page
             $this->load->view('templates/header');
@@ -123,19 +139,64 @@
             }
         }
 
-        public function manage($e_id){
-            $data['title'] = 'Manage';
+        public function manage($e_id, $empty_teams = NULL){
+            $this->team_model->check_expire_date();
+
+            $event = $this->event_model->get_event($e_id);
+            $data['title'] = 'Manage - '.$event['e_name'];
             $data['e_id'] = $e_id;
             $data['teams'] = $this->team_model->get_teams($e_id);
+            $data['empty_teams'] = $this->check_teams($e_id);
+            $data['message'] = $this->event_model->get_message($e_id);
+
             $this->load->view('templates/header');
             $this->load->view('events/manage', $data);
             $this->load->view('templates/footer');
         }
 
+        public function manage_points($e_id){
+            $this->form_validation->set_rules('points', '"point"', 'required|numeric');
+            $this->form_validation->set_rules('t_num', '"hold nummer"', 'required|numeric');
+
+            if($this->form_validation->run() === FALSE){
+                //Validation didn't run or failed
+                $this->session->set_flashdata('manage_points_failed', 'Point feltet må kun indeholde tal!');
+            } else {
+                //Get relevant team
+                $t_num = $this->input->post('t_num');
+                $team = $this->team_model->get_teams($e_id, $t_num);
+                //Calculate the teams new score
+                $t_score = $team['t_score'];
+                $points = $this->input->post('points');
+                $newscore = $t_score + $points;
+                //Update score in DB
+                $this->team_model->update_score($team['t_id'], $newscore);
+                $this->session->set_flashdata('manage_points_success', 'Holdets point er blevet opdateret');
+            }
+            //Reload page
+            redirect('events/manage/'.$e_id);
+        }
+
+        public function check_teams($e_id){
+            //Update DB; Remove all students past the expiredate
+            $this->team_model->check_expire_date();
+            //Find all empty/unmanned teams
+            $teams = $this->team_model->get_teams($e_id);
+            $empty_teams = array();
+            foreach($teams as $team){
+                $members = $this->team_model->get_team_members($team['t_id']);
+                if(count($members) <= 0){
+                    $empty_teams[] = $team['t_num'];
+                }
+            }
+            return $empty_teams;
+            //$this->manage($e_id, $empty_teams);
+        }
+
         public function message($e_id){
             $msg = $this->input->post('message');
             $this->event_model->update_message($e_id, $msg);
-            $this->manage($e_id);
+            redirect('events/manage/'.$e_id);
         }
 
         public function assignments_add($e_id){
@@ -144,6 +205,7 @@
             }
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
                     $ismember = TRUE;
@@ -151,7 +213,7 @@
                 }
             }
 
-            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Run if the user is a member of the events department
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
@@ -210,6 +272,7 @@
             }
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
+            $ismember = FALSE; //Throws an error if this variable is undefined
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
                     $ismember = TRUE;
@@ -217,7 +280,7 @@
                 }
             }
 
-            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
                 $data['asses'] = $this->event_assignment_model->get_ass($e_id);
@@ -236,6 +299,7 @@
             }
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
                     $ismember = TRUE;
@@ -243,7 +307,7 @@
                 }
             }
 
-            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->remove_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_removed_ass','Opgave fjernet fra eventet');
                 redirect('events/assignments/view/'.$e_id);
@@ -257,6 +321,7 @@
                 redirect('login');
             }
             $event = $this->event_model->get_event($e_id);
+            $ismember = FALSE;
             //Check if the user is in the same department as the event
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
@@ -265,7 +330,7 @@
                 }
             }
 
-            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->add_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
                 redirect('events/assignments/add/'.$e_id);
@@ -280,6 +345,7 @@
             }
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
                     $ismember = TRUE;
@@ -287,7 +353,7 @@
                 }
             }
             
-            if($ismember || $this->permissions->userdata('permissions') == 'Admin'){
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Delete all the events assignments
                 $asses = $this->event_assignment_model->get_ass($e_id);
                 foreach($asses as $ass){
@@ -305,6 +371,103 @@
                 $this->session->set_flashdata('event_deleted','Event slettet');
             }
             redirect('events');
+        }
+        
+        public function confirm_reset($e_id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            $data['event'] = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            $ismember = false;
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $data['event']['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+            
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Is member or admin
+                $data['title'] = 'RESET EVENT';
+                $data['event'] = $this->event_model->get_event($e_id);
+                
+                $this->form_validation->set_rules('e_name','"event navn"','required');
+
+                if($this->form_validation->run() === FALSE || $this->input->post('e_name') != $data['event']['e_name']){
+                    //If validation failed or didn't run
+                    $this->load->view('templates/header');
+                    $this->load->view('events/confirm_reset', $data);
+                    $this->load->view('templates/footer');
+                } else {
+                    //Validation passed successfully
+                    $this->reset($e_id);
+                }
+            } else {
+                //Not a member or admin
+                redirect('events');
+            }
+        }
+
+        function reset($e_id){
+            //Get all teams in the event
+            $teams = $this->team_model->get_teams($e_id);
+
+            $this->student_action_model->delete_actions($e_id);
+            $this->event_model->update_message($e_id, '');
+            //Reset teams & answers
+            foreach($teams as $team){
+                $this->team_model->delete_answers($team['t_id']);
+                $this->team_model->delete_students($team['t_id']);
+                $this->team_model->update_score($team['t_id'], 0);
+            }
+            redirect('events/manage/'.$e_id);
+        }
+
+        public function actions($e_id){
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+            $data['event'] = $this->event_model->get_event($e_id);
+            //Check if the user is in the same department as the event
+            $ismember = false;
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $data['event']['d_id']){
+                    $ismember = TRUE;
+                    break;
+                }
+            }
+            
+            if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                $data['title'] = 'Handlinger - ' . $data['event']['e_name'];
+                $action_id_array = $this->student_action_model->get_action_id($e_id);
+                $actions = array();
+                foreach($action_id_array as $act_id){
+                    $has_ass_id = $this->student_action_model->check_has_ass_id($act_id['act_id']);
+                    $actions[] = $this->student_action_model->get_action($e_id, $act_id['act_id'], $has_ass_id);
+                    /*
+                    if($has_ass_id){
+                        $actions[] = $this->student_action_model->get_action_ass($e_id, $act_id['act_id']);
+                    } else {
+                        $actions[] = $this->student_action_model->get_action_standard($e_id, $act_id['act_id']);
+                    }
+                    */
+                }
+                $data['actions'] = $actions;
+                $i = 0;
+                foreach($actions as $action){
+                    echo $i.': ';
+                    var_export($action);
+                    echo '<br>';
+                    $i++;
+                }
+
+                $this->load->view('templates/header');
+                $this->load->view('events/actions', $data);
+                $this->load->view('templates/footer');
+            } else {
+                //Not a member or admin
+            }
         }
 
         public function pdf($e_id){
@@ -368,7 +531,7 @@
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Enable QR and PDF libraries
                 require_once 'vendor/autoload.php';
-                $teamfolder = '/team-pdf';
+                $teamfolder = '/team-pdf/';
                 $event = $data['event'];
 
                 $eventfolder = url_title($event['e_name']);
@@ -377,10 +540,14 @@
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
                 $this->check_dir_exists($path, $teamfolder);
                 $this->delete_folder_contents($path.$teamfolder);
+                if(empty($teams)){
+                    //Don't run the function if there are no teams, otherwise it creates an empty PDF
+                    redirect('events/pdf/'.$e_id);
+                }
                 
                 //Set the path for where the PDF is to be saved (../assets/gen-files/..)
-                $qr_path = $path.'/team-pdf/qr/';
-                $pdf_path = $path.'/team-pdf/';
+                $qr_path = $path.$teamfolder.'qr/';
+                $pdf_path = $path.$teamfolder;
                 $url_template = base_url('teams/join/'.$e_id.'/');
                 
                 //Create a QR Code for each team in the event, with a correct URL that calls the correct Controller when scanned.
@@ -418,8 +585,8 @@
                 $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
                 $pdf->SetCreator(PDF_CREATOR);
                 $pdf->SetTitle('Team PDF');
-                $font_FrutigerBlack = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
-                $pdf->SetFont($font_FrutigerBlack,'', 12);
+                $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
+                $pdf->SetFont($title_font,'', 12);
                 $pdf->SetAutoPageBreak(true, 10);
                 $pdf->SetPrintHeader(false);
                 $pdf->SetPrintFooter(false);
@@ -468,13 +635,17 @@
 
                 $assfolder = '/assignment-pdf';
                 $eventfolder = url_title($event['e_name']);
+                $asses = $this->event_assignment_model->get_ass($e_id);
                 
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
                 $this->check_dir_exists($path, $assfolder);            
                 $this->delete_folder_contents($path.$assfolder);
+                if(empty($asses)){
+                    //Don't run the function if there are no assignments, otherwise it will create an empty PDF
+                    redirect('events/pdf/'.$e_id);
+                }
 
                 //Create a PDF for each assignment containing a QR code for each answer
-                $asses = $this->event_assignment_model->get_ass($e_id);
                 foreach($asses as $ass){
                     //PDF settings
                     $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
@@ -495,28 +666,27 @@
 
                     //Create and save a QR Code for each answer
                     //Set a title with the assignments title in the PDF
-                    $font_FrutigerBlack = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
-                    $pdf->SetFont($font_FrutigerBlack,'', 12);
+                    $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
+                    $pdf->SetFont($title_font,'', 22);
                     $ass_title = '<h1>'.$ass['title'].'</h1>';
                     $pdf->MultiCell(180, 20, $ass_title, 0, 'L', 0, 1, '15', '15', true, 0, true);
-                    $font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
-                    $pdf->SetFont($font, '', 12);
+                    $main_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
+                    $pdf->SetFont($main_font, '', 12);
                     
                     //Create PDF
                     //Check amount of answers for the assignment
-                    $answer_amount = count($ass_answers);
-                    $answers_per_line = $answer_amount;
+                    $answers_left = count($ass_answers);
                     $qr_answer_index = 0;
                     //Calculate amount of rows for each assignment
-                    $rows = ceil($answer_amount/3);
+                    $rows = ceil($answers_left/3);
 
                     //Create 1-3 rows
                     for($i = 0; $i <= $rows; $i++){
                         //Figure out how many times to iterate the loops
-                        if($answers_per_line >= 3){
+                        if($answers_left >= 3){
                             $loops = 3;
                         } else {
-                            $loops = $answers_per_line;
+                            $loops = $answers_left;
                         }
 
                         //Write out up to 3 answer choices per line
@@ -546,7 +716,7 @@
 
                             $content .= '
                             <div>
-                            <img src="'.$qrpath.'" />
+                                <img src="'.$qrpath.'" />
                             </div>
                             ';
 
@@ -560,14 +730,14 @@
                             unlink($qrpath);
                         }
                         $qr_answer_index += 3;
-                        $answers_per_line -= 3;
+                        $answers_left -= 3;
                     }
 
                     // Multicell params
                     //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
                     $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.url_title($ass['title']).'.pdf','F');
                 }
-                $this->session->set_flashdata('pdf_ass_created',"Opgaver PDF'er oprettet!");
+                $this->session->set_flashdata('pdf_ass_created',"Opgave PDF'er oprettet!");
                 redirect('events/pdf/'.$e_id);
             }
         }

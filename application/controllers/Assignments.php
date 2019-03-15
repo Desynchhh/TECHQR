@@ -1,38 +1,45 @@
 <?php
 	class Assignments extends CI_Controller{
-		public function index(){
-            if(!$this->session->userdata('logged_in')){
+		public function index($offset = 0){
+			//Check if anyone is logged in
+			if(!$this->session->userdata('logged_in')){
                 redirect('login');
-            }
+			}
+			
+			//Prep
+			$isAdmin = ($this->session->userdata('permissions') == 'Admin') ? true : false;
+			$user_depts = $this->session->userdata('departments');
+			$total_rows = 0;
+			foreach($user_depts as $dep){
+				$total_rows += $this->db->where('assignments.department_id', $dep['d_id'])->count_all_results('assignments');
+			}
 
+			//Pagination config
+			$config['base_url'] = base_url() . 'assignments/index/';
+			$config['total_rows'] = $total_rows;
+			$config['per_page'] = 10;
+			$config['uri_segment'] = 3;
+			$this->pagination->initialize($config);
+
+			//Data variables
 			$data['title'] = 'Opgave oversigt';
+			
+			//Get assignments
 			if($this->form_validation->run() === FALSE){
 				//Get all assignments
-				$data['asses'] = $this->assignment_model->get_ass_index();
+				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, NULL);
 			} else {
 				//Search the DB for assignments LIKE what the user searched for
-				$data['asses'] = $this->assignment_model->get_ass_index($this->input->post('search_string'));
+				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, $this->input->post('search_string'));
 			}
-			//Sort through all assignments
-			//Only show assignments with the relevant department
-			$tokeep = array();
-			for($i = 0; $i < count($data['asses']); $i++){
-				for($o = 0; $o < count($this->session->userdata('departments')); $o++){
-					if($data['asses'][$i]['name'] == $this->session->userdata['departments'][$o]['name']){
-						//Keep the assignment if any of the users departments match the assignments department
-						$tokeep[] = $data['asses'][$i];
-					}
-				}
-			}
-			//Store the kept assignments in the $data array in order to transfer them to the view	
-			$data['asses'] = $tokeep;
-
+			
+			//Load the page
 			$this->load->view('templates/header');
 			$this->load->view('assignments/index', $data);
 			$this->load->view('templates/footer');
 		}
 		
-		public function view($ass_id = NULL){
+		public function view($ass_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -70,7 +77,8 @@
 					$ismember = true;
 					break;
 				}
-			} 
+			}
+
 			if($ismember){
 				$this->load->view('templates/header');
 				$this->load->view('assignments/confirm_delete', $data);
@@ -95,6 +103,7 @@
 					break;
 				}
 			}
+
 			if($ismember){
 				//Delete if they are a member
 				$this->assignment_model->delete_ass($ass_id);
@@ -102,7 +111,7 @@
 				redirect('assignments');
 			} else {
 				//Redirect if they are not
-				$this->session->set_flashdata('ass_delete_fail', 'is member: '.$ismember);//'Du kan kun slette opgaver fra din egne afdelinger!'
+				$this->session->set_flashdata('ass_delete_fail', 'Du kan kun slette opgaver fra din egne afdelinger!');
 				redirect('assignments');
 			}
 		}
@@ -143,8 +152,10 @@
 			$data['title'] = "Rediger opgave";
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			if($optionsAmount){
+				//Set the amount of answers to the user specified amount
 				$data['options'] = $this->set_answer_amount($optionsAmount);
 			} else {
+				//Get the amount of answers to the assignment from the DB
 				$data['options'] = $this->set_answer_amount(count($data['ass'][0]));
 			}
 			$this->form_validation->set_rules('title','"opgave titel"','required');

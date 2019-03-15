@@ -28,7 +28,7 @@
 			<td>[Not yet implemented]</td>
             <td>
                 <?= form_open('departments/add/'.$department['id'].'/'.$user['u_id']); ?>
-                    <input type="submit" class="btn btn-sm btn-outline-secondary" value="Tilføj" />
+                    <input type="submit" class="btn btn-sm btn-secondary" value="Tilføj" />
                 <?= form_close(); ?>
             </td>
 		</tr>

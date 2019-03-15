@@ -195,7 +195,7 @@
             }
         }
 
-        public function delete($id){
+        function delete($id){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
                     redirect('home');

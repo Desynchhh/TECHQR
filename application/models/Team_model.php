@@ -4,13 +4,6 @@
             $this->load->database();
         }
 
-        //REMOVE THIS FUNCTION ONCE IT IS NO LONGER NEEDED
-        public function force_delete(){
-            $this->db->where('team_id >', 0)
-            ->delete('team_assignments');
-        }
-
-
         //Create team
         public function create_team($e_id, $t_num){
             $data = array(
@@ -73,6 +66,7 @@
             $this->db->insert('students', $data);
         }
 
+        //Save the fact that a team has answered an assignment
         public function answer_assignment($t_id, $ass_id, $ans_id){
             $data = array(
                 'team_id' => $t_id,
@@ -82,6 +76,21 @@
             $this->db->insert('team_assignments', $data);
         }
 
+        //Check if the team has already answered the assignment they are attempting to answer
+        public function check_already_answered($t_id, $ass_id){
+            $data =  array(
+                'team_id' => $t_id,
+                'assignment_id' => $ass_id
+            );
+            $query = $this->db->get_where('team_assignments', $data);
+            if(empty($query->row_array())){
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        //Update team score
         public function update_score($t_id, $score){
             $data = array(
                 'score' => $score
@@ -96,11 +105,24 @@
             $this->db->where('students.cookie_epoch_expire_date <', time())
             ->delete('students');
         }
+
+        //Remove all students / participants
+        public function delete_students($t_id){
+            $this->db->where('team_id', $t_id)
+            ->delete('students');
+        }
+
+        //Remove reset all answers
+        public function delete_answers($t_id){
+            $this->db->where('team_id', $t_id)
+            ->delete('team_assignments');
+        }
         
         //Delete all teams from an event
         public function delete_team($e_id, $t_id = NULL){
             if($t_id){
                 //Delete a specific team
+                //Deprecated
                 $this->db->where('event_id', $e_id)
                 ->where('id', $t_id)
                 ->delete('teams');

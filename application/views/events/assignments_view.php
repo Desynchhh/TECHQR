@@ -24,7 +24,7 @@
                 <td><a href="<?= base_url('assignments/view/'.$ass['ass_id']); ?>"><?= $ass['title'] ?></a></td>
                 <td><?= $ass['name'] ?></td>
                 <td><?= $ass['location'] ?></td>
-                <td><a class="btn btn-sm btn-outline-danger" href="<?= base_url('events/remove_ass/'.$e_id.'/'.$ass['ass_id']); ?>" >Fjern</a></td>
+                <td><a class="btn btn-sm btn-danger" href="<?= base_url('events/remove_ass/'.$e_id.'/'.$ass['ass_id']); ?>" >Fjern</a></td>
             </tr>
             <?php endforeach;?>
         </tbody>

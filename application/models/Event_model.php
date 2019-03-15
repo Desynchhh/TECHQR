@@ -14,34 +14,28 @@
         }
 
         //Gets either a single event or all events
-        public function get_event($id = NULL){
-            if($id){
-                //Get specific event
-                $query = $this->db->select('
-                    events.id as e_id,
-                    events.name as e_name,
-                    departments.id as d_id,
-                    departments.name as d_name
-                ')
-                ->join('departments', 'departments.id = events.department_id')
-                ->from('events')
-                ->where('events.id', $id)
-                ->get();
-                return $query->row_array();
-            } else {
-                //Get all events
-                $query = $this->db->select('
-                    events.id as e_id,
-                    events.name as e_name,
-                    departments.id as d_id,
-                    departments.name as d_name
-                ')
-                ->join('departments', "departments.id = events.department_id")
-                ->from('events')
-                ->order_by('events.created_at', 'DESC')
-                ->get();
-                return $query->result_array();
+        public function get_event($department_array, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $id = NULL){
+            //Get all events
+            $this->db->select('
+                events.id as e_id,
+                events.name as e_name,
+                departments.id as d_id,
+                departments.name as d_name
+            ')
+            ->join('departments', "departments.id = events.department_id");
+            if(!$isAdmin){
+                $this->db->where('events.department_id', $department_array[0]['d_id']);
+                foreach($department_array as $department){
+                    $this->db->or_where('events.department_id', $department['d_id']);
+                }
             }
+            $this->db->from('events');
+            if($id){
+                $this->db->where('events.id', $id);
+            }
+            $this->db->order_by('events.created_at', 'DESC');
+            $query = $this->db->get();
+            return $query->result_array();
         }
 
         //Renames an event
@@ -82,6 +76,7 @@
                 events.message
             ')
             ->where('id', $e_id)
+            ->from('events')
             ->get();
             return $query->row_array();
         }

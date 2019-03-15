@@ -20,7 +20,7 @@
                 <td><?= $ass['title'] ?></td>
                 <td><?= $ass['name'] ?></td>
                 <td><?= $ass['location'] ?></td>
-                <td><a class="btn btn-sm btn-outline-secondary" href="<?= base_url('events/add_ass/'.$e_id.'/'.$ass['id']); ?>" >Tilføj</a></td>
+                <td><a class="btn btn-sm btn-secondary" href="<?= base_url('events/add_ass/'.$e_id.'/'.$ass['id']); ?>" >Tilføj</a></td>
             </tr>
             <?php endforeach;?>
         </tbody>
