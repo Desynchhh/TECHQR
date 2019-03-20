@@ -4,6 +4,11 @@
             $this->load->database();
         }
 
+        public function force_delete(){
+            $this->db->where('team_assignments.team_id >', 0)
+            ->delete('team_assignments');
+        }
+
         //Create team
         public function create_team($e_id, $t_num){
             $data = array(
@@ -14,7 +19,10 @@
         }
         
         //Get either one or all teams
-        public function get_teams($e_id, $t_num = NULL){
+        public function get_teams($e_id, $t_num = NULL, $limit = FALSE, $offset = FALSE){
+            if($limit){
+                $this->db->limit($limit, $offset);
+            }
             if($t_num){
                 $query = $this->db->select('
                 teams.id as t_id,
@@ -44,17 +52,6 @@
                 ->get();
                 return $query->result_array();
             }
-        }
-        
-        //Get all students from a team
-        public function get_team_members($t_id){
-            $query = $this->db->select('
-            students.id as s_id
-            ')
-            ->where('students.team_id', $t_id)
-            ->from('students')
-            ->get();
-            return $query->result_array();
         }
         
         //Create a student for a team + insert the expiredate for the cookie
@@ -90,7 +87,7 @@
             }
         }
 
-        //Update team score
+        //Update a teams score
         public function update_score($t_id, $score){
             $data = array(
                 'score' => $score

@@ -1,6 +1,5 @@
 <?php
     class Department_model extends CI_Model{
-        
         //Constructor to access the database with the info in /config/database.php
         public function __construct(){
             $this->load->database();
@@ -24,8 +23,11 @@
             return true;
         }
 
-        public function get_department($id = NULL){
+        public function get_department($id = NULL, $limit = FALSE, $offset = FALSE){
             if($id == NULL){
+                if($limit){
+                    $this->db->limit($limit, $offset);
+                }
                 //Get all departments
                 $this->db->order_by('name');
                 $query = $this->db->get('departments');

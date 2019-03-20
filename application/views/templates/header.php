@@ -83,8 +83,11 @@
 	<?php if($this->session->flashdata('user_edited')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_edited').'</p>'; ?>
 	<?php endif; ?>
-	<?php if($this->session->flashdata('user_deleted')): ?>
-		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_deleted').'</p>'; ?>
+	<?php if($this->session->flashdata('user_delete_success')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('user_delete_success').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('user_delete_fail')): ?>
+		<?= '<p class="alert alert-danger">'.$this->session->flashdata('user_delete_fail').'</p>'; ?>
 	<?php endif; ?>
 	<?php if($this->session->flashdata('user_login_fail')): ?>
 		<?= '<p class="alert alert-danger">'.$this->session->flashdata('user_login_fail').'</p>'; ?>

@@ -11,7 +11,7 @@
     <dd class="event-dd"><?= count($event_asses) ?> - <a class="btn btn-sm btn-primary" href="<?= base_url('events/assignments/view/'.$event['e_id']); ?>">Vis</a></dd>
     <dt>Maks point:</dt>
     <dd class="event-dd"><?= $max_points ?></dd>
-    <dt>Antal Hold:</dt>
+    <dt>Hold & Score:</dt>
     <dd class="event-dd"><?= count($teams) ?> - <a class="btn btn-sm btn-primary" href="<?= base_url('teams/view/'.$event['e_id']); ?>">Vis</a></dd>
     <!-- Acions & PDF buttons -->
     <dd><a class="btn btn-primary" href="<?= base_url('events/actions/'.$event['e_id']); ?>">Se alle handlinger</a> 

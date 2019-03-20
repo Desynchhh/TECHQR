@@ -14,8 +14,12 @@
         }
 
         //Gets either a single event or all events
-        public function get_event($department_array, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $id = NULL){
+        public function get_event($e_id, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE){
             //Get all events
+            if($limit){
+				$this->db->limit($limit, $offset);
+            }
+            
             $this->db->select('
                 events.id as e_id,
                 events.name as e_name,
@@ -23,19 +27,26 @@
                 departments.name as d_name
             ')
             ->join('departments', "departments.id = events.department_id");
-            if(!$isAdmin){
-                $this->db->where('events.department_id', $department_array[0]['d_id']);
-                foreach($department_array as $department){
-                    $this->db->or_where('events.department_id', $department['d_id']);
+            if($department_array){
+                //Get all the users events
+                if(!$isAdmin){
+                    $this->db->where('events.department_id', $department_array[0]['d_id']);
+                    foreach($department_array as $department){
+                        $this->db->or_where('events.department_id', $department['d_id']);
+                    }
                 }
+            } else {
+                //Get specific event
+                $this->db->where('events.id', $e_id);
             }
             $this->db->from('events');
-            if($id){
-                $this->db->where('events.id', $id);
-            }
             $this->db->order_by('events.created_at', 'DESC');
             $query = $this->db->get();
-            return $query->result_array();
+            if($department_array){
+                return $query->result_array();
+            } else {
+                return $query->row_array();
+            }
         }
 
         //Renames an event

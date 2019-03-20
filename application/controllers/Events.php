@@ -1,13 +1,18 @@
 <?php
     class Events extends CI_Controller{
-        
+        public function yada(){
+            $this->team_model->force_delete();
+        }
         public function index($offset = 0){
+            //Check user is logged in
             if(!$this->session->userdata('logged_in')){
             redirect('login');
             }
-            $isAdmin = ($this->session->userdata('permissions')) ? true : false;
+
+            //Prep
+            $isAdmin = ($this->session->userdata('permissions') == 'Admin') ? true : false;
             $total_rows = 0;
-            $user_depts = $this->session->userdata('departments');
+			$user_depts = $this->session->userdata('departments');
             foreach($user_depts as $department){
                 $total_rows += $this->db->where('events.department_id', $department['d_id'])->count_all_results('events');
             }
@@ -17,10 +22,12 @@
             $config['total_rows'] = $total_rows;
             $config['per_page'] = 10;
             $config['uri_segment'] = 3;
+            $config['attributes'] = array('class' => 'pagination-link');
             $this->pagination->initialize($config);
 
+            //Data variables
             $data['title'] = "Event oversigt";
-            $data['events'] = $this->event_model->get_event($user_depts, $isAdmin, $config['per_page'], $offset);
+            $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset);
 
             /*
             if($this->session->userdata('permissions') != 'Admin'){
@@ -177,6 +184,7 @@
             redirect('events/manage/'.$e_id);
         }
 
+        //Check if there are any teams without members. Return the empty teams.
         public function check_teams($e_id){
             //Update DB; Remove all students past the expiredate
             $this->team_model->check_expire_date();
@@ -184,8 +192,8 @@
             $teams = $this->team_model->get_teams($e_id);
             $empty_teams = array();
             foreach($teams as $team){
-                $members = $this->team_model->get_team_members($team['t_id']);
-                if(count($members) <= 0){
+                //$members = $this->team_model->get_team_members($team['t_id']);
+                if($this->db->where('students.team_id', $team['t_id'])->count_all_results('students') <= 0){
                     $empty_teams[] = $team['t_num'];
                 }
             }
@@ -193,12 +201,14 @@
             //$this->manage($e_id, $empty_teams);
         }
 
+        //Updates the message field in the DB
         public function message($e_id){
             $msg = $this->input->post('message');
             $this->event_model->update_message($e_id, $msg);
             redirect('events/manage/'.$e_id);
         }
 
+        //Loads the page where assignments can be added to the event, so teams can answer it.
         public function assignments_add($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -266,7 +276,8 @@
             }
         }
 
-        public function assignments_view($e_id){
+        //Views all the assignments added to the event
+        public function assignments_view($e_id, $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -281,10 +292,20 @@
             }
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Pagination config
+                $config['base_url'] = base_url() . 'events/assignments/view/'.$e_id.'/';
+                $config['total_rows'] = $this->db->where('event_assignments.event_id', $e_id)->count_all_results('event_assignments');
+                $config['per_page'] = 10;
+                $config['uri_segment'] = 5;
+                $config['attributes'] = array('class' => 'pagination-link');
+                $this->pagination->initialize($config);
+
+                //Data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
-                $data['asses'] = $this->event_assignment_model->get_ass($e_id);
+                $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset);
                 
+                //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_view', $data);
                 $this->load->view('templates/footer');
@@ -293,6 +314,7 @@
             }
         }
 
+        //Removes an assignment from the event, so it can no longer be answered by teams.
         public function remove_ass($e_id, $ass_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -316,6 +338,7 @@
             }
         }
 
+        //Adds an assignment to the event, so it can be answered by teams.
         public function add_ass($e_id, $ass_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -339,6 +362,7 @@
             }
         }
 
+        //Delete the event from the system
         public function delete($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -372,43 +396,8 @@
             }
             redirect('events');
         }
-        
-        public function confirm_reset($e_id){
-            if(!$this->session->userdata('logged_in')){
-                redirect('login');
-            }
-            $data['event'] = $this->event_model->get_event($e_id);
-            //Check if the user is in the same department as the event
-            $ismember = false;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
-            
-            if($ismember || $this->session->userdata('permissions') == 'Admin'){
-                //Is member or admin
-                $data['title'] = 'RESET EVENT';
-                $data['event'] = $this->event_model->get_event($e_id);
-                
-                $this->form_validation->set_rules('e_name','"event navn"','required');
 
-                if($this->form_validation->run() === FALSE || $this->input->post('e_name') != $data['event']['e_name']){
-                    //If validation failed or didn't run
-                    $this->load->view('templates/header');
-                    $this->load->view('events/confirm_reset', $data);
-                    $this->load->view('templates/footer');
-                } else {
-                    //Validation passed successfully
-                    $this->reset($e_id);
-                }
-            } else {
-                //Not a member or admin
-                redirect('events');
-            }
-        }
-
+        //Resets the event. Empties all teams, resets scores, deletes message and action, and removes teams logged answers, so they can answer the same assignments again.
         function reset($e_id){
             //Get all teams in the event
             $teams = $this->team_model->get_teams($e_id);
@@ -424,7 +413,8 @@
             redirect('events/manage/'.$e_id);
         }
 
-        public function actions($e_id){
+        //Views all actions taken by teams in the event
+        public function actions($e_id, $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -439,29 +429,19 @@
             }
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Pagination configuration
+                $config['base_url'] = base_url() . 'events/actions/'.$e_id.'/';
+                $config['total_rows'] = $this->db->where('student_actions.event_id', $e_id)->count_all_results('student_actions');
+                $config['per_page'] = 10;
+                $config['uri_segment'] = 4;
+                $config['attributes'] = array('class' => 'pagination-link');
+                $this->pagination->initialize($config);
+                
+                //Set data variables
                 $data['title'] = 'Handlinger - ' . $data['event']['e_name'];
-                $action_id_array = $this->student_action_model->get_action_id($e_id);
-                $actions = array();
-                foreach($action_id_array as $act_id){
-                    $has_ass_id = $this->student_action_model->check_has_ass_id($act_id['act_id']);
-                    $actions[] = $this->student_action_model->get_action($e_id, $act_id['act_id'], $has_ass_id);
-                    /*
-                    if($has_ass_id){
-                        $actions[] = $this->student_action_model->get_action_ass($e_id, $act_id['act_id']);
-                    } else {
-                        $actions[] = $this->student_action_model->get_action_standard($e_id, $act_id['act_id']);
-                    }
-                    */
-                }
-                $data['actions'] = $actions;
-                $i = 0;
-                foreach($actions as $action){
-                    echo $i.': ';
-                    var_export($action);
-                    echo '<br>';
-                    $i++;
-                }
+                $data['actions'] = $this->student_action_model->get_actions($e_id, $config['per_page'], $offset);
 
+                //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/actions', $data);
                 $this->load->view('templates/footer');
@@ -470,6 +450,7 @@
             }
         }
 
+        //Loads page where PDFs can be created and viewed
         public function pdf($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -495,6 +476,7 @@
             }
         }
 
+        //Views the selected PDF (between 'team' and 'assignment' PDF)
         public function open_pdf($eventfolder, $path_location){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -608,12 +590,12 @@
                 //$pdf->writeHTML($content);
                 $pdf->Output($pdf_path.'Hold.pdf', 'F');
                 $this->deleteDir($qr_path);
-                $this->session->set_flashdata('pdf_team_created',"Hold PDF'er oprettet!");
+                $this->session->set_flashdata('pdf_team_created',"Hold PDF oprettet!");
                 redirect('events/pdf/'.$e_id);
             }
         }
 
-        //Create assignment pdf - WIP
+        //Create assignment PDF
         public function create_ass_pdf($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -641,7 +623,7 @@
                 $this->check_dir_exists($path, $assfolder);            
                 $this->delete_folder_contents($path.$assfolder);
                 if(empty($asses)){
-                    //Don't run the function if there are no assignments, otherwise it will create an empty PDF
+                    //Stop running the function if there are no assignments, otherwise it will create an empty PDF
                     redirect('events/pdf/'.$e_id);
                 }
 

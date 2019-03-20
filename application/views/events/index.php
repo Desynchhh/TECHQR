@@ -23,4 +23,8 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+		<!-- Pagination -->
+    <div class="btn-group mr-2" role="group" aria-label="First group">
+		<?= $this->pagination->create_links(); ?>
+	</div>
 </div>

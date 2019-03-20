@@ -51,19 +51,23 @@
             }
         }
 
-
+        //Attempt to answer an assignment
         public function answer($e_id, $ass_id, $ans_id){
             if(isset($_COOKIE['TechQR'])){
                 $cookie = unserialize($_COOKIE['TechQR']);
                 if($this->team_model->check_already_answered($cookie['t_id'], $ass_id)){
                     //Team has already answered the assignment
+                    //Log action in DB
+                    $action = "Forsøgte at besvare samme opgave mere end en gang";
+                    $this->student_action_model->create_action($e_id, $cookie['t_id'], $action, $ass_id);
+                    //Set message for team
                     $this->session->set_flashdata('team_already_answered','I kan ikke besvare den samme opgave flere gange!');
+                    //Reload go to team status/overview page
                     $this->status($e_id);
                 } else {
-                    //Get answer and team points
+                    //Get answer- and team points
                     $answers = $this->assignment_model->get_ass_answers($ass_id, $ans_id);
                     $team = $this->team_model->get_teams($e_id, $cookie['t_num']);
-                    
                     $ans_points = $answers['points'];
                     $team_points = $team['t_score'];
     
@@ -72,10 +76,10 @@
                     $this->team_model->update_score($cookie['t_id'], $score);
                     
                     //Add entry to team_assignments table
-                    $this->team_model->answer_assignment($e_id, $ass_id, $ans_id);
+                    $this->team_model->answer_assignment($cookie['t_id'], $ass_id, $ans_id);
                     //Log action
                     $action = 'Svarede på opgave';
-                    $this->student_action_model->create_action($e_id, $cookie['t_id'], $action, $ass_id);
+                    $this->student_action_model->create_action($e_id, $cookie['t_id'], $action, $ass_id, $ans_id);
                     //Redirect to the teams overview/status screen
                     redirect('teams/status/'.$e_id.'/'.$cookie['t_num']);
                 }
@@ -85,56 +89,76 @@
             }
         }
 
+        //Create teams for an event
         public function create($e_id){
+            //Check a user is logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
 
+            //Set form validation rules
             $this->form_validation->set_rules('teams','"antal hold"','numeric');
 
             if($this->form_validation->run() === FALSE){
+                //If validation failed OR did not run
                 $this->load->view('templates/header');
                 $this->load->view('events/view', $data);
                 $this->load->view('templates/footer');
             } else {
+                //Validation successful
+                //Check if event already has an amount of teams
                 $teams = $this->team_model->get_teams($e_id);
                 if(empty($teams)){
                     //Event has no teams. Create the first team
                     $next_team_number = 1;
                 } else {
                     //Event has teams. Increase the team count from the newest team
-                    $next_team_number = count($teams)+1;
+                    $next_team_number = end($teams)['t_num']+1;
                 }
                 //Create the requested amount of teams
                 for($i = 0; $i < $this->input->post('teams'); $i++){
                     $this->team_model->create_team($e_id, $next_team_number);
                     $next_team_number++;
                 }
+                //Set message to inform the user of the successful creation of teams
                 $this->session->set_flashdata('team_created','Hold oprettet');
                 //Reload the page
                 redirect('teams/view/'.$e_id);
             }
         }
 
-        public function view($e_id){
+        public function view($e_id, $offset = 0){
+            //Check user is logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
-            
-            $this->team_model->check_expire_date();
-            $data['teams'] = $this->team_model->get_teams($e_id);
-            $data['e_id'] = $e_id;
-            $event = $this->event_model->get_event($e_id);
-            $data['title'] = "Hold oversigt - ".$event['e_name'];
-            
-            //Get the id's for each member in each team
-            $s_id_array = array();
-            foreach($data['teams'] as $team){
-                $s_id_array[] = $this->team_model->get_team_members($team['t_id']);
-            }
-            //Store the id's in the $data array
-            $data['students'] = $s_id_array;
 
+            //Pagination configuration
+            $config['base_url'] = base_url().'teams/view/'.$e_id.'/';
+            $config['total_rows'] = $this->db->where('teams.event_id', $e_id)->count_all_results('teams');
+            $config['per_page'] = 10;
+            $config['uri_segment'] = 4;
+            $config['attributes'] = array('class' => 'pagination-link');
+            $this->pagination->initialize($config);
+            
+            //Set data variables
+            $this->team_model->check_expire_date();
+            $event = $this->event_model->get_event($e_id);
+            $data['teams'] = $this->team_model->get_teams($e_id, NULL, $config['per_page'], $offset);
+            $data['title'] = "Hold oversigt - ".$event['e_name'];
+            //Used to calculate the array index difference between 'teams' and 'student_array'
+            $data['offset'] = $offset+(($offset+1) % $config['per_page']);
+            $data['e_id'] = $e_id;
+            
+            //Get the total amount of members per team and store them in a separate array
+            $student_array = array();
+            foreach($data['teams'] as $team){
+                $student_array[] = $this->db->where('students.team_id', $team['t_id'])->count_all_results('students');
+            }
+            //Store the array in the $data array
+            $data['students'] = $student_array;
+
+            //Load the page
             $this->load->view('templates/header');
             $this->load->view('teams/view', $data);
             $this->load->view('templates/footer');
@@ -151,10 +175,5 @@
             $this->session->set_flashdata('teams_deleted', 'Alle hold slettet');
             //Reload page
             redirect('teams/view/'.$e_id);
-        }
-
-        public function delete_answers($t_id){
-            $this->db->where('team_assignments.team_id', $t_id)
-            ->delete('team_assignments');
         }
     }

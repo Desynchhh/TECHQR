@@ -29,3 +29,22 @@ dt {
     width: 50%;
     padding: 10px;
 }
+
+.pagination-links{
+    text-align: center;
+}
+
+.pagination-links strong{
+    padding: 8px 13px;
+    background: #373A3C;
+    color: white;
+    border: 1px #ccc solid;
+}
+
+a.pagination-link{
+    padding: 8px 13px;
+    margin: 1px;
+    background: #388AE5;
+    color: white;
+    border: 1px #ccc solid;
+}

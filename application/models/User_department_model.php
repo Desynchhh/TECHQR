@@ -4,6 +4,7 @@
             $this->load->database();
         }
         
+        //Adds a row to 'user_departments' table in the DB
         public function assign_user_to_department($u_id, $d_id){
             $data = array(
                 'user_id' => $u_id,
@@ -26,7 +27,10 @@
         }
 
         //Get all users in a department
-        public function get_department_members($d_id){
+        public function get_department_members($d_id, $limit = FALSE, $offset = FALSE){
+            if($limit){
+                $this->db->limit($limit, $offset);
+            }
             $query = $this->db->select('
                 users.id as u_id,
                 users.username,
@@ -41,6 +45,7 @@
             return $query->result_array();
         }
 
+        //Get all users who are NOT assigned to the given department
         public function get_department_not_members($d_id){
             $query = $this->db->select('
                 users.id as u_id,
@@ -58,6 +63,7 @@
             return $query->result_array();
         }
 
+        //Removes the given user from the given department
         public function delete_user_from_department($u_id, $d_id){
             $this->db->where('user_id', $u_id)
             ->where('department_id', $d_id)

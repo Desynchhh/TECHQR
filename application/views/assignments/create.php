@@ -66,4 +66,4 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 <input type="submit" value="Opret" class="btn btn-secondary"/>
 <?= form_close(); ?>
 
-<a type="button" class="btn btn-primary" href="<?= base_url('assignments'); ?>">Tilbage til oversigt</a>
+<a href="<?= base_url('assignments'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>

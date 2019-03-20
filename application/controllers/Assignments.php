@@ -19,6 +19,7 @@
 			$config['total_rows'] = $total_rows;
 			$config['per_page'] = 10;
 			$config['uri_segment'] = 3;
+			$config['attributes'] = array('class' => 'pagination-link');// btn btn-primary
 			$this->pagination->initialize($config);
 
 			//Data variables
@@ -65,6 +66,7 @@
 				}
 		}
 
+		/*	DEPRECATED. don't forget to delete views/assignments/confirm_delete.php
 		public function confirm_delete($ass_id){
 			if(!$this->session->userdata['logged_in']){
 				redirect('login');
@@ -86,9 +88,8 @@
 			} else {
 				redirect('assignments');
 			}
-		
-
 		}
+		*/
 
 		public function delete($ass_id){
 			if(!$this->session->userdata['logged_in']){
@@ -105,10 +106,17 @@
 			}
 
 			if($ismember){
-				//Delete if they are a member
-				$this->assignment_model->delete_ass($ass_id);
-				$this->session->set_flashdata('ass_delete_success','Opgave slettet');
-				redirect('assignments');
+				$input = $this->input->post('input');
+				//Check if the entered name matches the name in the DB
+				if($input == $data['ass']['ass_title']){
+					//Names match
+					$this->assignment_model->delete_ass($ass_id);
+					$this->session->set_flashdata('ass_delete_success','Opgave slettet');
+					redirect('assignments');
+				} else {
+					$this->session->set_flashdata('ass_delete_fail','Den indtastede titel matcher ikke opgavens titel!');
+					redirect('assignments/view/'.$ass_id);
+				}
 			} else {
 				//Redirect if they are not
 				$this->session->set_flashdata('ass_delete_fail', 'Du kan kun slette opgaver fra din egne afdelinger!');

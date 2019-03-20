@@ -2,7 +2,7 @@
 
 <br>
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('events/assignments/view/'.$e_id); ?>">Tilbage til oversigt</a>
+    <a href="<?= base_url('events/assignments/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 <br>
 
@@ -20,7 +20,7 @@
                 <td><?= $ass['title'] ?></td>
                 <td><?= $ass['name'] ?></td>
                 <td><?= $ass['location'] ?></td>
-                <td><a class="btn btn-sm btn-secondary" href="<?= base_url('events/add_ass/'.$e_id.'/'.$ass['id']); ?>" >Tilføj</a></td>
+                <td><a href="<?= base_url('events/add_ass/'.$e_id.'/'.$ass['id']); ?>"><button type="button" class="btn btn-sm btn-secondary">Tilføj</button></a></td>
             </tr>
             <?php endforeach;?>
         </tbody>
@@ -28,5 +28,5 @@
 </div>
 
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('events/assignments/view/'.$e_id); ?>">Tilbage til oversigt</a>
+    <a href="<?= base_url('events/assignments/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

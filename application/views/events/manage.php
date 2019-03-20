@@ -1,7 +1,20 @@
+
 <h2><?= $title ?></h2>
 <hr>
+
 <!-- Get CKEditor (used for sending messages to the students) -->
 <script src="http://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+
+<!-- JS function to show a dialog box, which will call the reset function in Controllers/Events.php -->
+<script>
+    function reset(){
+        if(window.confirm('Er du sikker på du vil resette dette event?')){
+            window.location = '<?= base_url("events/reset/".$e_id); ?>'
+        }
+    }
+</script>
+
+    <!-- HTML -->
 
 <div class="row">
     <!-- Tildel/Fratag Point -->
@@ -56,7 +69,8 @@
         <h4>Reset event</h4>
         <h5>Start eventet forfra.</h5>
         <p>Dette vil: Ubemande alle hold, fjerne alle point, slette alle handlinger, og gøre alle opgaver besvarlige igen.</p>
-        <a href="<?= base_url('events/confirm_reset/'.$e_id); ?>"><button type="button" class="btn btn-danger">Reset</button></a>
+        <!-- <a href="<?= base_url('events/confirm_reset/'.$e_id); ?>"><button type="button" class="btn btn-danger">Reset</button></a> -->
+        <button class="btn btn-danger" onclick="reset()">Reset</button>
     </div>
 
     <!-- Team List -->

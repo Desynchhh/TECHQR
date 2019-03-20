@@ -31,7 +31,8 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 			<?php endforeach;?>
 		</tbody>
 	</table>
-	<div class="btn-group mr-2" role="group" aria-label="First group">
+	<!-- Pagination -->
+	<div class="pagination-links">
 		<?= $this->pagination->create_links(); ?>
 	</div>
 </div>

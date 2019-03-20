@@ -2,11 +2,11 @@
 
 <br>
 <div>
-    <a type="button" class="btn btn-warning" href="<?= base_url('events/assignments/add/'.$e_id); ?>">Tilføj opgave</a>
+    <a href="<?= base_url('events/assignments/add/'.$e_id); ?>"><button type="button" class="btn btn-warning">Tilføj opgave</button></a>
 </div>
 <br>
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('events/view/'.$e_id); ?>">Tilbage til event</a>
+    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
 <br>
 
@@ -24,13 +24,17 @@
                 <td><a href="<?= base_url('assignments/view/'.$ass['ass_id']); ?>"><?= $ass['title'] ?></a></td>
                 <td><?= $ass['name'] ?></td>
                 <td><?= $ass['location'] ?></td>
-                <td><a class="btn btn-sm btn-danger" href="<?= base_url('events/remove_ass/'.$e_id.'/'.$ass['ass_id']); ?>" >Fjern</a></td>
+                <td><a href="<?= base_url('events/remove_ass/'.$e_id.'/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-sm btn-danger">Fjern</button></a></td>
             </tr>
             <?php endforeach;?>
         </tbody>
     </table>
+        <!-- Pagination -->
+    <div class="pagination-links">
+        <?= $this->pagination->create_links(); ?>
+    </div>
 </div>
 
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('events/view/'.$e_id); ?>">Tilbage til event</a>
+    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>

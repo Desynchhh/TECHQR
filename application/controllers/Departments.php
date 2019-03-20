@@ -1,13 +1,24 @@
 <?php
     class Departments extends CI_Controller{
-        public function index(){
+        public function index($offset = 0){
+            //Check the user is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
 
-            $data['title'] = 'Afdelings oversigt';
-            $data['departments'] = $this->department_model->get_department();
+            //Pagination configuration
+            $config['base_url'] = base_url().'departments/index/';
+            $config['total_rows'] = $this->db->count_all_results('departments');
+            $config['per_page'] = 10;
+            $config['uri_segment'] = 3;
+            $config['attributes'] = array('class' => 'pagination-link');
+            $this->pagination->initialize($config);
 
+            //Set data variables
+            $data['title'] = 'Afdelings oversigt';
+            $data['departments'] = $this->department_model->get_department(NULL, $config['per_page'], $offset);
+
+            //Load the page
             $this->load->view('templates/header');
             $this->load->view('departments/index', $data);
             $this->load->view('templates/footer');
@@ -34,22 +45,29 @@
         }
 
         //Open a page with details about a department
-        public function view($id = NULL){
+        public function view($d_id, $offset = 0){
+            //Check a user is logged in
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
 
+            //Pagination configuration
+            $config['base_url'] = base_url() . 'departments/view/'.$d_id;
+            $config['total_rows'] = $this->db->where('user_departments.department_id', $d_id)->count_all_results('user_departments');
+            $config['per_page'] = 10;
+            $config['uri_segment'] = 4;
+            $config['attributes'] = array('class' => 'pagination-link');
+            $this->pagination->initialize($config);
+            
+            //Set data variables
             $data['title'] = 'Afdelings detajler';
-            $data['department'] = $this->department_model->get_department($id);
-            $data['users'] = $this->user_department_model->get_department_members($id);
-
-            if($id === NULL){
-                redirect('departments');
-            } else {
-                $this->load->view('templates/header');
-                $this->load->view('departments/view', $data);
-                $this->load->view('templates/footer');
-            }
+            $data['department'] = $this->department_model->get_department($d_id);
+            $data['users'] = $this->user_department_model->get_department_members($d_id, $config['per_page'], $offset);
+            
+            //Load the page
+            $this->load->view('templates/header');
+            $this->load->view('departments/view', $data);
+            $this->load->view('templates/footer');
         }
 
         //Remove a user from the department
@@ -72,14 +90,9 @@
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
-
-            $data['department'] = $this->department_model->get_department($d_id);
-            $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
-            $data['users'] = $this->user_department_model->get_department_not_members($d_id);
-
             $this->form_validation->set_rules('u_id','"bruger"','required');
-
             if($u_id === NULL){
+                $data['users'] = $this->user_department_model->get_department_not_members($d_id);
                 for($i = 0; $i < count($data['users']); $i++){
                     if(!$this->user_department_model->is_already_member($data['users'][$i]['u_id'], $d_id)){
                         $temp[] = ($data['users'][$i]);
@@ -87,6 +100,10 @@
                 }
                 $data['users'] = $temp;
             
+                $data['department'] = $this->department_model->get_department($d_id);
+                $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
+
+                //Load page
                 $this->load->view('templates/header');
                 $this->load->view('departments/add', $data);
                 $this->load->view('templates/footer');

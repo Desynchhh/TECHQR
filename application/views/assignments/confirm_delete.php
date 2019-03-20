@@ -10,6 +10,6 @@
         <?= form_close(); ?>
     </div>
     <div>
-        <a type="button" class="btn btn-primary" href="<?= base_url('assignments/view/'.$ass['ass_id']); ?>">Nej, behold opgave</a>
+        <a href="<?= base_url('assignments/view/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-primary">Nej, behold opgave</button></a>
     </div>
 </div>

@@ -120,15 +120,17 @@
 
 		//Get one or all answers to an assignment
 		public function get_ass_answers($ass_id, $ans_id = NULL){
-				$query = $this->db->select('
+				$this->db->select('
 					answers.id,
 					answers.answer,
 					answers.points
 				')
-				->where('answers.assignment_id', $ass_id)
-				->from('answers')
-				->get();
-				//}
+				->where('answers.assignment_id', $ass_id);
+				if($ans_id){
+					$this->db->where('answers.id', $ans_id);
+				}
+				$this->db->from('answers');
+				$query = $this->db->get();
 				if($ans_id){
 					return $query->row_array();
 				} else {

@@ -5,7 +5,11 @@
         }
 
         //Get an assignment from the event
-        public function get_ass($e_id){
+        public function get_ass($e_id, $limit = FALSE, $offset = FALSE){
+            if($limit){
+                $this->db->limit($limit, $offset);
+            }
+            
             $query = $this->db->select('
                 assignments.id as ass_id,
                 assignments.title,

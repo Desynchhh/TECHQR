@@ -1,13 +1,21 @@
 <?php
     class Users extends CI_Controller{
-        public function index(){
-            if($this->session->userdata('permissions')!='Admin'){
+        public function index($offset = 0){
+            if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
+            //Pagination config
+            $config['base_url'] = base_url().'users/index/';
+            $config['total_rows'] = $this->db->count_all_results('users');
+            $config['per_page'] = 10;
+            $config['uri_segment'] = 3;
+            $config['attributes'] = array('class' => 'pagination-link');
+            $this->pagination->initialize($config);
 
             $data['title'] = 'Bruger oversigt';
-            $data['users'] = $this->user_model->get_user();
+            $data['users'] = $this->user_model->get_user(NULL, $config['per_page'], $offset);
 
+            //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
             $this->load->view('templates/footer');
@@ -26,10 +34,12 @@
                 if($this->session->userdata('permissions') != 'Admin'){
                     $id = $this->session->userdata('u_id');
                 }
+                //Set $data variables
                 $data['title'] = 'Bruger detaljer';
                 $data['user'] = $this->user_model->get_user($id);
                 $data['departments'] = $this->user_department_model->get_user_departments($id);
 
+                //Load page
                 $this->load->view('templates/header');
                 $this->load->view('users/view', $data);
                 $this->load->view('templates/footer');
@@ -173,6 +183,7 @@
             }
         }
         
+        /*  DEPRECATED. don't forget to delete views/users/confirm_delete.php
         public function confirm_delete($u_id){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
@@ -194,18 +205,31 @@
                 $this->delete($u_id);
             }
         }
+        */
 
-        function delete($id){
+        function delete($u_id, $input_username){
+            //Check user us logged in
             if(!$this->session->userdata('logged_in')){
+                //Check user is admin
                 if($this->session->userdata('permissions') != 'Admin'){
                     redirect('home');
                 }
                 redirect('login');
             }
 
-            $this->user_model->delete_user($id);
-            $this->session->set_flashdata('user_deleted','Bruger slettet');
-            redirect('users');
+            //Check the inputted username matches the one in the DB
+            $user = $this->user_model->get_user($u_id);
+            if($input_username == $user['username']){
+                //Username matches
+                $this->user_model->delete_user($u_id);
+                $this->session->set_flashdata('user_delete_success','Bruger slettet');
+                redirect('users');
+            } else {
+                //Username does not match
+                $this->session->set_flashdata('user_delete_fail', 'Indtastet brugernavn matcher ikke!');
+                redirect('users/view/'.$u_id);
+            }
+
         }
 
         public function change_password(){

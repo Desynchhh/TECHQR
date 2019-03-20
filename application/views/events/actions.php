@@ -36,4 +36,8 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+        <!-- Pagination -->
+    <div class="pagination-links">
+        <?= $this->pagination->create_links(); ?>
+    </div>
 </div>

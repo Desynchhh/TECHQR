@@ -28,16 +28,20 @@
                 <th>Sidste handling</th>
                 <th>Medlemmer</th>
             </tr>
-            <?php $count = 1; foreach($teams as $team):?>
+            <?php foreach($teams as $team):?>
             <tr>
                 <td><?= $team['t_num'] ?></td>
-                <td><?= $team['t_score'] ?></td>
+                <td><?= $team['t_score']?></td>
                 <td>[Not yet implemented]</td>
-                <td><?= count($students[$team['t_num']-1]) ?></td>
+                <td><?= $students[array_search($team['t_num']-$offset, array_keys($teams))]; ?></td>
             </tr>
-            <?php $count++; endforeach;?>
+            <?php endforeach;?>
         </tbody>
     </table>
+</div>
+	<!-- Pagination -->
+<div class="pagination-links">
+	<?= $this->pagination->create_links(); ?>
 </div>
 
 <div>

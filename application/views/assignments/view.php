@@ -1,6 +1,18 @@
+<script>
+    function deleteAss(){
+        var warning = "Er du sikker på du vil slette denne opgave fra systemet?\nIndtast opgavens titel for at bekræfte:";
+        var input = prompt(warning);
+        if(input != null && input != ""){
+            document.getElementById("input").value = input;
+            document.getElementById("inputForm").submit();
+        }
+    }
+</script>
+
 <h2><?= $title ?></h2>
 <hr>
 
+<!-- Info -->
 <div>
     <dl class="dl-horizontal">
         <dt>Opgave navn:</dt>
@@ -21,19 +33,27 @@
         <dd class="ass-dd"><?= $ass['ass_created_by'] ?><br></dd>
     </dl>
 </div>
-
+    <!-- Buttons -->
 <div class="row">
+    
+        <!-- Edit button -->
     <div class="md-col-1" style="margin-left:1.33%;">
-        <a href="<?= base_url('assignments/edit/'.$ass['ass_id']); ?>"><button class="btn btn-warning">Rediger opgave</button></a>
+        <a href="<?= base_url('assignments/edit/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-warning">Rediger opgave</button></a>
     </div>
+        <!-- Delete button -->
     <div class="md-col-1" style="margin-left:1%;">
-        <?= form_open('assignments/confirm_delete/'.$ass['ass_id']); ?>
-            <input type="submit" value="Slet opgave" class="btn btn-danger" />
+        <button type="button" class="btn btn-danger" onclick="deleteAss();">Slet opgave</button>
+            <!-- Hidden form to be submitted in case the assignments title contains an illegal URI character -->
+        <?= form_open('assignments/delete/'.$ass['ass_id'], array('id'=>'inputForm', 'method'=>'post')); ?>
+            <input type="hidden" name="input" id="input" value="" />
         <?= form_close(); ?>
     </div>
+
 </div>
+<br>
+    <!-- Back button -->
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('assignments'); ?>">Tilbage til oversigt</a>
+    <a href="<?= base_url('assignments'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 <br/>
 

@@ -23,8 +23,11 @@
             $this->db->insert('user_departments', $data);
         }
 
-        public function get_user($id = NULL){
-            if($id === NULL){
+        public function get_user($u_id = NULL, $limit = FALSE, $offset = FALSE){
+            if($u_id === NULL){
+                if($limit){
+                    $this->db->limit($limit, $offset);
+                }
                 //Get all users
                 $this->db->select('
                     users.id as u_id,
@@ -45,29 +48,29 @@
                 users.permissions,
                 users.created_at
                 ')
-                ->where('users.id', $id)
+                ->where('users.id', $u_id)
                 ->from('users');
                 $query = $this->db->get();
                 return $query->row_array();
             }
         }
 
-        public function edit_user($id){
+        public function edit_user($u_id){
             $data = array(
                 'username' => $this->input->post('username'),
                 'email' => $this->input->post('email'),
                 'permissions' => $this->input->post('permissions')
                 );
-            $this->db->where('id',$id)
+            $this->db->where('id',$u_id)
             ->update('users', $data);
             return true;
         }
 
-        public function delete_user($id){
-            $this->db->where('id', $id);
+        public function delete_user($u_id){
+            $this->db->where('id', $u_id);
             $this->db->delete('users');
 
-            $this->db->where('user_id', $id)
+            $this->db->where('user_id', $u_id)
             ->delete('user_departments');
             return true;
         }
@@ -80,11 +83,11 @@
             return $query->row(0)->password;
         }
 
-        public function change_password($id, $password){
+        public function change_password($u_id, $password){
             $data = array(
                 'password' => $password
             );
-            $this->db->where('id', $id)
+            $this->db->where('id', $u_id)
             ->update('users', $data);
             return true;
         }
