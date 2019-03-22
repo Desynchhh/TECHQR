@@ -46,13 +46,13 @@
 
         //Open a page with details about a department
         public function view($d_id, $offset = 0){
-            //Check a user is logged in
+            //Check user is logged in and is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
 
             //Pagination configuration
-            $config['base_url'] = base_url() . 'departments/view/'.$d_id;
+            $config['base_url'] = base_url() . 'departments/view/'.$d_id.'/';
             $config['total_rows'] = $this->db->where('user_departments.department_id', $d_id)->count_all_results('user_departments');
             $config['per_page'] = 10;
             $config['uri_segment'] = 4;
@@ -87,20 +87,26 @@
         }
 
         public function add($d_id, $u_id = NULL){
+            //Check the user is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
+            //Set validation rules
             $this->form_validation->set_rules('u_id','"bruger"','required');
+            $data['department'] = $this->department_model->get_department($d_id);
+            
+            //Check if a user has been selected to be added
             if($u_id === NULL){
+                //Dont add a user. List all users NOT in the specified department
                 $data['users'] = $this->user_department_model->get_department_not_members($d_id);
                 for($i = 0; $i < count($data['users']); $i++){
                     if(!$this->user_department_model->is_already_member($data['users'][$i]['u_id'], $d_id)){
                         $temp[] = ($data['users'][$i]);
                     }
                 }
+                //Add found users to data variable
                 $data['users'] = $temp;
             
-                $data['department'] = $this->department_model->get_department($d_id);
                 $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
 
                 //Load page
@@ -108,6 +114,7 @@
                 $this->load->view('departments/add', $data);
                 $this->load->view('templates/footer');
             } else {
+                //User has been selected. Add them to the department
                 $this->user_department_model->assign_user_to_department($u_id, $d_id);
                 $this->session->set_flashdata('department_user_added','Brugeren er blevet tilføjet til '.$data['department']['name']);
                 $this->view($d_id);

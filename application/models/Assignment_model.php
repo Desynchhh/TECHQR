@@ -87,7 +87,7 @@
 		}
 
 		//Get all assignments wihout their answers
-		public function get_ass_index($department_array, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $search_string = NULL){
+		public function get_ass_index($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL){
 			if($limit){
 				$this->db->limit($limit, $offset);
 			}
@@ -103,7 +103,7 @@
 				departments.id as d_id
 			')
 			->join('departments', 'departments.id = assignments.department_id');
-			if(!$isAdmin){	
+			if($isAdmin === false){	
 				$this->db->where('assignments.department_id', $department_array[0]['d_id']);
 				foreach($department_array as $department){
 					$this->db->or_where('assignments.department_id', $department['d_id']);

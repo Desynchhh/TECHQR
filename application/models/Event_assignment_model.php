@@ -24,6 +24,39 @@
             return $query->result_array();
         }
 
+        //Get all assignments not in the specified event
+        public function get_ass_not_event($e_id, $d_id){
+            $query = $this->db->query("
+                SELECT assignments.id AS ass_id,
+                assignments.title,
+                assignments.location,
+                departments.name
+                FROM assignments
+                LEFT JOIN event_assignments
+                ON assignments.id = event_assignments.assignment_id
+                WHERE event_assignments.assignment_id IS NULL
+                JOIN departments ON
+                departments.id = assignments.department_id
+                WHERE assignments.department_id = $d_id                
+                ");
+                /*
+            $query = $this->db->select('
+                assignments.id as ass_id,
+                assignments.title,
+                assignments.location,
+                departments.name
+            ')
+            ->join('departments', 'departments.id = assignments.department_id')
+            ->join('event_assignments', 'event_assignments.assignment_id = assignments.id', 'left')
+            ->where('assignments.department_id', $d_id)
+            ->where('event_assignments.event_id !=', $e_id)
+            ->from('assignments')
+            ->get();
+            */
+            return $query->result_array();
+        }
+
+
         //Gets all the points from an assignment
         public function get_event_points($ass_id){
             $query = $this->db->select('

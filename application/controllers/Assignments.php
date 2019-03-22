@@ -10,8 +10,12 @@
 			$isAdmin = ($this->session->userdata('permissions') == 'Admin') ? true : false;
 			$user_depts = $this->session->userdata('departments');
 			$total_rows = 0;
-			foreach($user_depts as $dep){
-				$total_rows += $this->db->where('assignments.department_id', $dep['d_id'])->count_all_results('assignments');
+			if($isAdmin){
+				$total_rows = $this->db->count_all_results('assignments');
+			} else {
+				foreach($user_depts as $dep){
+					$total_rows += $this->db->where('assignments.department_id', $dep['d_id'])->count_all_results('assignments');
+				}
 			}
 
 			//Pagination config
@@ -49,13 +53,14 @@
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			//Check the currently logged in users departments. 
 			//Only users who are in the same department as the assignment can view it.
+			$ismember = false;
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
 				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
 					$ismember = true;
 					break;
 				}
 			}
-				if($ismember){
+				if($ismember || $this->session->userdata('permissions') == 'Admin'){
 					//Allow the user to view the assignment details if they are a member of its department
 					$this->load->view('templates/header');
 					$this->load->view('assignments/view', $data);
@@ -66,37 +71,13 @@
 				}
 		}
 
-		/*	DEPRECATED. don't forget to delete views/assignments/confirm_delete.php
-		public function confirm_delete($ass_id){
-			if(!$this->session->userdata['logged_in']){
-				redirect('login');
-			}
-			
-			$data['title'] = "SLET OPGAVE?";
-			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
-			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
-				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
-					$ismember = true;
-					break;
-				}
-			}
-
-			if($ismember){
-				$this->load->view('templates/header');
-				$this->load->view('assignments/confirm_delete', $data);
-				$this->load->view('templates/footer');
-			} else {
-				redirect('assignments');
-			}
-		}
-		*/
-
 		public function delete($ass_id){
 			if(!$this->session->userdata['logged_in']){
 				redirect('login');
 			}
 			
 			//Check if the logged in user is a member of the assignments department
+			$ismember = false;
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
 				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
@@ -105,7 +86,7 @@
 				}
 			}
 
-			if($ismember){
+			if($ismember || $this->session->userdata('permissions') == 'Admin'){
 				$input = $this->input->post('input');
 				//Check if the entered name matches the name in the DB
 				if($input == $data['ass']['ass_title']){

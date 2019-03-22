@@ -1,6 +1,6 @@
 <script>
     function deleteUser(){
-        var warning = "Er du sikker på du vil slette denne bruger fra systemet?\nIndtast brugerens navn for at bekræfte:";
+        var warning = "Er du sikker på du vil slette denne bruger fra systemet?\nIndtast brugerens brugernavn for at bekræfte:";
         var input = prompt(warning);
         if(input != null && input != ""){
             window.location = '<?= base_url('users/delete/'.$user['u_id'].'/'); ?>'+input;

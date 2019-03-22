@@ -224,30 +224,24 @@
             }
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
-                //Run if the user is a member of the events department
+                //Pagination config
+                $config['base_url'] = base_url().'events/assignments/add/'.$e_id.'/';
+                $config['total_rows'] = 1;
+                $config['per_page'] = 10;
+                $config['uri_segment'] = 5;
+                $config['attributes'] = array('class' => 'pagination-link');
+                //$this->pagination->initialize($config);
+
+                //Run if the user is a member of the events department or is admin
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
-                //$unsorted_asses = $this->assignment_model->get_ass_index();
-                $asses = $this->assignment_model->get_department_ass($event['d_id']);
-                $event_asses = $this->event_assignment_model->get_ass($e_id);//get_event_ass($e_id);
-
-                //Sort assignments, so only the assignments in the events department are shown
-                //Create array to temporarily store assignments in
                 /*
-                $asses_to_keep = array();                
-                foreach($unsorted_asses as $ass){
-                    if($ass['d_id'] == $event['d_id']){
-                        $asses_to_keep[] = $ass;
-                    }
-                }
-                //Store the sorted assignments in an array
-                $sorted_asses = $asses_to_keep;
+                $asses = $this->assignment_model->get_department_ass($event['d_id']);
+                $event_asses = $this->event_assignment_model->get_ass($e_id);
                 */
-
-                //Only show the user assignments that have NOT been added to the event, as you shouldn't add the same assignment twice
-                //Reset the temp array
-                $asses_to_keep = array();
+                /*
                 //Run through all assignments and compare them to the events assignments
+                $asses_to_keep = array();
                 foreach($asses as $ass){
                     $already_contains = false;
                     //Compare all assignments in the event to every other assignment.
@@ -258,6 +252,7 @@
                             break;
                         }
                     }
+
                     if(!$already_contains){
                         //Add assignment to the temp array if it was not found in the events assignments
                         $asses_to_keep[] = $ass;
@@ -265,7 +260,8 @@
                 }
                 //Add all unfound assignments to the $data array
                 $data['asses'] = $asses_to_keep;
-
+                */
+                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id']);
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_add', $data);
