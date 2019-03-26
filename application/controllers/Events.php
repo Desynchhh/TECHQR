@@ -23,33 +23,13 @@
             $config['per_page'] = 10;
             $config['uri_segment'] = 3;
             $config['attributes'] = array('class' => 'pagination-link');
+            $config['first_link'] = 'Første';
+            $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
 
             //Data variables
             $data['title'] = "Event oversigt";
             $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset);
-
-            /*
-            if($this->session->userdata('permissions') != 'Admin'){
-
-                //Find all events that have the same department as the logged in user
-                //Create array to temporarily store events in
-                $events_to_keep = array();
-                //Check through all the users departments and all events, and compare them
-                foreach($this->session->userdata('departments') as $user_deps){
-                    foreach($events as $event){
-                        if($user_deps['d_id'] == $event['d_id']){
-                            //Add matching event to the array
-                            $events_to_keep[] = $event;
-                        }
-                    }
-                }
-                //Add all matching events to the $data array
-                $data['events'] = $events_to_keep;
-            } else {
-                $data['events'] = $events;
-            }
-            */
 
             //Load page
             $this->load->view('templates/header');
@@ -84,18 +64,28 @@
                 redirect('login');
             }
             
-            $data['title'] = "Rediger event";
-            $data['event'] = $this->event_model->get_event($e_id);
-            $data['e_id'] = $e_id;
             //Check the user is part of the events department
+            $data['event'] = $this->event_model->get_event($e_id);
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
                     $ismember = TRUE;
                     break;
                 }
             }
-
+            
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                $input = $this->input->post('input');
+                if (strlen(trim($input)) == 0){
+                    //Inputted name is empty or only contains whitespace
+                    $this->session->set_flashdata('event_edited_fail','Eventets navn kan ikke være tomt!');
+                } else {
+                    //Inputted name is valid
+                    $this->event_model->edit_event($e_id, $input);
+                    $this->session->set_flashdata('event_edited_success','Eventet er blevet omdøbt');
+                }
+                redirect('events/view/'.$e_id);
+                /*
                 //Set rules for form input fields
                 $this->form_validation->set_rules('e_name','"event navn"','required');
 
@@ -106,13 +96,13 @@
                     $this->load->view('templates/footer');
                 } else {
                     //Update/rename the event if validation is successful
-                    $this->event_model->edit_event($e_id);
-                    $this->session->set_flashdata('event_edited','Eventet er blevet omdøbt');
                     redirect('events');
                 }
+                */
             }
         }
 
+        //Loads page with data on the specified event
         public function view($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -146,7 +136,18 @@
             }
         }
 
+        public function stats($e_id){
+            $data['title'] = 'Stats - TEST';
+            $data['e_id'] = $e_id;
+
+            $this->load->view('templates/header');
+            $this->load->view('events/stats', $data);
+            $this->load->view('templates/footer');
+        }
+
+        //Load manage options and data
         public function manage($e_id, $empty_teams = NULL){
+            //Check if any students cookie have expired
             $this->team_model->check_expire_date();
 
             $event = $this->event_model->get_event($e_id);
@@ -161,6 +162,7 @@
             $this->load->view('templates/footer');
         }
 
+        //Subtract or add points to a team from the backend
         public function manage_points($e_id){
             $this->form_validation->set_rules('points', '"point"', 'required|numeric');
             $this->form_validation->set_rules('t_num', '"hold nummer"', 'required|numeric');
@@ -209,7 +211,7 @@
         }
 
         //Loads the page where assignments can be added to the event, so teams can answer it.
-        public function assignments_add($e_id){
+        public function assignments_add($e_id, $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -219,6 +221,7 @@
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
                     $ismember = TRUE;
+                    $d_id = $department['d_id'];
                     break;
                 }
             }
@@ -226,42 +229,19 @@
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination config
                 $config['base_url'] = base_url().'events/assignments/add/'.$e_id.'/';
-                $config['total_rows'] = 1;
+                $config['total_rows'] = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
                 $config['per_page'] = 10;
                 $config['uri_segment'] = 5;
                 $config['attributes'] = array('class' => 'pagination-link');
-                //$this->pagination->initialize($config);
-
+                $config['first_link'] = 'Første';
+                $config['last_link'] = 'Sidste';
+                $this->pagination->initialize($config);
+                
                 //Run if the user is a member of the events department or is admin
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
-                /*
-                $asses = $this->assignment_model->get_department_ass($event['d_id']);
-                $event_asses = $this->event_assignment_model->get_ass($e_id);
-                */
-                /*
-                //Run through all assignments and compare them to the events assignments
-                $asses_to_keep = array();
-                foreach($asses as $ass){
-                    $already_contains = false;
-                    //Compare all assignments in the event to every other assignment.
-                    foreach($event_asses as $event_ass){
-                        if($ass['id'] == $event_ass['ass_id']){
-                            //Found a match
-                            $already_contains = true;
-                            break;
-                        }
-                    }
-
-                    if(!$already_contains){
-                        //Add assignment to the temp array if it was not found in the events assignments
-                        $asses_to_keep[] = $ass;
-                    }
-                }
-                //Add all unfound assignments to the $data array
-                $data['asses'] = $asses_to_keep;
-                */
-                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id']);
+                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset);
+                
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_add', $data);
@@ -294,6 +274,8 @@
                 $config['per_page'] = 10;
                 $config['uri_segment'] = 5;
                 $config['attributes'] = array('class' => 'pagination-link');
+                $config['first_link'] = 'Første';
+                $config['last_link'] = 'Sidste';
                 $this->pagination->initialize($config);
 
                 //Data variables
@@ -374,21 +356,25 @@
             }
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
-                //Delete all the events assignments
-                $asses = $this->event_assignment_model->get_ass($e_id);
-                foreach($asses as $ass){
-                    $this->event_assignment_model->remove_ass($e_id, $ass['ass_id']);
+                //Check if entered name matches name in DB
+                $input = $this->input->post('input');
+                if($input === $event['e_name']){
+                    //Remove all assignments from the event
+                    $asses = $this->event_assignment_model->get_ass($e_id);
+                    foreach($asses as $ass){
+                        $this->event_assignment_model->remove_ass($e_id, $ass['ass_id']);
+                    }
+                    
+                    //Delete all the events teams
+                    $this->team_model->delete_team($e_id);
+                    //Delete the event folder containing PDF files
+                    $eventfolder = url_title($event['e_name']);
+                    $dirpath = APPPATH.'../assets/gen-files/'.$eventfolder;
+                    $this->deleteDir($dirpath);
+                    //Delete the event
+                    $this->event_model->delete_event($e_id);
+                    $this->session->set_flashdata('event_deleted','Event slettet');
                 }
-
-                //Delete all the events teams
-                $this->team_model->delete_team($e_id);
-                //Delete the event folder containing PDF files
-                $eventfolder = url_title($event['e_name']);
-                $dirpath = APPPATH.'../assets/gen-files/'.$eventfolder;
-                $this->deleteDir($dirpath);
-                //Delete the event
-                $this->event_model->delete_event($e_id);
-                $this->session->set_flashdata('event_deleted','Event slettet');
             }
             redirect('events');
         }
@@ -431,6 +417,8 @@
                 $config['per_page'] = 10;
                 $config['uri_segment'] = 4;
                 $config['attributes'] = array('class' => 'pagination-link');
+                $config['first_link'] = 'Første';
+                $config['last_link'] = 'Sidste';
                 $this->pagination->initialize($config);
                 
                 //Set data variables

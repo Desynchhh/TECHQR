@@ -45,9 +45,9 @@
             return $query->result_array();
         }
 
-        //Get all users who are NOT assigned to the given department
+        //Get all users who are NOT assigned to the specified department
         public function get_department_not_members($d_id){
-            $query = $this->db->select('
+            $this->db->select('
                 users.id as u_id,
                 users.username,
                 users.permissions,
@@ -58,12 +58,12 @@
             ->join('users', 'users.id = user_departments.user_id')
             ->join('departments', 'departments.id = user_departments.department_id')
             ->from('user_departments')
-            ->order_by('users.username', 'ASC')
-            ->get();
+            ->order_by('users.username', 'ASC');
+            $query = $this->db->get();
             return $query->result_array();
         }
 
-        //Removes the given user from the given department
+        //Removes the given user from the specified department
         public function delete_user_from_department($u_id, $d_id){
             $this->db->where('user_id', $u_id)
             ->where('department_id', $d_id)

@@ -33,7 +33,7 @@
             if(isset($team)){
                 //Set cookie variables
                 $name = 'TechQR';
-                $expiredate = time()+round(5);
+                $expiredate = time()+round(60);
                 
                 //Serialize the value so it can be cookie-fied
                 $value = serialize($team);
@@ -139,6 +139,8 @@
             $config['per_page'] = 10;
             $config['uri_segment'] = 4;
             $config['attributes'] = array('class' => 'pagination-link');
+            $config['first_link'] = 'Første';
+            $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
             
             //Set data variables

@@ -1,6 +1,18 @@
+    <!-- JS function to delete the department -->
+<script>
+    function deleteDepartment(){
+        
+        var input = prompt('Er du sikker på du vil slette denne afdeling?\nIndtast afdelingens navn for at bekræfte:');
+        if(input != null && input != ""){
+            document.getElementById("input").value = input;
+            document.getElementById("inputForm").submit();
+        }
+    }
+</script>
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
-
+    <!-- Department Info -->
 <div>
     <dl class="dl-horizontal">
         <dt>Afdelingsnavn:</dt>
@@ -11,22 +23,29 @@
         <dd class="department-dd"><?= $department['created_at'] ?><br></dd>
     </dl>
 </div>
-
+    <!-- Buttons -->
 <div class="row">
+        <!-- Add user to department -->
     <div class="md-col-1" style="margin-left:1.33%;">
     <a type="button" class="btn btn-warning" href="<?= base_url('departments/add/'.$department['id']); ?>">Tilføj bruger</a>
     </div>
+        <!-- Delete department -->
     <div class="md-col-1" style="margin-left:1%;">
-    <?= form_open('departments/confirm_delete/'.$department['id']); ?>
-        <input type="submit" value="Slet afdeling" class="btn btn-danger" />
-    <?= form_close(); ?>
+        <button class="btn btn-danger" onclick="deleteDepartment()">Slet afdeling</button>
+            <!-- Hidden form to submit name when deleting the department -->
+        <?= form_open('departments/delete/'.$department['id'], array('id' => 'inputForm')); ?>
+            <input type="hidden" name="input" id="input" value="" class="btn btn-danger" />
+        <?= form_close(); ?>
     </div>
 </div>
+
+<br>
+    <!-- Back button -->
 <div>
     <a type="button" class="btn btn-primary" href="<?= base_url('departments'); ?>">Tilbage til oversigt</a>
 </div>
 <br/>
-
+    <!-- Table of users -->
 <div>
     <table class="table">
         <tbody>
@@ -52,7 +71,7 @@
         <?= $this->pagination->create_links(); ?>
     </div>
 </div>
-
+    <!-- Back button -->
 <div>
     <a type="button" class="btn btn-primary" href="<?= base_url('departments'); ?>">Tilbage til oversigt</a>
 </div>

@@ -128,6 +128,12 @@
 	<?php if($this->session->flashdata('event_deleted')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_deleted').'</p>'; ?>
 	<?php endif; ?>
+	<?php if($this->session->flashdata('event_edited_success')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_edited_success').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('event_edited_fail')): ?>
+		<?= '<p class="alert alert-danger">'.$this->session->flashdata('event_edited_fail').'</p>'; ?>
+	<?php endif; ?>
 	<?php if($this->session->flashdata('event_added_ass')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_added_ass').'</p>'; ?>
 	<?php endif; ?>

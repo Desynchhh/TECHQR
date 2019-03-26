@@ -18,13 +18,17 @@
             <?php foreach($asses as $ass):?>
             <tr>
                 <td><?= $ass['title'] ?></td>
-                <td><?= $ass['name'] ?></td>
+                <td><?= $ass['d_name'] ?></td>
                 <td><?= $ass['location'] ?></td>
                 <td><a href="<?= base_url('events/add_ass/'.$e_id.'/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-sm btn-secondary">Tilføj</button></a></td>
             </tr>
             <?php endforeach;?>
         </tbody>
     </table>
+        <!-- Pagination -->
+    <div class="pagination-links">
+        <?= $this->pagination->create_links(); ?>
+    </div>
 </div>
 
 <div>

@@ -50,9 +50,9 @@
         }
 
         //Renames an event
-        public function edit_event($e_id){
+        public function edit_event($e_id, $input){
             $data = array(
-                'name' => $this->input->post('e_name')
+                'name' => $input
             );
             $this->db->where('id', $e_id)
             ->update('events', $data);

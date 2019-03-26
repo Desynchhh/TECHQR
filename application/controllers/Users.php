@@ -10,6 +10,8 @@
             $config['per_page'] = 10;
             $config['uri_segment'] = 3;
             $config['attributes'] = array('class' => 'pagination-link');
+            $config['first_link'] = 'Første';
+            $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
 
             $data['title'] = 'Bruger oversigt';

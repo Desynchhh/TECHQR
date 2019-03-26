@@ -23,6 +23,8 @@
 			$config['total_rows'] = $total_rows;
 			$config['per_page'] = 10;
 			$config['uri_segment'] = 3;
+			$config['first_link'] = 'Første';
+			$config['last_link'] = 'Sidste';
 			$config['attributes'] = array('class' => 'pagination-link');// btn btn-primary
 			$this->pagination->initialize($config);
 

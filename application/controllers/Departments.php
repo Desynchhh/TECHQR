@@ -12,6 +12,8 @@
             $config['per_page'] = 10;
             $config['uri_segment'] = 3;
             $config['attributes'] = array('class' => 'pagination-link');
+            $config['first_link'] = 'Første';
+            $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
 
             //Set data variables
@@ -57,6 +59,8 @@
             $config['per_page'] = 10;
             $config['uri_segment'] = 4;
             $config['attributes'] = array('class' => 'pagination-link');
+            $config['first_link'] = 'Første';
+            $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
             
             //Set data variables
@@ -97,8 +101,9 @@
             
             //Check if a user has been selected to be added
             if($u_id === NULL){
+                
                 //Dont add a user. List all users NOT in the specified department
-                $data['users'] = $this->user_department_model->get_department_not_members($d_id);
+                /*$data['users'] = $this->user_department_model->get_department_not_members($d_id);
                 for($i = 0; $i < count($data['users']); $i++){
                     if(!$this->user_department_model->is_already_member($data['users'][$i]['u_id'], $d_id)){
                         $temp[] = ($data['users'][$i]);
@@ -106,17 +111,24 @@
                 }
                 //Add found users to data variable
                 $data['users'] = $temp;
-            
+                */
+                $test = $this->user_department_model->get_department_not_members($d_id);
+                foreach($test as $user){
+                    echo $user['username'].'<br><br><br>';
+                }
+                /*
                 $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
 
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('departments/add', $data);
                 $this->load->view('templates/footer');
+                */
             } else {
                 //User has been selected. Add them to the department
                 $this->user_department_model->assign_user_to_department($u_id, $d_id);
                 $this->session->set_flashdata('department_user_added','Brugeren er blevet tilføjet til '.$data['department']['name']);
+                //Reload department details page
                 $this->view($d_id);
             }
         }
@@ -148,6 +160,7 @@
             }
         }
 
+        /*
         public function confirm_delete($d_id){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
@@ -169,28 +182,35 @@
                 $this->delete($d_id);
             }
         }
+        */
 
-        public function delete($id){
+        public function delete($d_id){
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
             
             //Check if the department has users who only have 1 department
             //DO NOT DELETE DEPARTMENT IF THIS IS TRUE
-            $dep_users = $this->user_department_model->get_department_members($id);
+            $dep_users = $this->user_department_model->get_department_members($d_id);
             foreach($dep_users as $user){
                 if(count($this->user_department_model->get_user_departments($user['u_id'])) <= 1){
                     //Denne afdeling har en eller flere brugere som kun har en afdeling. En bruger skal som minimum have én afdeling!
                     $this->session->set_flashdata('department_delete_fail','Afdelingen kunne ikke slettes, da <strong>'.$user['username'].'</strong> kun har 1 afdeling');
-                    redirect('departments/view/'.$id);
+                    redirect('departments/view/'.$d_id);
                 }
             }
-
-            $this->assignment_model->delete_department_ass($id);
-            $this->event_model->delete_department_event($id);
-            $this->department_model->delete_department($id);
-            $this->session->set_flashdata('department_delete_success','Afdeling slettet.');
-            redirect('departments');
+            $department = $this->department_model->get_department($d_id);
+            $input = $this->input->post('input');
+            if($input === $department['name']){
+                $this->assignment_model->delete_department_ass($d_id);
+                $this->event_model->delete_department_event($d_id);
+                $this->department_model->delete_department($d_id);
+                $this->session->set_flashdata('department_delete_success','Afdeling slettet.');
+                redirect('departments');
+            } else {
+                $this->session->set_flashdata('department_delete_fail','Indtastet navn matcher ikke!');
+                redirect('departments/view/'.$d_id);
+            }
         }
 
         //CUSTOM VALIDATION RULES BELOW THIS POINT

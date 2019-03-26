@@ -29,7 +29,7 @@
                     $this->db->limit($limit, $offset);
                 }
                 //Get all departments
-                $this->db->order_by('name');
+                $this->db->order_by('created_at');
                 $query = $this->db->get('departments');
                 return $query->result_array();
             } else {
