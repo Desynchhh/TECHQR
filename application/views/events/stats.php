@@ -1,37 +1,35 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
-
-<div class="row">
-    <div class="col-md-8">
-        <canvas id="piechart"></canvas>
+<?php $index = 0; foreach($event_ass as $ass):?>
+    <div class="row">
+            <!-- Info -->
+        <div class="col-md-6">
+            <dl class="dl-horizontal">
+                <h3>Opgave: <?= $ass['title'] ?></h3>
+                <?php foreach($event_ans[$index] as $ans):?>
+                    <dt><?= $ans['answer'] ?>:</dt>
+                    <br>
+                    <dd class="ass-dd">[VALG PROCENT]</dd>
+                <?php endforeach;?>
+            </dl>
+        </div>
+            <!-- Chart -->
+        <div class="col-md-6">
+            <canvas id="piechart<?= $ass['ass_id'] ?>"></canvas>
+        </div>
     </div>
-</div>
+    <hr>
+<?php $index++; endforeach;?>
+    <!-- Back button -->
 <div>
     <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
-
-<script>
-    var color1 = 'rgba(0, 255, 0, 0)';
-    var answers = ['svar 1', 'svar 2', 'svar 3'];
-    var data = [0, 10, 25];
-    var ctx = document.getElementById('piechart').getContext('2d');
-    var chart = new Chart(ctx, {
-        //Chart Type
-        type: 'line',
-
-        //Data for dataset
-        data: {
-            labels: answers,
-            datasets: [{
-                label: 'Første Opgave',
-                backgroundColor: color1,
-                borderColor: 'rgb(132, 99, 255)',
-                data: data
-            }]
-        },
-        
-        //Config options
-        options: {}
-    });
+    <!-- Scripts -->
+<script type="text/javascript" src="<?= base_url('assets/js/imports/Chart.js')?>"></script>
+<script type="text/javascript">
+    var eventAss = <?= json_encode($event_ass) ?>;
+    var eventAns = <?= json_encode($event_ans) ?>;//, JSON_PRETTY_PRINT
+    var teamAns = <?= json_encode($team_ans) ?>;
 </script>
+<script type="text/javascript" src="<?= base_url('assets/js/chart.js')?>"></script>

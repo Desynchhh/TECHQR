@@ -1,13 +1,3 @@
-<script>
-    function deleteUser(){
-        var warning = "Er du sikker på du vil slette denne bruger fra systemet?\nIndtast brugerens brugernavn for at bekræfte:";
-        var input = prompt(warning);
-        if(input != null && input != ""){
-            window.location = '<?= base_url('users/delete/'.$user['u_id'].'/'); ?>'+input;
-        }
-    }
-</script>
-
 <h2><?= $title ?></h2>
 <hr>
 
@@ -43,8 +33,12 @@
         <!-- Delete button -->
     <?php if($this->session->userdata('u_id') != $user['u_id']):?>
         <div class="md-col-1" style="margin-left:1%;">
-            <button class="btn btn-danger" onclick="deleteUser()">Slet Bruger</button>
+            <button class="btn btn-danger" onclick="submitHidden('inputDelete', 'formDelete', 'brugeren')">Slet Bruger</button>
         </div>
+            <!-- Hidden delete form -->
+        <?= form_open('users/delete/'.$user['u_id'], array('id' => 'formDelete')); ?>
+            <input type="hidden" name="input" id="inputDelete" value="">
+        <?= form_close(); ?>
     <?php endif;?>
 
 </div>

@@ -5,7 +5,7 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 <a type="button" class="btn btn-warning" href="<?= base_url('assignments/create'); ?>">Opret ny opgave</a>
 <?= form_open('assignments/index'); ?>
 <div>
-	<label>Søg på opgavenavn, brugernavn eller lokation:</label>
+	<label>Søg på opgavenavn, brugernavn eller notat:</label>
 	<input type="text" name="search_string" />
 	<input type="submit" value="Søg" class="btn btn-secondary" />
 </div>
@@ -16,7 +16,7 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 		<tbody>
 			<tr>
 				<th>Opgavenavn</th>
-				<th>Lokation</th>
+				<th>Notater</th>
 				<th>Afdeling</th>
 				<th>Oprettet af</th>
 			</tr>
@@ -24,7 +24,7 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 			<?php foreach($asses as $ass): ?>
 				<tr>
 					<td><a href="<?= base_url('assignments/view/'.$ass['id']); ?>"><?= $ass['title'] ?></a></td>
-					<td><?= $ass['location'] ?></td>
+					<td><?= $ass['notes'] ?></td>
 					<td><?= $ass['name'] ?></td>
 					<td><?= $ass['username'] ?></td>
 				</tr>

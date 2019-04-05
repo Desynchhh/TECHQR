@@ -1,8 +1,5 @@
 <?php
     class Events extends CI_Controller{
-        public function yada(){
-            $this->team_model->force_delete();
-        }
         public function index($offset = 0){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
@@ -10,15 +7,16 @@
             }
 
             //Prep
-            $isAdmin = ($this->session->userdata('permissions') == 'Admin') ? true : false;
-            $total_rows = 0;
+            $isAdmin = ($this->session->userdata('permissions') == 'Admin') ? TRUE : FALSE;
 			$user_depts = $this->session->userdata('departments');
+            //Count all rows in all the users department
+            $total_rows = 0;
             foreach($user_depts as $department){
                 $total_rows += $this->db->where('events.department_id', $department['d_id'])->count_all_results('events');
             }
 
             //Pagination config
-            $config['base_url'] = base_url() . 'events/index/';
+            $config['base_url'] = base_url('events/index/');
             $config['total_rows'] = $total_rows;
             $config['per_page'] = 10;
             $config['uri_segment'] = 3;
@@ -37,26 +35,32 @@
             $this->load->view('templates/footer');
         }
 
+
         public function create(){
+            //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
 
             $data['title'] = "Opret event";
 
+            //Set validation rules
             $this->form_validation->set_rules('event_name','"eventnavn"','required');
             
             if($this->form_validation->run() === FALSE){
+                //Validation fail
                 $this->load->view('templates/header');
                 $this->load->view('events/create', $data);
                 $this->load->view('templates/footer');
             } else {
+                //Validation success
                 //Create event in the DB
                 $this->event_model->create_event();
                 $this->session->set_flashdata('event_created','Event oprettet');
                 redirect('events');
             }
         }
+
 
         public function edit($e_id){
             //Check the user is logged in
@@ -102,6 +106,7 @@
             }
         }
 
+
         //Loads page with data on the specified event
         public function view($e_id){
             if(!$this->session->userdata('logged_in')){
@@ -126,6 +131,7 @@
                 $data['max_points'] = $this->calc_max_points($data['event_asses']);
                 //Get the events teams
                 $data['teams'] = $this->team_model->get_teams($e_id);
+                
                 //Load the page
                 $this->load->view('templates/header');
                 $this->load->view('events/view', $data);
@@ -136,20 +142,76 @@
             }
         }
 
+
         public function stats($e_id){
             $data['title'] = 'Stats - TEST';
             $data['e_id'] = $e_id;
+            //Get all assignments in the event
+            $event_ass = $this->event_assignment_model->get_ass($e_id);
+            //Get all answers made by the students
+            $team_ans = $this->team_model->get_team_answers($e_id);
+            //Get all answers to the events assignments
+            $event_ans = array();
+            foreach($event_ass as $ass){
+                $event_ans[] = $this->assignment_model->get_ass_answers($ass['ass_id']);
+            }
 
+            //Sort team_ans by assignment_id
+            $sorted_answers = array();
+            foreach($team_ans as $team_answer){
+                if(!in_array($team_answer['ass_id'], array_column($sorted_answers, 'ass_id'))){
+                    array_push($sorted_answers, $team_answer);
+                } else {
+                    array_push(
+                        $sorted_answers[in_array($team_answer['ass_id'], 
+                            array_column($sorted_answers, 'ass_id'))], $team_answer);
+                }
+            }
+            /*
+            //TEST displaying data in arrays
+            var_export(($sorted_answers));
+            echo'<br>';
+            for($i = 0; $i < count($event_ass); $i++){
+                echo 'Assignment:<br>';
+                var_export($event_ass[$i]);
+                echo '<br><br>';
+                echo 'Answers:<br>';
+                for($o = 0; $o < count($event_ans[$i]); $o++){
+                    var_export($event_ans[$i][$o]);
+                    echo '<br>';
+                }
+            }
+            */
+            echo '<br><br>Team Answers:<br>';
+            var_export($team_ans);
+            //Set data variables
+            $data['team_ans'] = $team_ans;
+            $data['event_ass'] = $event_ass;
+            $data['event_ans'] = $event_ans;
+            echo '<br><br>';
+            foreach($event_ass as $ass){
+                var_export($ass);
+                echo '<br>';
+            }
+            echo '<br><br>';
+            foreach($event_ans as $ans){
+                var_export($ans);
+                echo '<br>';
+            }
+
+            //Load the page
             $this->load->view('templates/header');
             $this->load->view('events/stats', $data);
             $this->load->view('templates/footer');
         }
 
+
         //Load manage options and data
         public function manage($e_id, $empty_teams = NULL){
-            //Check if any students cookie have expired
+            //Check if any students cookie has expired
             $this->team_model->check_expire_date();
 
+            //Set data variables
             $event = $this->event_model->get_event($e_id);
             $data['title'] = 'Manage - '.$event['e_name'];
             $data['e_id'] = $e_id;
@@ -157,19 +219,22 @@
             $data['empty_teams'] = $this->check_teams($e_id);
             $data['message'] = $this->event_model->get_message($e_id);
 
+            //Load page
             $this->load->view('templates/header');
             $this->load->view('events/manage', $data);
             $this->load->view('templates/footer');
         }
 
+
         //Subtract or add points to a team from the backend
         public function manage_points($e_id){
+            //Set validation rules
             $this->form_validation->set_rules('points', '"point"', 'required|numeric');
             $this->form_validation->set_rules('t_num', '"hold nummer"', 'required|numeric');
 
             if($this->form_validation->run() === FALSE){
                 //Validation didn't run or failed
-                $this->session->set_flashdata('manage_points_failed', 'Point feltet må kun indeholde tal!');
+                $this->session->set_flashdata('manage_points_fail', 'Point feltet må kun indeholde tal!');
             } else {
                 //Get relevant team
                 $t_num = $this->input->post('t_num');
@@ -185,6 +250,7 @@
             //Reload page
             redirect('events/manage/'.$e_id);
         }
+
 
         //Check if there are any teams without members. Return the empty teams.
         public function check_teams($e_id){
@@ -203,12 +269,14 @@
             //$this->manage($e_id, $empty_teams);
         }
 
+
         //Updates the message field in the DB
         public function message($e_id){
             $msg = $this->input->post('message');
             $this->event_model->update_message($e_id, $msg);
             redirect('events/manage/'.$e_id);
         }
+
 
         //Loads the page where assignments can be added to the event, so teams can answer it.
         public function assignments_add($e_id, $offset = 0){
@@ -228,7 +296,7 @@
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination config
-                $config['base_url'] = base_url().'events/assignments/add/'.$e_id.'/';
+                $config['base_url'] = base_url('events/assignments/add/'.$e_id.'/');
                 $config['total_rows'] = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
                 $config['per_page'] = 10;
                 $config['uri_segment'] = 5;
@@ -252,6 +320,7 @@
             }
         }
 
+
         //Views all the assignments added to the event
         public function assignments_view($e_id, $offset = 0){
             if(!$this->session->userdata('logged_in')){
@@ -269,7 +338,7 @@
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination config
-                $config['base_url'] = base_url() . 'events/assignments/view/'.$e_id.'/';
+                $config['base_url'] = base_url('events/assignments/view/'.$e_id.'/');
                 $config['total_rows'] = $this->db->where('event_assignments.event_id', $e_id)->count_all_results('event_assignments');
                 $config['per_page'] = 10;
                 $config['uri_segment'] = 5;
@@ -292,8 +361,10 @@
             }
         }
 
+
         //Removes an assignment from the event, so it can no longer be answered by teams.
         public function remove_ass($e_id, $ass_id){
+            //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -316,8 +387,10 @@
             }
         }
 
+
         //Adds an assignment to the event, so it can be answered by teams.
         public function add_ass($e_id, $ass_id){
+            //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -339,6 +412,7 @@
                 redirect('events');
             }
         }
+
 
         //Delete the event from the system
         public function delete($e_id){
@@ -367,17 +441,24 @@
                     
                     //Delete all the events teams
                     $this->team_model->delete_team($e_id);
+                    //Delete actions
+                    $this->student_action_model->delete_actions($e_id);
                     //Delete the event folder containing PDF files
-                    $eventfolder = url_title($event['e_name']);
+                    $eventfolder = url_title($event['e_name'].'-'.$e_id);
                     $dirpath = APPPATH.'../assets/gen-files/'.$eventfolder;
-                    $this->deleteDir($dirpath);
+                    $this->delete_dir($dirpath);
                     //Delete the event
                     $this->event_model->delete_event($e_id);
-                    $this->session->set_flashdata('event_deleted','Event slettet');
+                    $this->session->set_flashdata('event_delete_success','Event slettet');
+                    //Load index page
+                    redirect('events');
+                } else {
+                    $this->session->set_flashdata('event_delete_fail', 'Det indtastede navn matcher ikke med eventets navn!');
+                    redirect('events/view/'.$e_id);
                 }
             }
-            redirect('events');
         }
+
 
         //Resets the event. Empties all teams, resets scores, deletes message and action, and removes teams logged answers, so they can answer the same assignments again.
         function reset($e_id){
@@ -388,15 +469,17 @@
             $this->event_model->update_message($e_id, '');
             //Reset teams & answers
             foreach($teams as $team){
-                $this->team_model->delete_answers($team['t_id']);
+                //$this->team_model->delete_answers($team['t_id']);
                 $this->team_model->delete_students($team['t_id']);
                 $this->team_model->update_score($team['t_id'], 0);
             }
             redirect('events/manage/'.$e_id);
         }
 
+
         //Views all actions taken by teams in the event
         public function actions($e_id, $offset = 0){
+            //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -412,7 +495,7 @@
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination configuration
-                $config['base_url'] = base_url() . 'events/actions/'.$e_id.'/';
+                $config['base_url'] = base_url('events/actions/'.$e_id.'/');
                 $config['total_rows'] = $this->db->where('student_actions.event_id', $e_id)->count_all_results('student_actions');
                 $config['per_page'] = 10;
                 $config['uri_segment'] = 4;
@@ -431,8 +514,10 @@
                 $this->load->view('templates/footer');
             } else {
                 //Not a member or admin
+                redirect('events');
             }
         }
+
 
         //Loads page where PDFs can be created and viewed
         public function pdf($e_id){
@@ -450,25 +535,30 @@
             }
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
-                //Get data and load the page
+                //Get data
                 $data['title'] = 'PDF - ' . $data['event']['e_name'];
-                $data['team_pdf'] = $this->get_pdf($e_id, 'team-pdf');
-                $data['ass_pdf'] = $this->get_pdf($e_id, 'assignment-pdf');
+                $data['team_pdf'] = $this->get_pdf($e_id, $data['event']['e_name'], 'team-pdf');
+                $data['ass_pdf'] = $this->get_pdf($e_id, $data['event']['e_name'], 'assignment-pdf');
+                $data['e_id'] = $e_id;
+                
+                //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/pdf', $data);
                 $this->load->view('templates/footer');
             }
         }
 
+
         //Views the selected PDF (between 'team' and 'assignment' PDF)
         public function open_pdf($eventfolder, $path_location){
+            //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
             
+            //Get PDF path
             $filename = $this->input->post('filename');
             $path_location = APPPATH.'../assets/gen-files/'.$eventfolder.'/'.$path_location.'/'.$filename;
-            
             //Set the HTML to be able to read/view a PDF file
             header('Content-type: application/pdf');
             header("Content-disposition: inline; filename=".$filename);
@@ -478,6 +568,7 @@
             @readfile($path_location);
         }
         
+
         //Create team pdf
         public function create_team_pdf($e_id){
             if(!$this->session->userdata('logged_in')){
@@ -500,12 +591,12 @@
                 $teamfolder = '/team-pdf/';
                 $event = $data['event'];
 
-                $eventfolder = url_title($event['e_name']);
+                $eventfolder = url_title($event['e_name'].'-'.$e_id);
                 $teams = $this->team_model->get_teams($e_id);
                 
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
                 $this->check_dir_exists($path, $teamfolder);
-                $this->delete_folder_contents($path.$teamfolder);
+                $this->delete_dir_contents($path.$teamfolder);
                 if(empty($teams)){
                     //Don't run the function if there are no teams, otherwise it creates an empty PDF
                     redirect('events/pdf/'.$e_id);
@@ -573,11 +664,12 @@
                 }
                 //$pdf->writeHTML($content);
                 $pdf->Output($pdf_path.'Hold.pdf', 'F');
-                $this->deleteDir($qr_path);
+                $this->delete_dir($qr_path);
                 $this->session->set_flashdata('pdf_team_created',"Hold PDF oprettet!");
                 redirect('events/pdf/'.$e_id);
             }
         }
+
 
         //Create assignment PDF
         public function create_ass_pdf($e_id){
@@ -600,12 +692,12 @@
                 $event = $data['event'];
 
                 $assfolder = '/assignment-pdf';
-                $eventfolder = url_title($event['e_name']);
+                $eventfolder = url_title($event['e_name'].'-'.$e_id);
                 $asses = $this->event_assignment_model->get_ass($e_id);
                 
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
                 $this->check_dir_exists($path, $assfolder);            
-                $this->delete_folder_contents($path.$assfolder);
+                $this->delete_dir_contents($path.$assfolder);
                 if(empty($asses)){
                     //Stop running the function if there are no assignments, otherwise it will create an empty PDF
                     redirect('events/pdf/'.$e_id);
@@ -721,9 +813,10 @@
             }
         }
 
+
         //Deletes all files in a folder
-        private function delete_folder_contents($dirpath){
-            if (substr($dirpath, strlen($dirpath) - 1, 1) != '/') {
+        private function delete_dir_contents($dirpath){
+            if(substr($dirpath, strlen($dirpath) - 1, 1) != '/') {
                 $dirpath .= '/';
             }
             $files = glob($dirpath . '*', GLOB_NOSORT);
@@ -732,15 +825,16 @@
             }
         }
 
+
         //Recursive function to delete all files in a folder and the folder itself
-        private function deleteDir($dirpath){
+        private function delete_dir($dirpath){
             if (substr($dirpath, strlen($dirpath) - 1, 1) != '/') {
                 $dirpath .= '/';
             }
             $files = glob($dirpath . '*', GLOB_MARK);
             foreach ($files as $file) {
                 if (is_dir($file)) {
-                    self::deleteDir($file);
+                    self::delete_dir($file);
                 } else {
                     unlink($file);
                 }
@@ -748,43 +842,30 @@
             rmdir($dirpath);
         }
 
+
         //Returns the max possible points in an event
         private function calc_max_points($event_asses){
             $max_points = 0;
-            $ass_points = array();
-            $ass_max_points;
             
-            foreach($event_asses as $event_ass){
-                //For each assignment in the event.. get the answers to the assignment
-                $answers = $this->assignment_model->get_ass_answers($event_ass['ass_id']);
+            //Get all answers for each assignment
+            foreach($event_asses as $ass){
+                $ass_points = array();
+                $answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
+                //Get all points from each answer
                 foreach($answers as $answer){
-                    //Get the points for each individual answer, and store them in an array
                     $ass_points[] = $answer['points'];
                 }
-                //Set the max point for this assignment as the first answer (default, only to avoid possible errors)
-                $ass_max_points = $ass_points[0];
-                foreach($ass_points as $ass_point){
-                    //Compare each answers points to the currently highest answer
-                    if($ass_max_points < $ass_point){
-                        //Replace the max points with a new max
-                        $ass_max_points = $ass_point;
-                    }
-                }
-                if($ass_max_points > 0){
-                    //Only add to the max number of points IF the points are positive
-                    //Negative points != higher max
-                    $max_points += $ass_max_points;
-                }
-                //Reset array
-                $ass_points = array();
+                //Add the highest amount of points to the $max_points
+                $max_points += max($ass_points);
             }
+            //Return highest possible attainable score for the event
             return $max_points;
         }
 
+
         //Returns all PDF files in given folder
-        private function get_pdf($e_id, $subfolder){
-            $event = $this->event_model->get_event($e_id);
-            $eventfolder = url_title($event['e_name']);
+        private function get_pdf($e_id, $e_name, $subfolder){
+            $eventfolder = url_title($e_name.'-'.$e_id);
             $path = APPPATH.'../assets/gen-files/'.$eventfolder.'/'.$subfolder;
             if(is_dir($path)){
                 $files = array_diff(scandir($path), array('.', '..'));

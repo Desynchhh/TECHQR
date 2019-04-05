@@ -16,14 +16,14 @@
             <tr>
                 <th>Opgavenavn</th>
                 <th>Afdeling</th>
-                <th>Lokation</th>
+                <th>Notater</th>
                 <th>Fjern</th>
             </tr>
             <?php foreach($asses as $ass):?>
             <tr>
                 <td><a href="<?= base_url('assignments/view/'.$ass['ass_id']); ?>"><?= $ass['title'] ?></a></td>
                 <td><?= $ass['name'] ?></td>
-                <td><?= $ass['location'] ?></td>
+                <td><?= $ass['notes'] ?></td>
                 <td><a href="<?= base_url('events/remove_ass/'.$e_id.'/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-sm btn-danger">Fjern</button></a></td>
             </tr>
             <?php endforeach;?>

@@ -4,11 +4,6 @@
             $this->load->database();
         }
 
-        public function force_delete(){
-            $this->db->where('team_assignments.team_id >', 0)
-            ->delete('team_assignments');
-        }
-
         //Create team
         public function create_team($e_id, $t_num){
             $data = array(
@@ -64,11 +59,12 @@
         }
 
         //Save the fact that a team has answered an assignment
-        public function answer_assignment($t_id, $ass_id, $ans_id){
+        public function answer_assignment($t_id, $ass_id, $ans_id, $e_id){
             $data = array(
                 'team_id' => $t_id,
                 'assignment_id' => $ass_id,
-                'answer_id' => $ans_id
+                'answer_id' => $ans_id,
+                'event_id' => $e_id
             );
             $this->db->insert('team_assignments', $data);
         }
@@ -103,17 +99,33 @@
             ->delete('students');
         }
 
+        public function get_team_answers($e_id){
+            $this->db->select('
+                team_id as t_id,
+                assignment_id as ass_id,
+                answer_id as ans_id
+            ')
+            ->from('student_actions')//team_assignments
+            ->where('event_id', $e_id)
+            ->where('assignment_id !=', NULL);
+            $query = $this->db->get();
+
+            return $query->result_array();
+        }
+
         //Remove all students / participants
         public function delete_students($t_id){
             $this->db->where('team_id', $t_id)
             ->delete('students');
         }
 
-        //Remove reset all answers
+        /*
+        //Reset all the teams answers
         public function delete_answers($t_id){
             $this->db->where('team_id', $t_id)
             ->delete('team_assignments');
         }
+        */
         
         //Delete all teams from an event
         public function delete_team($e_id, $t_id = NULL){

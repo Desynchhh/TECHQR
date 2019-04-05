@@ -1,22 +1,3 @@
-    <!-- JS script  -->
-<script>
-    function deleteEvent(){
-        input = prompt('Er du sikker på du vil slette dette event?\nIndtast eventnavnet for at bekræfte:');
-        if(input){// != null && input != ""
-            document.getElementById("inputDelete").value = input;
-            document.getElementById("inputFormDelete").submit();
-        }
-    }
-
-    function renameEvent(){
-        input = prompt("Indtast nyt navn til eventet:");
-        if(input){
-            document.getElementById("inputRename").value = input;
-            document.getElementById("inputFormRename").submit();
-        }
-    }
-</script>
-
     <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
@@ -42,12 +23,9 @@
 
     <!-- Manage buttons -->
 <div>
-    <button class="btn btn-warning" onclick="renameEvent()">Omdøb</button>
+    <button class="btn btn-warning" onclick="submitHidden('inputRename', 'formRename')">Omdøb</button>
     <a href="<?= base_url('events/manage/'.$event['e_id']); ?>"><button type="button" class="btn btn-warning">Manage</button></a>
-    <button class="btn btn-danger" onclick="deleteEvent()">Slet event</button>
-</div>
-
-<div>
+    <button class="btn btn-danger" onclick="submitHidden('inputDelete', 'formDelete', 'eventet')">Slet event</button>
 </div>
 
 <br>
@@ -57,12 +35,12 @@
     <a class="btn btn-primary" href="<?= base_url('events'); ?>">Tilbage til oversigt</a>
 </div>
 
-    <!-- Hidden deletion form -->
-<?= form_open('events/delete/'.$event['e_id'], array('id' => 'inputFormDelete'));?>
+    <!-- Hidden delete form -->
+<?= form_open('events/delete/'.$event['e_id'], array('id' => 'formDelete'));?>
     <input type="hidden" name="input" id="inputDelete" value="" />
 <?= form_close();?>
 
-    <!-- Hidden renaming form -->
-<?= form_open('events/edit/'.$event['e_id'], array('id' => 'inputFormRename')); ?>
+    <!-- Hidden rename form -->
+<?= form_open('events/edit/'.$event['e_id'], array('id' => 'formRename')); ?>
     <input type="hidden" name="input" id="inputRename" value="" />
 <?= form_close(); ?>

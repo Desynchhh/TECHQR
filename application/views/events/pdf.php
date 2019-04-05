@@ -6,7 +6,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
 <div class="row">
 
     <div class="col-md-4" style="border-right:1px solid lightgrey;">
-        <?= form_open('events/open_pdf/'.url_title($event['e_name']).'/team-pdf'); ?>
+        <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/team-pdf'); ?>
             <h4>Hold PDF</h4>
             <label>Vælg hold</label>
             <select name="filename" class="form-control">
@@ -23,7 +23,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
     </div>
 
     <div class="col-md-4" style="border-right:1px solid lightgrey;">
-        <?= form_open('events/open_pdf/'.url_title($event['e_name']).'/assignment-pdf'); ?>
+        <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/assignment-pdf'); ?>
             <h4>Opgave PDF</h4>
             <label>Vælg Opgave</label>
             <select name="filename" class="form-control">

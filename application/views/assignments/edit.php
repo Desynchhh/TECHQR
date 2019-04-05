@@ -10,7 +10,7 @@
 
 <h2><?= $title ?></h2>
 <h5><strong>NOTE: Hvis du ændre på dit antal svar muligheder, forsvinder dine indtastede oplysninger!</strong><br>
-Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
+Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
 <hr>
 <?= validation_errors(); ?>
 <?= form_open('assignments/edit/'.$ass['ass_id'].'/'.$options['optionsAmount']); ?>
@@ -33,8 +33,8 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 	</div>
 	<div class="col-md-3">
 		<div class="form-group">
-			<label>Lokation:</label>
-			<input type="text" name="location" placeholder="Lokation" value="<?= $ass['location'] ?>" class="form-control"/>
+			<label>Notater:</label>
+			<input type="text" name="notes" placeholder="Notater" value="<?= $ass['notes'] ?>" class="form-control"/>
 		</div>
 	</div>
 	<div class="col-md-3">

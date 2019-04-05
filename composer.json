@@ -13,7 +13,8 @@
 	"require": {
 		"php": ">=5.3.7",
 		"endroid/qr-code": "^3.5",
-		"tecnickcom/tcpdf": "^6.2"
+		"tecnickcom/tcpdf": "^6.2",
+		"nnnick/chartjs": "^2.8"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

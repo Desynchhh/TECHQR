@@ -8,7 +8,7 @@
 		public function create_ass($answerAmount){
 			$data = array(
 			'title' => $this->input->post('title'),
-			'location' => $this->input->post('location'),
+			'notes' => $this->input->post('notes'),
 			//Change this when a user is able to pick which of their departments they want the assignment in
 			'department_id' => $this->input->post('d_id'),
 			'created_by' => $this->session->userdata('username'),
@@ -27,7 +27,7 @@
 			$edited_at = date('Y-m-d H:i:s');
 			$data = array(
 				'title' => $this->input->post('title'),
-				'location' => $this->input->post('location'),
+				'notes' => $this->input->post('notes'),
 				'edited_by' => $this->session->userdata('username'),
 				'edited_at' => $edited_at
 			);
@@ -63,7 +63,7 @@
 				assignments.edited_by as ass_edited_by,
 				assignments.created_at as ass_created_at,
 				assignments.created_by as ass_created_by,
-				assignments.location,
+				assignments.notes,
 				departments.id as d_id,
 				departments.name as department
 			')
@@ -97,13 +97,13 @@
 			$this->db->select('
 				assignments.id,
 				assignments.title,
-				assignments.location,
+				assignments.notes,
 				assignments.created_by as username,
 				departments.name,
 				departments.id as d_id
 			')
 			->join('departments', 'departments.id = assignments.department_id');
-			if($isAdmin === false){	
+			if($isAdmin === FALSE){	
 				$this->db->where('assignments.department_id', $department_array[0]['d_id']);
 				foreach($department_array as $department){
 					$this->db->or_where('assignments.department_id', $department['d_id']);
@@ -154,7 +154,7 @@
 			$query = $this->db->select('
 				assignments.id,
 				assignments.title,
-				assignments.location,
+				assignments.notes,
 				departments.name,
 			')
 			->where('assignments.department_id', $d_id)

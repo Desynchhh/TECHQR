@@ -13,7 +13,7 @@
             $query = $this->db->select('
                 assignments.id as ass_id,
                 assignments.title,
-                assignments.location,
+                assignments.notes,
                 departments.name
             ')
             ->where('event_id', $e_id)
@@ -39,7 +39,7 @@
             $this->db->select('
                 assignments.id AS ass_id,
                 assignments.title,
-                assignments.location,
+                assignments.notes,
                 departments.name AS d_name
             ')
             ->from('assignments')

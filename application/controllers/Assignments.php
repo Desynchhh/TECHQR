@@ -19,7 +19,7 @@
 			}
 
 			//Pagination config
-			$config['base_url'] = base_url() . 'assignments/index/';
+			$config['base_url'] = base_url('assignments/index/');
 			$config['total_rows'] = $total_rows;
 			$config['per_page'] = 10;
 			$config['uri_segment'] = 3;
@@ -50,7 +50,7 @@
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
-
+			
 			$data['title'] = 'Opgave detaljer';
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			//Check the currently logged in users departments. 
@@ -62,8 +62,10 @@
 					break;
 				}
 			}
-				if($ismember || $this->session->userdata('permissions') == 'Admin'){
+
+			if($ismember || $this->session->userdata('permissions') == 'Admin'){
 					//Allow the user to view the assignment details if they are a member of its department
+					
 					$this->load->view('templates/header');
 					$this->load->view('assignments/view', $data);
 					$this->load->view('templates/footer');
@@ -74,6 +76,7 @@
 		}
 
 		public function delete($ass_id){
+			//Check logged in
 			if(!$this->session->userdata['logged_in']){
 				redirect('login');
 			}
@@ -97,6 +100,7 @@
 					$this->session->set_flashdata('ass_delete_success','Opgave slettet');
 					redirect('assignments');
 				} else {
+					//Names don't match
 					$this->session->set_flashdata('ass_delete_fail','Den indtastede titel matcher ikke opgavens titel!');
 					redirect('assignments/view/'.$ass_id);
 				}
@@ -108,6 +112,7 @@
 		}
 
 		public function create($answerAmount = 1){
+			//Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
 			}

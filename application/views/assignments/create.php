@@ -10,11 +10,13 @@
 
 <h2><?= $title ?></h2>
 <h5><strong>NOTE: Hvis du ændre på dit antal svar muligheder, forsvinder dine indtastede oplysninger!</strong><br>
-Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
+Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
 <hr>
+
 <?= validation_errors(); ?>
 <?= form_open('assignments/create/'.$options['optionsAmount']); ?>
 <div class="row">
+			<!-- Amount of answers dropdown -->
 		<div class="col-md-3">
 			<label>Antal svarmuligheder:</label>
 			<!-- fill the combobox with available number of answers an assignment can have -->
@@ -25,18 +27,21 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 				<?php endforeach; ?> 
 			</select>
 		</div>
+			<!-- Title box -->
 	<div class="col-md-3">
 		<div class="form-group">
 			<label>Opgave titel:</label>
 			<input type="text" id="title" name="title" placeholder="Opgave titel" class="form-control"/>
 		</div>
 	</div>
+			<!-- Note field box -->
 	<div class="col-md-3">
 		<div class="form-group">
-			<label>Lokation:</label>
-			<input type="text" id="location" name="location" placeholder="Lokation" class="form-control"/>
+			<label>Notater:</label>
+			<input type="text" id="notes" name="notes" placeholder="Notater" class="form-control"/>
 		</div>
 	</div>
+			<!-- Department dropdown -->
 	<div class="col-md-3">
 		<div class="form-group">
 			<label>Afdeling:</label>
@@ -48,6 +53,7 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 			</select>
 		</div>
 	</div>
+
 </div>
 		<!-- Create as many input fields as the user wants -->
 <div class="row">
@@ -65,5 +71,7 @@ Lokations feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL
 </div>
 <input type="submit" value="Opret" class="btn btn-secondary"/>
 <?= form_close(); ?>
-
-<a href="<?= base_url('assignments'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+		<!-- Back button -->
+<div>
+	<a href="<?= base_url('assignments'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+</div>

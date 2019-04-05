@@ -5,7 +5,7 @@
                 redirect('home');
             }
             //Pagination config
-            $config['base_url'] = base_url().'users/index/';
+            $config['base_url'] = base_url('users/index/');
             $config['total_rows'] = $this->db->count_all_results('users');
             $config['per_page'] = 10;
             $config['uri_segment'] = 3;
@@ -22,6 +22,7 @@
             $this->load->view('users/index', $data);
             $this->load->view('templates/footer');
         }
+
 
         public function view($id = NULL){
             if(!$this->session->userdata('logged_in')){
@@ -47,6 +48,7 @@
                 $this->load->view('templates/footer');
             }
         }
+
 
         public function login(){
             if($this->session->userdata('logged_in')){
@@ -79,6 +81,8 @@
             }
         }
 
+
+        //Clear session->userdata
         public function logout(){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -92,6 +96,8 @@
             redirect('users/login');
         }
 
+
+        //Create new user in DB
         public function register(){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
@@ -123,7 +129,9 @@
             }
         }
 
-        public function edit($id){
+
+        //Edit user info (update users table)
+        public function edit($u_id){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
                     redirect('home');
@@ -132,7 +140,7 @@
             }
 
             $data['title'] = 'Rediger bruger';
-            $data['user'] = $this->user_model->get_user($id);
+            $data['user'] = $this->user_model->get_user($u_id);
             $data['departments'] = $this->department_model->get_department();
             $newpass = FALSE;
 
@@ -164,12 +172,12 @@
                         $this->session->userdata['username'] = $this->input->post('username');
                     }
                     //Update 'users' table in DB
-                    $this->user_model->edit_user($id);
+                    $this->user_model->edit_user($u_id);
                 }
                 //Change password if validation for new password passed
                 if($newpass){
                     $enc_pass = $this->hash_password($this->input->post('password'));
-                    $this->user_model->change_password($id, $enc_pass);
+                    $this->user_model->change_password($u_id, $enc_pass);
                 }
                 //Assign a department to the user IF the department field is filled out (combo-box)
                 if(!empty($this->input->post('d_id'))){
@@ -181,35 +189,13 @@
                     }
                 }
                 $this->session->set_flashdata('user_edited','Brugeren er blevet opdateret');
-                redirect('users/view/'.$id);
+                redirect('users/view/'.$u_id);
             }
         }
-        
-        /*  DEPRECATED. don't forget to delete views/users/confirm_delete.php
-        public function confirm_delete($u_id){
-            if(!$this->session->userdata('logged_in')){
-                if($this->session->userdata('permissions') != 'Admin'){
-                    redirect('users/view/'.$this->session->userdata('u_id'));
-                }
-                redirect('login');
-            }
-            
-            $data['title'] = "SLET BRUGER?";
-            $data['user'] = $this->user_model->get_user($u_id);
 
-            $this->form_validation->set_rules('username','"brugernavn"','required');
 
-            if($this->form_validation->run() === FALSE || $this->input->post('username') != $data['user']['username']){
-                $this->load->view('templates/header');
-                $this->load->view('users/confirm_delete', $data);
-                $this->load->view('templates/footer');
-            } else {
-                $this->delete($u_id);
-            }
-        }
-        */
-
-        function delete($u_id, $input_username){
+        //Delete user from the system
+        public function delete($u_id){
             //Check user us logged in
             if(!$this->session->userdata('logged_in')){
                 //Check user is admin
@@ -221,23 +207,27 @@
 
             //Check the inputted username matches the one in the DB
             $user = $this->user_model->get_user($u_id);
-            if($input_username == $user['username']){
+            $input = $this->input->post('input');
+            if($input == $user['username']){
                 //Username matches
                 $this->user_model->delete_user($u_id);
-                $this->session->set_flashdata('user_delete_success','Bruger slettet');
+                $this->session->set_flashdata('user_delete_success', 'Bruger slettet');
                 redirect('users');
             } else {
                 //Username does not match
                 $this->session->set_flashdata('user_delete_fail', 'Indtastet brugernavn matcher ikke!');
                 redirect('users/view/'.$u_id);
             }
-
         }
 
+
+        //Change users password
         public function change_password(){
-            $this->form_validation->set_rules('old_password','"nuværende kodeord"','required|callback_check_space');
-            $this->form_validation->set_rules('new_password','"nyt kodeord"','required|callback_check_space');
-            $this->form_validation->set_rules('new_password2','"bekræft kodeord"','matches[new_password]');
+            //Set validation rules
+            $this->form_validation->set_rules('old_password', '"nuværende kodeord"','required|callback_check_space');
+            $this->form_validation->set_rules('new_password', '"nyt kodeord"','required|callback_check_space');
+            $this->form_validation->set_rules('new_password2', '"bekræft kodeord"','matches[new_password]');
+            
             if($this->input->post('new_password') === $this->input->post('new_password2') && !empty($this->input->post('new_password'))){
                 if(password_verify($this->input->post('old_password'), $this->user_model->get_password())){
                     //Old password matches
@@ -249,6 +239,7 @@
                     $this->session->set_flashdata('old_password_mismatch','Det indtastede gamle kodeord passer ikke med det i systemet');
                 }
             } else {
+                //new_password and new_password2 don't match
                 $this->session->set_flashdata('new_password_mismatch','De indtastede nye kodeord passer ikke med hindanden');
             }
             redirect('users/view/'.$this->input->post('id'));
@@ -259,6 +250,7 @@
         private function hash_password($password){
             return password_hash($password, PASSWORD_DEFAULT);
         }
+
 
         //Update userdata function
         private function update_userdata($username){
@@ -274,6 +266,7 @@
             $this->session->set_userdata($userdata);
         }
 
+
         //CUSTOM VALIDATION RULES BELOW THIS POINT
         function check_space($str){
             $this->form_validation->set_message('check_space','No field can contain a space');
@@ -286,6 +279,7 @@
                 return true;
             }
         }
+
 
         function check_user_exists($username){
             $this->form_validation->set_message('check_user_exists','Det brugernavn findes allerede i systemet.');
@@ -305,6 +299,7 @@
              }
         }
 
+        
         function check_email_exists($email){
             $this->form_validation->set_message('check_email_exists','Den email findes allerede i systemet.');
             //This part is used when an existing user is being edited
@@ -314,9 +309,9 @@
                     return true;
                 }
             }
-            //This part is used when a new user is being registered OR when an existing user's email is æchanged
+            //This part is used when a new user is being registered OR when an existing user's email is changed
             //Ensure the new email address does not already exist within the DB
-             if($this->user_model->check_email_exists($email)){
+            if($this->user_model->check_email_exists($email)){
                 return false;
             } else {
                 return true;

@@ -5,6 +5,8 @@
             $this->load->database();
         }
 
+
+        //Create new row in DB
         public function create_department(){
             //create data array with relevant info
             $data = array(
@@ -14,17 +16,21 @@
             return $this->db->insert('departments', $data);
         }
 
-        public function edit_department($id = NULL){
+
+        //Rename department
+        public function edit_department($d_id = NULL){
             $data = array(
-                'name' => $this->input->post('name')
+                'name' => $this->input->post('input')
             );
-            $this->db->where('id', $id);
+            $this->db->where('id', $d_id);
             $this->db->update('departments', $data);
             return true;
         }
 
-        public function get_department($id = NULL, $limit = FALSE, $offset = FALSE){
-            if($id == NULL){
+
+        //Get one or all departments from DB
+        public function get_department($d_id = NULL, $limit = FALSE, $offset = FALSE){
+            if($d_id == NULL){
                 if($limit){
                     $this->db->limit($limit, $offset);
                 }
@@ -34,11 +40,13 @@
                 return $query->result_array();
             } else {
                 //Get specific department
-                $query = $this->db->get_where('departments', array('id' => $id));
+                $query = $this->db->get_where('departments', array('id' => $d_id));
                 return $query->row_array();
             }
         }
 
+
+        //Delete department from DB
         public function delete_department($id){
             $this->db->where('id', $id);
             $this->db->delete('departments');
@@ -48,12 +56,16 @@
             return true;
         }
 
+        
+        //Check entered department name already exists
         public function check_department_exists($d_name){
             $result = $this->db->get_where('departments', array('name' => $d_name));
             if(empty($result->row_array())){
-                return false;
-            } else {
+                //Department exist
                 return true;
+            } else {
+                //Department doesn't exists
+                return false;
             }
         }
     }
