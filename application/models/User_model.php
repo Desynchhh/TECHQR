@@ -23,7 +23,7 @@
             $this->db->insert('user_departments', $data);
         }
 
-        public function get_user($u_id = NULL, $limit = FALSE, $offset = FALSE){
+        public function get_user($u_id = NULL, $limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'DESC'){
             if($u_id === NULL){
                 if($limit){
                     $this->db->limit($limit, $offset);
@@ -34,7 +34,8 @@
                     users.username,
                     users.email,
                     users.permissions
-                    ')
+                ')
+                ->order_by($sort_by, $order_by)
                 ->from('users')
                 ->order_by('users.username', 'ASC');
                 $query = $this->db->get();
@@ -63,7 +64,7 @@
                 );
             $this->db->where('id',$u_id)
             ->update('users', $data);
-            return true;
+            //return true;
         }
 
         public function delete_user($u_id){
@@ -72,7 +73,7 @@
 
             $this->db->where('user_id', $u_id)
             ->delete('user_departments');
-            return true;
+            //return true;
         }
 
         public function get_password(){
@@ -89,7 +90,7 @@
             );
             $this->db->where('id', $u_id)
             ->update('users', $data);
-            return true;
+            //return true;
         }
 
         public function login($username){
@@ -103,25 +104,25 @@
             if($query->num_rows() == 1){
                 return $query->row_array();
             } else {
-                return false;
+                return FALSE;
             }
         }
 
         public function check_user_exists($username){
             $query = $this->db->get_where('users', array('username' => $username));
             if(empty($query->row_array())){
-                return false;
+                return FALSE;
             } else {
-                return true;
+                return TRUE;
             }
         }
 
         public function check_email_exists($email){
             $query = $this->db->get_where('users',array('email' => $email));
             if(empty($query->row_array())){
-                return false;
+                return FALSE;
             } else {
-                return true;
+                return TRUE;
             }
         }
     }

@@ -14,7 +14,7 @@
         }
 
         //Gets either a single event or all events
-        public function get_event($e_id, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE){
+        public function get_event($e_id, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $sort_by = 'e_name', $order_by = 'DESC'){
             //Get all events
             if($limit){
 				$this->db->limit($limit, $offset);
@@ -40,7 +40,7 @@
                 $this->db->where('events.id', $e_id);
             }
             $this->db->from('events');
-            $this->db->order_by('events.created_at', 'DESC');
+            $this->db->order_by($sort_by, $order_by);
             $query = $this->db->get();
             if($department_array){
                 return $query->result_array();

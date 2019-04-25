@@ -47,10 +47,26 @@
 
         //Get all users who are NOT assigned to the specified department
         public function get_department_not_members($d_id, $limit = FALSE, $offset = FALSE){
+            /*
+            SELECT user_id FROM user_departments
+            WHERE department_id != $d_id
+            GROUP BY user_id
+            */
             if($limit){
                 $this->db->limit($limit, $offset);
             }
 
+            $this->db->select('
+                user_id as u_id,
+                users.username
+            ')
+            ->from('user_departments')
+            ->join('users', 'users.id = user_departments.user_id')
+            ->where('user_departments.department_id !=', $d_id)
+            ->group_by('user_departments.user_id');
+            $query = $this->db->get();
+
+            /*
             $this->db->distinct('user_departments.user_id')
             ->select('
                 users.id as u_id,
@@ -60,7 +76,7 @@
             ->where('user_departments.department_id !=', $d_id)
             ->from('user_departments');
             $query = $this->db->get();
-
+            */
             return $query->result_array();
         }
 
@@ -69,7 +85,7 @@
             $this->db->where('user_id', $u_id)
             ->where('department_id', $d_id)
             ->delete('user_departments');
-            return true;
+            //return true;
         }
 
         //Check if the user is already a member of the department they are being assigned to
@@ -80,9 +96,9 @@
             );
             $result = $this->db->get_where('user_departments', $data);
             if(empty($result->row_array())){
-                return false;
+                return FALSE;
             } else {
-                return true;
+                return TRUE;
             }
         }
     }

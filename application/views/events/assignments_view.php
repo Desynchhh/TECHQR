@@ -14,9 +14,9 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Opgavenavn</th>
+                <th><a href="<?= base_url('events/assignments_view/'.$e_id.'/'.$offset.'/'.$order_by.'/title'); ?>" >Opgavenavn</a></th>
                 <th>Afdeling</th>
-                <th>Notater</th>
+                <th><a href="<?= base_url('events/assignments_view/'.$e_id.'/'.$offset.'/'.$order_by.'/notes'); ?>" >Notater</a></th>
                 <th>Fjern</th>
             </tr>
             <?php foreach($asses as $ass):?>

@@ -3,6 +3,7 @@
 
 <head>
 	<title>TECHQR</title>
+	<link rel="shortcut icon" type="image/png" href="<?= base_url('assets/favicon.png')?>"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="<?= base_url('assets/js/submit-hidden.js')?>"></script>
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/bootstrap.min.css')?>">
@@ -17,9 +18,7 @@
 <!-- students and teachers/admins get different navbars, for security reasons -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<a class="navbar-brand" href="<?= base_url(); ?>">TECHQR</a>
-	<?php if(isset($_COOKIE['TechQR'])):?>
-	<!-- User is a student -->
-	<?php else:?>
+	<?php if(!isset($_COOKIE['TechQR'])):?>
 	<!-- User is a teacher or admin -->
 		<ul class="navbar-nav mr-auto">
 			<!-- gets the base_url from /config/config.php -->
@@ -146,6 +145,9 @@
 	<?php endif; ?>
 	<?php if($this->session->flashdata('event_removed_ass')): ?>
 		<?= '<p class="alert alert-danger">'.$this->session->flashdata('event_removed_ass').'</p>'; ?>
+	<?php endif; ?>
+	<?php if($this->session->flashdata('event_reset')): ?>
+		<?= '<p class="alert alert-success">'.$this->session->flashdata('event_reset').'</p>'; ?>
 	<?php endif; ?>
 	<?php if($this->session->flashdata('pdf_ass_created')): ?>
 		<?= '<p class="alert alert-success">'.$this->session->flashdata('pdf_ass_created').'</p>'; ?>

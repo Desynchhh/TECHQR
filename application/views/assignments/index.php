@@ -15,11 +15,12 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 	<table class="table">
 		<tbody>
 			<tr>
-				<th>Opgavenavn</th>
-				<th>Notater</th>
-				<th>Afdeling</th>
-				<th>Oprettet af</th>
+				<th><a href="<?= base_url('assignments/index/'.$offset.'/'.$order_by.'/title'); ?>">Opgavenavn</a></th>
+				<th><a href="<?= base_url('assignments/index/'.$offset.'/'.$order_by.'/notes'); ?>">Notater</a></th>
+				<th><a href="<?= base_url('assignments/index/'.$offset.'/'.$order_by.'/name'); ?>">Afdeling</a></th>
+				<th><a href="<?= base_url('assignments/index/'.$offset.'/'.$order_by.'/created_by'); ?>">Oprettet af</a></th>
 			</tr>
+			
 			<!-- create <tr> with <td> children for each assignment in the DB -->
 			<?php foreach($asses as $ass): ?>
 				<tr>
@@ -31,8 +32,17 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 			<?php endforeach;?>
 		</tbody>
 	</table>
+
 	<!-- Pagination -->
 	<div class="pagination-links">
 		<?= $this->pagination->create_links(); ?>
+		<select name="paginate">
+			<option value="5">5</option>
+			<option value="10">10</option>
+			<option value="25">25</option>
+			<option value="50">50</option>
+			<option value="100">100</option>
+			<option value="NULL">Alle</option>
+		</select>
 	</div>
 </div>

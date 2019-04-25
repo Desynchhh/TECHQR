@@ -1,6 +1,7 @@
 <?php
     class Users extends CI_Controller{
-        public function index($offset = 0){
+        public function index($offset = 0, $order_by = 'DESC', $sort_by = 'username'){
+            //Check is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
@@ -14,9 +15,15 @@
             $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
 
+            //Set data array
             $data['title'] = 'Bruger oversigt';
-            $data['users'] = $this->user_model->get_user(NULL, $config['per_page'], $offset);
-
+            $data['offset'] = $offset;
+            $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+            $data['users'] = $this->user_model->get_user(NULL, $config['per_page'], $offset, $sort_by, $order_by);
+            foreach($data['users'] as $user){
+                $data['user_depts'][] = $this->user_department_model->get_user_departments($user['u_id']);
+            }
+            
             //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);

@@ -18,11 +18,11 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 <table class="table">
 	<tbody>
 		<tr>
-			<th>Brugernavn</th>
-			<th>Type</th>
+			<th><a href="<?= base_url('users/index/'.$offset.'/'.$order_by.'/username'); ?>">Brugernavn</a></th>
+			<th><a href="<?= base_url('users/index/'.$offset.'/'.$order_by.'/permissions'); ?>" >Type</a></th>
 			<th>Afdelinger</th>
 			<th>Sidste handling</th>
-			<th>Email</th>
+			<th><a href="<?= base_url('users/index/'.$offset.'/'.$order_by.'/email'); ?>" >Email</a></th>
 		</tr>
 		<!-- create a <tr> with <td> children for each user in the database -->
 		<?php foreach($users as $user): ?>
@@ -30,10 +30,9 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 			<td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
 			<td><?= $user['permissions'] ?></td>
 			<!-- get all departments for each individual user and show them in the table -->
-			<?php $u_departments = $this->user_department_model->get_user_departments($user['u_id'])?>
 			<td>
-				<?php foreach($u_departments as $department):?>
-					<?= $department['name'] ?><br>
+				<?php foreach($user_depts[array_search($user, $users)] as $department):?>
+					<a href="<?= base_url('departments/view/'.$department['d_id']); ?>" ><?= $department['name'] ?></a><br>
 				<?php endforeach;?>
 			</td>
 			<td><!-- INSERT LAST_ACTION --></td>

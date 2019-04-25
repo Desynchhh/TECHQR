@@ -7,22 +7,19 @@
 		//Create an assignment in the DB
 		public function create_ass($answerAmount){
 			$data = array(
-			'title' => $this->input->post('title'),
-			'notes' => $this->input->post('notes'),
-			//Change this when a user is able to pick which of their departments they want the assignment in
-			'department_id' => $this->input->post('d_id'),
-			'created_by' => $this->session->userdata('username'),
-			'edited_by' => $this->session->userdata('username')
-			//add the creating users "id" in the "created_by" column
-			//add the creating users departments "id" in the "department_id" column
+				'title' => $this->input->post('title'),
+				'notes' => $this->input->post('notes'),
+				'department_id' => $this->input->post('d_id'),
+				'created_by' => $this->session->userdata('username'),
+				'edited_by' => $this->session->userdata('username')
 			);
-			$this->db->insert('assignments',$data);
+			$this->db->insert('assignments', $data);
 
 			$ass_id = $this->db->insert_id();
 			$this->insert_answers($ass_id, $answerAmount);
 		}
 
-		//Update an assignment, delete all answers from the DB, and insert the new answers
+		//Update an assignment, delete all answers from the DB, and insert the new  answers
 		public function edit_ass($ass_id, $answerAmount){
 			$edited_at = date('Y-m-d H:i:s');
 			$data = array(
@@ -56,7 +53,7 @@
 		public function get_ass_view($ass_id){
 			$returnarray = array();
 			//Get everything related to the assignment itself
-			$query = $this->db->select('
+			$this->db->select('
 				assignments.id as ass_id,
 				assignments.title as ass_title,
 				assignments.edited_at,
@@ -69,25 +66,25 @@
 			')
 			->where('assignments.id', $ass_id)
 			->join('departments','departments.id = assignments.department_id')
-			->from('assignments')
-			->get();
+			->from('assignments');
+			$query = $this->db->get();
 			$returnarray = $query->row_array();
 			
-			//Get all answers
-			$query = $this->db->select('
+			//Get all answers to the assignment
+			$this->db->select('
 				answers.id as ans_id,
 				answers.answer,
 				answers.points
 			')
 			->where('answers.assignment_id', $ass_id)
-			->from('answers')
-			->get();
+			->from('answers');
+			$query = $this->db->get();
 			$returnarray[] = $query->result_array();
 			return $returnarray;
 		}
 
-		//Get all assignments wihout their answers
-		public function get_ass_index($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL){
+		//Get all assignments without their answers
+		public function get_ass_index($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL, $sort_by, $order_by){
 			if($limit){
 				$this->db->limit($limit, $offset);
 			}
@@ -110,7 +107,7 @@
 				}
 			}
 			$this->db->from('assignments')
-			->order_by('assignments.created_at', 'DESC');
+			->order_by($sort_by, $order_by);
 			$query = $this->db->get();
 			return $query->result_array();
 			} else {
@@ -167,7 +164,7 @@
 
 		//Delete all assignments in a department
 		public function delete_department_ass($d_id){
-			$query = $this->db->get_where('assignments',array('department_id' => $d_id));
+			$query = $this->db->get_where('assignments', array('department_id' => $d_id));
 			if(!empty($query->row_array())){
 				$this->db->delete('assignments');
 			}
@@ -175,13 +172,13 @@
 
 		//Check if a user has created any assignments, so the proper fields can be changed (used when changing username)
 		public function check_created_by($oldname){
-			$query = $this->db->get_where('assignments',array('created_by' => $oldname));
+			$query = $this->db->get_where('assignments', array('created_by' => $oldname));
 			if(empty($query->row_array())){
 				//Username has not created any assignments
-                return false;
+                return FALSE;
             } else {
 				//Username has created assignments
-                return true;
+                return TRUE;
             }
 		}
 		
@@ -196,10 +193,10 @@
 			$query = $this->db->get_where('assignments', array('edited_by' => $oldname));
 			if(empty($query->row_array())){
 				//Username has not edited any assignments
-                return false;
+                return FALSE;
             } else {
 				//Username has edited assignments
-                return true;
+                return TRUE;
             }
 		}
 

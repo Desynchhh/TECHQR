@@ -1,12 +1,12 @@
-        <script>
-            $(document).ready(function(){
-				$('#answerAmount').change(function(){
-					//Selected value
-					var optionsAmount = $(this).val();
-					window.location = '<?= base_url("assignments/create/"); ?>'+optionsAmount;
-				});
-			});
-        </script>
+<script>
+	$(document).ready(function(){
+		$('#answerAmount').change(function(){
+			//Selected value
+			var optionsAmount = $(this).val();
+			window.location = '<?= base_url("assignments/create/"); ?>'+optionsAmount;
+		});
+	});
+</script>
 
 <h2><?= $title ?></h2>
 <h5><strong>NOTE: Hvis du ændre på dit antal svar muligheder, forsvinder dine indtastede oplysninger!</strong><br>

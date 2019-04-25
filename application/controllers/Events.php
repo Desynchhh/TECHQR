@@ -1,6 +1,6 @@
 <?php
     class Events extends CI_Controller{
-        public function index($offset = 0){
+        public function index($offset = 0, $order_by = 'ASC', $sort_by = 'e_name'){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
             redirect('login');
@@ -27,8 +27,10 @@
 
             //Data variables
             $data['title'] = "Event oversigt";
-            $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset);
-
+            $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset, $sort_by, $order_by);
+            $data['offset'] = $offset;
+            $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+            
             //Load page
             $this->load->view('templates/header');
             $this->load->view('events/index', $data);
@@ -143,11 +145,19 @@
         }
 
 
-        public function stats($e_id){
-            $data['title'] = 'Stats - TEST';
-            $data['e_id'] = $e_id;
+        public function stats($e_id, $offset = 0){
+            //Pagination config
+            $config['base_url'] = base_url().'events/stats/'.$e_id;
+            $config['total_rows'] = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
+            $config['per_page'] = 3;
+            $config['uri_segment'] = 4;
+            $config['attributes'] = array('class' => 'pagination-link');
+            $config['first_link'] = 'Første';
+            $config['last_link'] = 'Sidste';
+            $this->pagination->initialize($config);
+
             //Get all assignments in the event
-            $event_ass = $this->event_assignment_model->get_ass($e_id);
+            $event_ass = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset);
             //Get all answers made by the students
             $team_ans = $this->team_model->get_team_answers($e_id);
             //Get all answers to the events assignments
@@ -155,49 +165,14 @@
             foreach($event_ass as $ass){
                 $event_ans[] = $this->assignment_model->get_ass_answers($ass['ass_id']);
             }
-
-            //Sort team_ans by assignment_id
-            $sorted_answers = array();
-            foreach($team_ans as $team_answer){
-                if(!in_array($team_answer['ass_id'], array_column($sorted_answers, 'ass_id'))){
-                    array_push($sorted_answers, $team_answer);
-                } else {
-                    array_push(
-                        $sorted_answers[in_array($team_answer['ass_id'], 
-                            array_column($sorted_answers, 'ass_id'))], $team_answer);
-                }
-            }
-            /*
-            //TEST displaying data in arrays
-            var_export(($sorted_answers));
-            echo'<br>';
-            for($i = 0; $i < count($event_ass); $i++){
-                echo 'Assignment:<br>';
-                var_export($event_ass[$i]);
-                echo '<br><br>';
-                echo 'Answers:<br>';
-                for($o = 0; $o < count($event_ans[$i]); $o++){
-                    var_export($event_ans[$i][$o]);
-                    echo '<br>';
-                }
-            }
-            */
-            echo '<br><br>Team Answers:<br>';
-            var_export($team_ans);
+            
             //Set data variables
+            $event = $this->event_model->get_event($e_id);
+            $data['title'] = 'Stats - '.$event['e_name'];
+            $data['e_id'] = $e_id;
             $data['team_ans'] = $team_ans;
             $data['event_ass'] = $event_ass;
             $data['event_ans'] = $event_ans;
-            echo '<br><br>';
-            foreach($event_ass as $ass){
-                var_export($ass);
-                echo '<br>';
-            }
-            echo '<br><br>';
-            foreach($event_ans as $ans){
-                var_export($ans);
-                echo '<br>';
-            }
 
             //Load the page
             $this->load->view('templates/header');
@@ -216,7 +191,7 @@
             $data['title'] = 'Manage - '.$event['e_name'];
             $data['e_id'] = $e_id;
             $data['teams'] = $this->team_model->get_teams($e_id);
-            $data['empty_teams'] = $this->check_teams($e_id);
+            $data['empty_teams'] = $this->check_teams($e_id, $data['teams']);
             $data['message'] = $this->event_model->get_message($e_id);
 
             //Load page
@@ -253,20 +228,17 @@
 
 
         //Check if there are any teams without members. Return the empty teams.
-        public function check_teams($e_id){
+        public function check_teams($e_id, $teams){
             //Update DB; Remove all students past the expiredate
             $this->team_model->check_expire_date();
             //Find all empty/unmanned teams
-            $teams = $this->team_model->get_teams($e_id);
             $empty_teams = array();
             foreach($teams as $team){
-                //$members = $this->team_model->get_team_members($team['t_id']);
                 if($this->db->where('students.team_id', $team['t_id'])->count_all_results('students') <= 0){
                     $empty_teams[] = $team['t_num'];
                 }
             }
             return $empty_teams;
-            //$this->manage($e_id, $empty_teams);
         }
 
 
@@ -279,7 +251,7 @@
 
 
         //Loads the page where assignments can be added to the event, so teams can answer it.
-        public function assignments_add($e_id, $offset = 0){
+        public function assignments_add($e_id, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -294,6 +266,7 @@
                 }
             }
 
+            //Run if the user is a member of the events department or is admin
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination config
                 $config['base_url'] = base_url('events/assignments/add/'.$e_id.'/');
@@ -305,11 +278,13 @@
                 $config['last_link'] = 'Sidste';
                 $this->pagination->initialize($config);
                 
-                //Run if the user is a member of the events department or is admin
+                //Set data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
-                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset);
-                
+                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset, $sort_by, $order_by);
+                $data['offset'] = $offset;
+                $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
+
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_add', $data);
@@ -322,7 +297,7 @@
 
 
         //Views all the assignments added to the event
-        public function assignments_view($e_id, $offset = 0){
+        public function assignments_view($e_id, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -350,8 +325,9 @@
                 //Data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
-                $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset);
-                
+                $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset, $sort_by, $order_by);
+                $data['offset'] = $offset;
+                $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_view', $data);
@@ -465,6 +441,7 @@
             //Get all teams in the event
             $teams = $this->team_model->get_teams($e_id);
 
+            $this->event_assignment_model->reset_last_answered($e_id);
             $this->student_action_model->delete_actions($e_id);
             $this->event_model->update_message($e_id, '');
             //Reset teams & answers
@@ -473,19 +450,20 @@
                 $this->team_model->delete_students($team['t_id']);
                 $this->team_model->update_score($team['t_id'], 0);
             }
+            $this->session->set_flashdata('event_reset', 'Eventet er blevet resat');
             redirect('events/manage/'.$e_id);
         }
 
 
         //Views all actions taken by teams in the event
-        public function actions($e_id, $offset = 0){
+        public function actions($e_id, $offset = 0, $order_by = 'DESC', $sort_by = 'created_at'){
             //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = false;
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
                     $ismember = TRUE;
@@ -505,8 +483,11 @@
                 $this->pagination->initialize($config);
                 
                 //Set data variables
-                $data['title'] = 'Handlinger - ' . $data['event']['e_name'];
-                $data['actions'] = $this->student_action_model->get_actions($e_id, $config['per_page'], $offset);
+                $data['title'] = 'Handlinger - '.$data['event']['e_name'];
+                $data['actions'] = $this->student_action_model->get_actions($e_id, $config['per_page'], $offset, $sort_by, $order_by);
+                $data['e_id'] = $data['event']['e_id'];
+                $data['offset'] = $offset;
+                $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
 
                 //Load page
                 $this->load->view('templates/header');
@@ -577,7 +558,7 @@
             
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = false;
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
                     $ismember = TRUE;
@@ -586,17 +567,23 @@
             }
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                set_time_limit ( 300 );
                 //Enable QR and PDF libraries
                 require_once 'vendor/autoload.php';
-                $teamfolder = '/team-pdf/';
+                //Store event data in a more easily accessible variable
                 $event = $data['event'];
-
-                $eventfolder = url_title($event['e_name'].'-'.$e_id);
-                $teams = $this->team_model->get_teams($e_id);
                 
+                //Set folder names & path
+                $eventfolder = url_title($event['e_name'].'-'.$e_id);
+                $teamfolder = '/team-pdf/';
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
+                
+                //Ensure folders exist and are empty
                 $this->check_dir_exists($path, $teamfolder);
                 $this->delete_dir_contents($path.$teamfolder);
+                
+                //Get teams
+                $teams = $this->team_model->get_teams($e_id);
                 if(empty($teams)){
                     //Don't run the function if there are no teams, otherwise it creates an empty PDF
                     redirect('events/pdf/'.$e_id);
@@ -607,25 +594,26 @@
                 $pdf_path = $path.$teamfolder;
                 $url_template = base_url('teams/join/'.$e_id.'/');
                 
-                //Create a QR Code for each team in the event, with a correct URL that calls the correct Controller when scanned.
-                mkdir($qr_path);
+                //Create a QR Code for each team in the event, with a URL that calls the correct Controller when scanned.
+                mkdir($qr_path, 0777, TRUE);
                 $content_array = array();
                 foreach($teams as $team){
                     //Set the URL to the 'join()' function in the 'Teams' Controller.
                     //event_id and team_id are given as parameters.
                     $url = $url_template.$team['t_num'];
                     
-                    //Instantiate a new Endroid\QrCode object. Takes the URL the Code takes you to as a parameter
+                    //Instantiate a new Endroid\QrCode Object. Takes the URL the Code takes you to as a parameter
                     $qrcode = new Endroid\QrCode\QrCode($url);
                     //Qr Code settings
                     $qrcode->setSize(150);
                     $qrcode->setMargin(10);
                     $qrcode->setEncoding('UTF-8');
 
-                    //Save the QR Code
+                    //Create QR Code image file
                     $qr_filename = 'Hold-'.$team['t_num'].'.png';
                     $qrcode->writeFile($qr_path.$qr_filename);
                     
+                    //Store text, image, and layout for each page in the PDF
                     $content = '	
                         <div align="center">
                             <h1>Tilføj min mobil til hold '.$team["t_num"].'</h1>
@@ -635,7 +623,6 @@
                         </div>
                     ';
                     $content_array[] = $content;
-                    //unlink($path.$qr_filename);
                 }
                 
                 //PDF settings
@@ -655,17 +642,16 @@
                     $pdf->AddPage();
                     //Go the the last page
                     $pdf->LastPage();
-                    
+                    //Insert QR Code in PDF file
                     $pdf->writeHTML($content_array[$team['t_num']-1]);
-                  //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
-                    //$pdf->MultiCell(55, 5, 'Tilføj min mobil til hold '.$team['t_num'], 0, 'C', 0, 1);
-                    //$pdf->Image($qr_path.$qr_filename);
-                    //unlink($path.$qr_filename);
                 }
-                //$pdf->writeHTML($content);
+                //Save PDF file to path.
                 $pdf->Output($pdf_path.'Hold.pdf', 'F');
+                //Delete temp QR Code folder
                 $this->delete_dir($qr_path);
+                
                 $this->session->set_flashdata('pdf_team_created',"Hold PDF oprettet!");
+                set_time_limit (ini_get('max_executuion_time'));
                 redirect('events/pdf/'.$e_id);
             }
         }
@@ -678,7 +664,7 @@
             }
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = false;
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
                     $ismember = TRUE;
@@ -687,8 +673,9 @@
             }
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                set_time_limit(300);
                 //Enable PDF and QR libraries
-                require_once 'vendor\autoload.php';
+                require_once 'vendor/autoload.php';
                 $event = $data['event'];
 
                 $assfolder = '/assignment-pdf';
@@ -703,32 +690,35 @@
                     redirect('events/pdf/'.$e_id);
                 }
 
+                //URL
+                $url_template = base_url('teams/answer/'.$e_id.'/');
+                //Get fonts
+                $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
+                $main_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
                 //Create a PDF for each assignment containing a QR code for each answer
                 foreach($asses as $ass){
                     //PDF settings
                     $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
                     $pdf->SetCreator(PDF_CREATOR);
                     $pdf->SetTitle('Assignment PDF');
-                    $pdf->SetAutoPageBreak(true, 10);
-                    $pdf->setCellPaddings(1, 1, 1, 1);
-                    $pdf->setCellMargins(1, 1, 1, 1);
-                    $pdf->SetPrintHeader(false);
-                    $pdf->SetPrintFooter(false);
+                    $pdf->SetAutoPageBreak(TRUE, 10);
+                    //$pdf->setCellPaddings(1, 1, 1, 1);
+                    //$pdf->setCellMargins(1, 1, 1, 1);
+                    $pdf->SetPrintHeader(FALSE);
+                    $pdf->SetPrintFooter(FALSE);
                     //MUST add a new page, otherwise it will throw an error due to not containing any pages
                     $pdf->AddPage();
-
+                    
                     //URL template for each assignment (used later)
-                    $ass_url = base_url('teams/answer/'.$e_id.'/'.$ass['ass_id'].'/');
+                    $ass_url = $url_template . $ass['ass_id'].'/';
                     //Get all answers for the current assignment
                     $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
-
+                    
                     //Create and save a QR Code for each answer
                     //Set a title with the assignments title in the PDF
-                    $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
                     $pdf->SetFont($title_font,'', 22);
                     $ass_title = '<h1>'.$ass['title'].'</h1>';
                     $pdf->MultiCell(180, 20, $ass_title, 0, 'L', 0, 1, '15', '15', true, 0, true);
-                    $main_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
                     $pdf->SetFont($main_font, '', 12);
                     
                     //Create PDF
@@ -747,7 +737,7 @@
                             $loops = $answers_left;
                         }
 
-                        //Write out up to 3 answer choices per line
+                        //Write out up to 3 answers per line
                         for($o = 0; $o < $loops; $o++){
                             if($o == $loops-1){
                                 $pdf->MultiCell(60, 20, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 1, '', '', true);
@@ -796,6 +786,7 @@
                     $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.url_title($ass['title']).'.pdf','F');
                 }
                 $this->session->set_flashdata('pdf_ass_created',"Opgave PDF'er oprettet!");
+                set_time_limit(ini_get('max_execution_time'));
                 redirect('events/pdf/'.$e_id);
             }
         }
@@ -805,11 +796,11 @@
         //Checks if the given folder exists at the specified path. Creates it if it doesn't
         private function check_dir_exists($path, $folder){
             if(!is_dir($path)){
-                mkdir($path, 0777, true);
-                mkdir($path.$folder, 0777, true);
+                mkdir($path, 0777, TRUE);
+                mkdir($path.$folder, 0777, TRUE);
             }
             if(!is_dir($path.$folder)){
-                mkdir($path.$folder, 0777, true);
+                mkdir($path.$folder, 0777, TRUE);
             }
         }
 

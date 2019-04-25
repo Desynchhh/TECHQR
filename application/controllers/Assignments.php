@@ -1,6 +1,6 @@
 <?php
 	class Assignments extends CI_Controller{
-		public function index($offset = 0){
+		public function index($offset = 0, $order_by = 'DESC', $sort_by = 'assignments.created_at'){
 			//Check if anyone is logged in
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -30,11 +30,13 @@
 
 			//Data variables
 			$data['title'] = 'Opgave oversigt';
-			
+			$data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+			$data['offset'] = $offset;
+
 			//Get assignments
 			if($this->form_validation->run() === FALSE){
 				//Get all assignments
-				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, NULL);
+				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, NULL, $sort_by, $order_by);
 			} else {
 				//Search the DB for assignments LIKE what the user searched for
 				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, $this->input->post('search_string'));

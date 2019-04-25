@@ -17,12 +17,12 @@
         }
 
         //Returns all actions in a single event 
-        public function get_actions($e_id, $limit = FALSE, $offset = FALSE){
+        public function get_actions($e_id, $limit = FALSE, $offset = FALSE, $sort_by = 'created_at', $order_by = 'DESC'){
             if($limit){
                 $this->db->limit($limit, $offset);
             }
             
-            $query = $this->db->select('
+            $this->db->select('
                 student_actions.action,
                 assignments.title as ass_title,
                 teams.number as t_num,
@@ -35,7 +35,7 @@
             ->join('teams', 'teams.id = student_actions.team_id')
             ->where('teams.event_id', $e_id)
             ->where('student_actions.event_id', $e_id)
-            ->order_by('student_actions.created_at', 'DESC')
+            ->order_by($sort_by, $order_by)
             ->from('student_actions');
             $query = $this->db->get();
             return $query->result_array();

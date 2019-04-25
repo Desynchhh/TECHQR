@@ -1,24 +1,17 @@
 
 <h2><?= $title ?></h2>
 <hr>
-
+    <!-- Back button -->
+<div class="row">
+    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
+</div>
+<br/>
 <!-- Get CKEditor (used for sending messages to the students) -->
 <script src="http://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
 
-<!-- JS function to show a dialog box, which will call the reset function in Controllers/Events.php -->
-<script>
-    function reset(){
-        if(window.confirm('Er du sikker på du vil resette dette event?')){
-            window.location = '<?= base_url("events/reset/".$e_id); ?>'
-        }
-    }
-</script>
-
-    <!-- HTML -->
-
 <div class="row">
     <!-- Tildel/Fratag Point -->
-    <div class="col-md-4" style="border-right:solid lightgrey;">
+    <div class="col-md-4">
     <h4>Tildel/Fratag Point</h4>
     <h5>Indtast et negativt tal for at fratage point.</h5>
         <div>
@@ -39,15 +32,7 @@
     </div>
 
     <!-- Check Hold -->
-    <div class="col-md-4" style="border-right:solid lightgrey;">
-        <!--
-        <h4>Check Hold</h4>
-        <h5>Få en liste af alle hold uden medlemmer.</h5>
-        <div>
-            <a href="<?= base_url('events/check_teams/'.$e_id); ?>"><button type="button" class="btn btn-secondary">Check Hold</button></a>
-        </div>
-        <br>
-        -->
+    <div class="col-md-4" style="border-right:solid lightgrey;border-left:solid lightgrey;">
         <h4>Disse hold har ingen medlemmer:</h4>
         <h5>Genindlæs siden for at opdatere.</h5>
         <?php if(!empty($empty_teams)): ?>
@@ -69,30 +54,9 @@
         <h4>Reset event</h4>
         <h5>Start eventet forfra.</h5>
         <p>Dette vil: Ubemande alle hold, fjerne alle point, slette alle handlinger, og gøre alle opgaver besvarlige igen.</p>
-        <!-- <a href="<?= base_url('events/confirm_reset/'.$e_id); ?>"><button type="button" class="btn btn-danger">Reset</button></a> -->
-        <button class="btn btn-danger" onclick="reset()">Reset</button>
+        <!-- <a href="<?//= base_url('events/confirm_reset/'.$e_id); ?>"><button type="button" class="btn btn-danger">Reset</button></a> -->
+        <button class="btn btn-danger" onclick="resetEvent('<?= base_url('events/reset/'.$e_id); ?>')">Reset</button>
     </div>
-
-    <!-- Team List -->
-    <!--
-    <div class="col-md-4" style="border-left:solid lightgrey;">
-    <?php if(isset($empty_teams)): ?>
-        <h3>Disse hold har ingen medlemmer!</h3>
-        <div class="row">
-        <?php foreach($empty_teams as $team): ?>
-            <div class="col-md-3">
-                <p style="color:red;">Hold <?= $team ?></p>
-            </div>
-            <br>
-        <?php endforeach; ?>
-        </div>
-    <?php else: ?>
-        <h3>Alle hold har medlemmer!</h3>
-        <p style="color:green;">Alle hold bemandet.</p>
-    <?php endif; ?>
-    </div>
-    -->
-
 </div>
 
 <hr>
@@ -119,6 +83,7 @@
 
 <hr>
 
+    <!-- Back button -->
 <div class="row">
     <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>

@@ -12,8 +12,8 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Eventnavn</th>
-                <th>Afdeling</th>
+                <th><a href="<?= base_url('events/index/'.$offset.'/'.$order_by.'/e_name'); ?>">Eventnavn</a></th>
+                <th><a href="<?= base_url('events/index/'.$offset.'/'.$order_by.'/d_name'); ?>">Afdeling</a></th>
             </tr>
             <?php foreach($events as $event):?>
                 <tr>

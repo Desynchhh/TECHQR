@@ -91,12 +91,10 @@
                     //Update the teams score
                     $score = $team_points + $ans_points;
                     $this->team_model->update_score($cookie['t_id'], $score);
-                    
-                    /*
-                    //Add entry to team_assignments table
-                    $this->team_model->answer_assignment($cookie['t_id'], $ass_id, $ans_id, $e_id);
-                    */
 
+                    //Update last answered
+                    $this->event_assignment_model->update_last_answered($e_id, $ass_id);
+                    
                     //Log action
                     $action = 'Svarede på opgave';
                     $this->student_action_model->create_action($e_id, $cookie['t_id'], $action, $ass_id, $ans_id);
@@ -150,7 +148,7 @@
 
 
         //List all created teams in an event
-        public function view($e_id, $offset = 0){
+        public function view($e_id, $offset = 0, $order_by = 'ASC', $sort_by = 'number'){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -169,12 +167,14 @@
             //Set data variables
             $this->team_model->check_expire_date();
             $event = $this->event_model->get_event($e_id);
-            $data['teams'] = $this->team_model->get_teams($e_id, NULL, $config['per_page'], $offset);
+            $data['teams'] = $this->team_model->get_teams($e_id, NULL, $config['per_page'], $offset, $sort_by, $order_by);
             $data['title'] = "Hold oversigt - ".$event['e_name'];
             //Used to calculate the array index difference between 'teams' and 'student_array'
+            $data['page_offset'] = $offset;
             $data['offset'] = $offset+(($offset+1) % $config['per_page']);
+            $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
             $data['e_id'] = $e_id;
-            
+
             //Get the total amount of members per team and store them in a separate array
             $student_array = array();
             foreach($data['teams'] as $team){
