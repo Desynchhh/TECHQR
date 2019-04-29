@@ -169,11 +169,22 @@
             $event = $this->event_model->get_event($e_id);
             $data['teams'] = $this->team_model->get_teams($e_id, NULL, $config['per_page'], $offset, $sort_by, $order_by);
             $data['title'] = "Hold oversigt - ".$event['e_name'];
-            //Used to calculate the array index difference between 'teams' and 'student_array'
-            $data['page_offset'] = $offset;
             $data['offset'] = $offset+(($offset+1) % $config['per_page']);
             $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
             $data['e_id'] = $e_id;
+            $data['event_asses'] = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
+            foreach($data['teams'] as $team){
+                $data['team_ans'][] = $this->team_model->get_team_answers($e_id, $team['t_id']);
+            }
+            //Used to calculate the array index difference between 'teams' and 'student_array'
+            $data['pagination_offset'] = $offset;
+
+            /*  ECHO DATA IN team_ans
+            foreach($data['team_ans'] as $test){
+                var_export($test);
+                echo'<br>';
+            }
+            */
 
             //Get the total amount of members per team and store them in a separate array
             $student_array = array();

@@ -1,6 +1,6 @@
 <?php
     class Events extends CI_Controller{
-        public function index($offset = 0, $order_by = 'ASC', $sort_by = 'e_name'){
+        public function index($per_page = 5, $offset = 0, $order_by = 'ASC', $sort_by = 'e_name'){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
             redirect('login');
@@ -18,8 +18,8 @@
             //Pagination config
             $config['base_url'] = base_url('events/index/');
             $config['total_rows'] = $total_rows;
-            $config['per_page'] = 10;
-            $config['uri_segment'] = 3;
+            $config['per_page'] = (is_numeric($per_page)) ? $per_page : $total_rows;
+            $config['uri_segment'] = 4;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -29,8 +29,10 @@
             $data['title'] = "Event oversigt";
             $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset, $sort_by, $order_by);
             $data['offset'] = $offset;
+            $data['per_page'] = $per_page;
             $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
-            
+            $pagination['per_page'] = $per_page;
+            $pagination['offset'] = $offset;
             //Load page
             $this->load->view('templates/header');
             $this->load->view('events/index', $data);
@@ -140,7 +142,7 @@
                 $this->load->view('templates/footer');
             } else {
                 //The user is NOT a part of the events department
-                redirect('events');
+                redirect('events/index');
             }
         }
 
@@ -158,7 +160,7 @@
 
             //Get all assignments in the event
             $event_ass = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset);
-            //Get all answers made by the students
+            //Get all answers made by all teams
             $team_ans = $this->team_model->get_team_answers($e_id);
             //Get all answers to the events assignments
             $event_ans = array();

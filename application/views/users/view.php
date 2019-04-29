@@ -9,7 +9,7 @@
     <dd class="user-dd">
         <!-- Display all the users departments, if there are any -->
         <?php foreach($departments as $department): ?>
-                <a href="<?= base_url('departments/view/'.$department['d_id']); ?>"><?= $department['name'] ?></a><br>
+                <a target="_blank" href="<?= base_url('departments/view/'.$department['d_id']); ?>"><?= $department['name'] ?></a><br>
         <?php endforeach; ?>
         <!-- or this, if the user has no departments -->
     </dd>

@@ -12,7 +12,15 @@
         <dt>Notater:</dt>
         <dd class="ass-dd"><?= $ass['notes'] ?><br></dd>
         <dt>Events:</dt>
-        <dd class="ass-dd">0<br></dd>
+        <dd class="ass-dd">
+            <?php if($events): ?>
+                <?php foreach($events as $event): ?>
+                    <a target="_blank" href="<?= base_url('events/view/'.$event['e_id']); ?>"><?= $event['e_name'] ?></a><br>
+                <?php endforeach; ?>
+            <?php else: ?>
+                Ingen events
+            <?php endif; ?>
+        </dd>
         <dt>Sidst redigeret:</dt>
         <dd class="ass-dd"><?= $ass['edited_at'] ?><br></dd>
         <dt>Redigeret af:</dt>

@@ -1,15 +1,15 @@
 <?php
     class Users extends CI_Controller{
-        public function index($offset = 0, $order_by = 'DESC', $sort_by = 'username'){
+        public function index($per_page = 5, $offset = 0, $order_by = 'ASC', $sort_by = 'username'){
             //Check is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
             //Pagination config
-            $config['base_url'] = base_url('users/index/');
+            $config['base_url'] = base_url("users/index/$per_page");
             $config['total_rows'] = $this->db->count_all_results('users');
-            $config['per_page'] = 10;
-            $config['uri_segment'] = 3;
+            $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
+            $config['uri_segment'] = 4;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -18,16 +18,20 @@
             //Set data array
             $data['title'] = 'Bruger oversigt';
             $data['offset'] = $offset;
+            $data['per_page'] = $per_page;
             $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
             $data['users'] = $this->user_model->get_user(NULL, $config['per_page'], $offset, $sort_by, $order_by);
             foreach($data['users'] as $user){
                 $data['user_depts'][] = $this->user_department_model->get_user_departments($user['u_id']);
             }
+
+            $pagination['per_page'] = $per_page;
+            $pagination['offset'] = $offset;
             
             //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
-            $this->load->view('templates/footer');
+            $this->load->view('templates/footer', $pagination);
         }
 
 

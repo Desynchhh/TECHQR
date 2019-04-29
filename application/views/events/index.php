@@ -1,20 +1,25 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Klik på et events navn for at se flere detaljer.</h5>
 <hr>
 
+    <!-- Create event button -->
 <div>
-    <a type="button" class="btn btn-warning" href="<?= base_url('events/create'); ?>">Opret nyt event</a>
+    <a href="<?= base_url('events/create'); ?>"><button type="button" class="btn btn-warning">Opret nyt event</button></a>
 </div>
 
 <br>
 
+    <!-- Table -->
 <div>
     <table class="table">
         <tbody>
+                <!-- Table headers -->
             <tr>
-                <th><a href="<?= base_url('events/index/'.$offset.'/'.$order_by.'/e_name'); ?>">Eventnavn</a></th>
-                <th><a href="<?= base_url('events/index/'.$offset.'/'.$order_by.'/d_name'); ?>">Afdeling</a></th>
+                <th><a href="<?= base_url("events/index/$per_page/$offset/$order_by/e_name"); ?>">Eventnavn</a></th>
+                <th><a href="<?= base_url("events/index/$per_page/$offset/$order_by/d_name"); ?>">Afdeling</a></th>
             </tr>
+                <!-- Table data -->
             <?php foreach($events as $event):?>
                 <tr>
                     <td><a href="<?= base_url('events/view/'.$event['e_id']); ?>"><?= $event['e_name'] ?></a></td>
@@ -23,8 +28,4 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-		<!-- Pagination -->
-    <div class="btn-group mr-2" role="group" aria-label="First group">
-		<?= $this->pagination->create_links(); ?>
-	</div>
 </div>

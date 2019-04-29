@@ -14,7 +14,7 @@
     <dd class="event-dd"><?= $max_points ?></dd>
     <dt>Hold & Score:</dt>
     <dd class="event-dd"><?= count($teams) ?> - <a class="btn btn-sm btn-primary" href="<?= base_url('teams/view/'.$event['e_id']); ?>">Vis</a></dd>
-    <!-- Event buttons -->
+        <!-- Event buttons -->
     <dd><a href="<?= base_url('events/actions/'.$event['e_id']); ?>"><button type="button" class="btn btn-primary">Se alle handlinger</button></a> 
     <a href="<?= base_url('events/stats/'.$event['e_id']); ?>"><button type="button" class="btn btn-primary">Opgave statistik</button></a>
     <a href="<?= base_url('events/pdf/'.$event['e_id']); ?>"><button type="button" class="btn btn-primary">Se PDF</button></a>
@@ -32,7 +32,7 @@
 
     <!-- Back button -->
 <div>
-    <a class="btn btn-primary" href="<?= base_url('events'); ?>">Tilbage til oversigt</a>
+    <a class="btn btn-primary" href="<?= base_url('events/index'); ?>">Tilbage til oversigt</a>
 </div>
 
     <!-- Hidden delete form -->

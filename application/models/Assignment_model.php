@@ -4,6 +4,7 @@
 			$this->load->database();
 		}
 		
+
 		//Create an assignment in the DB
 		public function create_ass($answerAmount){
 			$data = array(
@@ -18,6 +19,7 @@
 			$ass_id = $this->db->insert_id();
 			$this->insert_answers($ass_id, $answerAmount);
 		}
+
 
 		//Update an assignment, delete all answers from the DB, and insert the new  answers
 		public function edit_ass($ass_id, $answerAmount){
@@ -37,6 +39,7 @@
 			$this->insert_answers($ass_id, $answerAmount);
 		}
 
+
 		//Add all answers to the DB
 		function insert_answers($ass_id, $answerAmount){
 			for($i = 1; $i<= $answerAmount; $i++){
@@ -49,6 +52,7 @@
 			}
 		}
 		
+
 		//Get 1 assignment
 		public function get_ass_view($ass_id){
 			$returnarray = array();
@@ -83,6 +87,7 @@
 			return $returnarray;
 		}
 
+
 		//Get all assignments without their answers
 		public function get_ass_index($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL, $sort_by, $order_by){
 			if($limit){
@@ -115,6 +120,7 @@
 			}
 		}
 
+
 		//Get one or all answers to an assignment
 		public function get_ass_answers($ass_id, $ans_id = NULL){
 				$this->db->select('
@@ -135,6 +141,20 @@
 			}
 		}
 
+		//Get all events an assignment is in
+		public function get_ass_events($ass_id){
+			$this->db->select('
+				events.id as e_id,
+				events.name as e_name
+			')
+			->join('events', 'events.id = event_assignments.event_id')
+			->where('event_assignments.assignment_id', $ass_id)
+			->from('event_assignments');
+			$query = $this->db->get();
+			return $query->result_array();
+		}
+
+
 		//Delete an assignment and all related answers
 		public function delete_ass($ass_id){
 			//Delete from assignments table
@@ -145,6 +165,7 @@
 			$this->db->where('assignment_id', $ass_id)
 			->delete('answers');
 		}
+
 
 		//Get all assignments in a department
 		public function get_department_ass($d_id){
@@ -162,6 +183,7 @@
 			return $query->result_array();
 		}
 
+
 		//Delete all assignments in a department
 		public function delete_department_ass($d_id){
 			$query = $this->db->get_where('assignments', array('department_id' => $d_id));
@@ -170,6 +192,7 @@
 			}
 		}
 
+		
 		//Check if a user has created any assignments, so the proper fields can be changed (used when changing username)
 		public function check_created_by($oldname){
 			$query = $this->db->get_where('assignments', array('created_by' => $oldname));
@@ -182,12 +205,14 @@
             }
 		}
 		
+
 		//Updates the 'created_by' field in the assignments table in the DB
 		public function update_created_by($newname, $oldname){
 			$this->db->where('created_by', $oldname)
 			->update('assignments', array('created_by' => $newname));
 		}
 
+		
 		//Check if a user has edited any assignments, so the proper fields can be changed (used when changing username)
 		public function check_edited_by($oldname){
 			$query = $this->db->get_where('assignments', array('edited_by' => $oldname));
@@ -199,6 +224,7 @@
                 return TRUE;
             }
 		}
+
 
 		//Updates the 'edited_by' field in the assignments table in the DB
 		public function update_edited_by($newname, $oldname){

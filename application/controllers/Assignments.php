@@ -1,6 +1,6 @@
 <?php
 	class Assignments extends CI_Controller{
-		public function index($offset = 0, $order_by = 'DESC', $sort_by = 'assignments.created_at'){
+		public function index($per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'assignments.created_at'){
 			//Check if anyone is logged in
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -19,10 +19,10 @@
 			}
 
 			//Pagination config
-			$config['base_url'] = base_url('assignments/index/');
+			$config['base_url'] = base_url("assignments/index/$per_page");
 			$config['total_rows'] = $total_rows;
-			$config['per_page'] = 10;
-			$config['uri_segment'] = 3;
+			$config['per_page'] = (is_numeric($per_page)) ? $per_page : $total_rows;
+			$config['uri_segment'] = 4;
 			$config['first_link'] = 'Første';
 			$config['last_link'] = 'Sidste';
 			$config['attributes'] = array('class' => 'pagination-link');// btn btn-primary
@@ -32,6 +32,9 @@
 			$data['title'] = 'Opgave oversigt';
 			$data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
 			$data['offset'] = $offset;
+			$data['per_page'] = $per_page;
+			$pagination['per_page'] = $per_page;
+			$pagination['offset'] = $offset;
 
 			//Get assignments
 			if($this->form_validation->run() === FALSE){
@@ -45,8 +48,9 @@
 			//Load the page
 			$this->load->view('templates/header');
 			$this->load->view('assignments/index', $data);
-			$this->load->view('templates/footer');
+			$this->load->view('templates/footer', $pagination);
 		}
+		
 		
 		public function view($ass_id){
             if(!$this->session->userdata('logged_in')){
@@ -57,17 +61,18 @@
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			//Check the currently logged in users departments. 
 			//Only users who are in the same department as the assignment can view it.
-			$ismember = false;
+			$ismember = FALSE;
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
 				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
-					$ismember = true;
+					$ismember = TRUE;
 					break;
 				}
 			}
 
 			if($ismember || $this->session->userdata('permissions') == 'Admin'){
 					//Allow the user to view the assignment details if they are a member of its department
-					
+					$data['events'] = $this->assignment_model->get_ass_events($ass_id);
+					var_export($data['events']);
 					$this->load->view('templates/header');
 					$this->load->view('assignments/view', $data);
 					$this->load->view('templates/footer');
@@ -77,6 +82,7 @@
 				}
 		}
 
+
 		public function delete($ass_id){
 			//Check logged in
 			if(!$this->session->userdata['logged_in']){
@@ -84,11 +90,11 @@
 			}
 			
 			//Check if the logged in user is a member of the assignments department
-			$ismember = false;
+			$ismember = FALSE;
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
 				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
-					$ismember = true;
+					$ismember = TRUE;
 					break;
 				}
 			}
@@ -112,6 +118,7 @@
 				redirect('assignments');
 			}
 		}
+
 
 		public function create($answerAmount = 1){
 			//Check logged in
@@ -141,6 +148,7 @@
 				redirect('assignments');
 			}
 		}
+
 
 		public function edit($ass_id, $optionsAmount = NULL){
 			if(!$this->session->userdata('logged_in')){
@@ -174,6 +182,7 @@
 				redirect('assignments/view/'.$ass_id);
 			}
 		}
+
 
 		public function set_answer_amount($answerAmount = 1){
 			$minOptions = 1;

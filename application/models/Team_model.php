@@ -122,7 +122,7 @@
         }
 
 
-        public function get_team_answers($e_id){
+        public function get_team_answers($e_id, $t_id = NULL){
             $this->db->select('
                 team_id as t_id,
                 assignment_id as ass_id,
@@ -131,6 +131,9 @@
             ->from('student_actions')//team_assignments
             ->where('event_id', $e_id)
             ->where('assignment_id !=', NULL);
+            if($t_id){
+                $this->db->where('team_id', $t_id);
+            }
             $query = $this->db->get();
 
             return $query->result_array();

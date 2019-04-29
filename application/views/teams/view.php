@@ -27,10 +27,11 @@
     <table class="table">
         <tbody>
             <tr>
-                <th><a href="<?= base_url('teams/view/'.$e_id.'/'.$page_offset.'/'.$order_by.'/number'); ?>">Hold #</a></th>
-                <th><a href="<?= base_url('teams/view/'.$e_id.'/'.$page_offset.'/'.$order_by.'/score'); ?>">Point</a></th>
+                <th><a href="<?= base_url('teams/view/'.$e_id.'/'.$pagination_offset.'/'.$order_by.'/number'); ?>">Hold #</a></th>
+                <th><a href="<?= base_url('teams/view/'.$e_id.'/'.$pagination_offset.'/'.$order_by.'/score'); ?>">Point</a></th>
                 <th>Sidste handling</th>
                 <th>Medlemmer</th>
+                <th>Besvarede opgaver</th>
             </tr>
             <?php foreach($teams as $team):?>
                 <tr>
@@ -38,6 +39,7 @@
                     <td><?= $team['t_score']?></td>
                     <td><?php $action = ($team['action']) ? $team['action'] : 'Ingen handlinger'; echo $action ?></td>
                     <td><?= $students[array_search($team['t_num']-$offset, array_keys($teams))]; ?></td>
+                    <td><?= count($team_ans[array_search($team, $teams)]).'/'.$event_asses ?></td>
                 </tr>
             <?php endforeach;?>
         </tbody>
