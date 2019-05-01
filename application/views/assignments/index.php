@@ -28,7 +28,7 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 				<th><a href="<?= base_url("assignments/index/$per_page/$offset/$order_by/created_by"); ?>">Oprettet af</a></th>
 			</tr>
 			
-			<!-- create <tr> with <td> children for each assignment in the DB -->
+				<!-- create <tr> with <td> children for each assignment in the DB -->
 			<?php foreach($asses as $ass): ?>
 					<!-- Table data -->
 				<tr>

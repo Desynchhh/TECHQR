@@ -1,3 +1,4 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Benyt "Lav" knapperne hvis Holdene eller Opgaverne er blevet ændret siden Eventet sidst var brugt<br>
 OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller opgaver</h5>
@@ -11,13 +12,14 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
             <h4>Hold PDF</h4>
             <label>Vælg hold</label>
             <select name="filename" class="form-control">
-                <!-- Add all PDFs from the events team-pdf folder as a selectable option  -->
+                    <!-- Add all PDFs from the events team-pdf folder as a selectable option  -->
                 <?php foreach($team_pdf as $pdf): ?>
                     <option value="<?= $pdf ?>"><?= $pdf ?></option>
                 <?php endforeach; ?>
             </select>
             <br>
             <?php if($team_pdf): ?>
+                    <!-- Only show 'Open PDF' if there is any available -->
                 <input type="submit" class="btn btn-warning" value="Åben PDF" />
             <?php endif; ?>
         <?= form_close(); ?>
@@ -29,13 +31,14 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
             <h4>Opgave PDF</h4>
             <label>Vælg Opgave</label>
             <select name="filename" class="form-control">
-                <!-- Add all PDFs from the events assignment-pdf folder as a selectable option -->
+                    <!-- Add all PDFs from the events assignment-pdf folder as a selectable option -->
                 <?php foreach($ass_pdf as $pdf):?>
                     <option value="<?= $pdf ?>"><?= $pdf ?></option>
                 <?php endforeach;?>
             </select>
             <br>
-            <?php if($ass_pdf): ?>
+            <?php if($ass_pdf): ?>                
+                    <!-- Only show 'Open PDF' if there is any available -->
                 <input type="submit" class="btn btn-warning" value="Åben PDF" />
             <?php endif; ?>
         <?= form_close(); ?>
@@ -55,6 +58,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
 
 </div>
 
+    <!-- Back button -->
 <div>
-    <a class="btn btn-primary" href="<?= base_url('events/view/'.$event['e_id']); ?>">Tilbage til event</a>
+    <a href="<?= base_url("events/view/$event[e_id]"); ?>"><button class="btn btn-primary">Tilbage til event</button></a>
 </div>

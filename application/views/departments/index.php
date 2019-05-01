@@ -1,14 +1,17 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Oversigt over alle afdelinger.<br/>
 Klik på en afdelings navn for at se flere detaljer.</h5>
 <hr>
+
     <!-- Create button -->
 <div>
-    <a type="button" class="btn btn-warning" href="<?= base_url('departments/create'); ?>">Opret ny afdeling</a>
+    <a href="<?= base_url('departments/create'); ?>"><button type="button" class="btn btn-warning">Opret ny afdeling</button></a>
 </div>
 
 <br>
 
+    <!-- "Table" -->
 <div>
 <?php foreach($departments as $department): ?>
     <div style="margin-bottom:1%;">

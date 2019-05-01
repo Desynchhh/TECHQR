@@ -148,17 +148,17 @@
 
 
         //List all created teams in an event
-        public function view($e_id, $offset = 0, $order_by = 'ASC', $sort_by = 'number'){
+        public function view($e_id, $per_page = 5, $offset = 0, $order_by = 'ASC', $sort_by = 'number'){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
 
             //Pagination configuration
-            $config['base_url'] = base_url('teams/view/'.$e_id.'/');
+            $config['base_url'] = base_url("teams/view/$e_id/$per_page");
             $config['total_rows'] = $this->db->where('teams.event_id', $e_id)->count_all_results('teams');
-            $config['per_page'] = 10;
-            $config['uri_segment'] = 4;
+            $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
+            $config['uri_segment'] = 5;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -178,7 +178,9 @@
             }
             //Used to calculate the array index difference between 'teams' and 'student_array'
             $data['pagination_offset'] = $offset;
-
+            $data['per_page'] = $per_page;
+            $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+            $pagination['offset'] = $offset;
             /*  ECHO DATA IN team_ans
             foreach($data['team_ans'] as $test){
                 var_export($test);
@@ -197,7 +199,7 @@
             //Load the page
             $this->load->view('templates/header');
             $this->load->view('teams/view', $data);
-            $this->load->view('templates/footer');
+            $this->load->view('templates/footer', $pagination);
         }
 
 

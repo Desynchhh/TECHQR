@@ -31,12 +31,13 @@
             $data['offset'] = $offset;
             $data['per_page'] = $per_page;
             $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
-            $pagination['per_page'] = $per_page;
+            $pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
+
             //Load page
             $this->load->view('templates/header');
             $this->load->view('events/index', $data);
-            $this->load->view('templates/footer');
+            $this->load->view('templates/footer', $pagination);
         }
 
 
@@ -147,12 +148,12 @@
         }
 
 
-        public function stats($e_id, $offset = 0){
+        public function stats($e_id, $per_page = 5, $offset = 0){
             //Pagination config
-            $config['base_url'] = base_url().'events/stats/'.$e_id;
+            $config['base_url'] = base_url()."events/stats/$e_id/$per_page";
             $config['total_rows'] = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
-            $config['per_page'] = 3;
-            $config['uri_segment'] = 4;
+            $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
+            $config['uri_segment'] = 5;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -175,11 +176,13 @@
             $data['team_ans'] = $team_ans;
             $data['event_ass'] = $event_ass;
             $data['event_ans'] = $event_ans;
+            $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+            $pagination['offset'] = $offset;
 
             //Load the page
             $this->load->view('templates/header');
             $this->load->view('events/stats', $data);
-            $this->load->view('templates/footer');
+            $this->load->view('templates/footer', $pagination);
         }
 
 
@@ -253,7 +256,7 @@
 
 
         //Loads the page where assignments can be added to the event, so teams can answer it.
-        public function assignments_add($e_id, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
+        public function assignments_add($e_id, $per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -270,11 +273,18 @@
 
             //Run if the user is a member of the events department or is admin
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Total_rows prep
+                //How many assignments in department
+                $ass_count = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
+                //How many assignments in event
+                $event_ass_count = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
+                $total_rows = $ass_count - $event_ass_count;
+
                 //Pagination config
-                $config['base_url'] = base_url('events/assignments/add/'.$e_id.'/');
-                $config['total_rows'] = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
-                $config['per_page'] = 10;
-                $config['uri_segment'] = 5;
+                $config['base_url'] = base_url("events/assignments/add/$e_id/$per_page");
+                $config['per_page'] = (is_numeric($per_page)) ? $per_page : NULL;
+                $config['total_rows'] = $total_rows;
+                $config['uri_segment'] = 6;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
@@ -286,11 +296,14 @@
                 $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset, $sort_by, $order_by);
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
-
+                $data['per_page'] = $per_page;
+                $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+                $pagination['offset'] = $offset;
+                
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_add', $data);
-                $this->load->view('templates/footer');
+                $this->load->view('templates/footer', $pagination);
             } else {
                 //If the user is NOT a member of the events department, redirect them to the event index
                 redirect('events');
@@ -299,7 +312,7 @@
 
 
         //Views all the assignments added to the event
-        public function assignments_view($e_id, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
+        public function assignments_view($e_id, $per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -317,8 +330,8 @@
                 //Pagination config
                 $config['base_url'] = base_url('events/assignments/view/'.$e_id.'/');
                 $config['total_rows'] = $this->db->where('event_assignments.event_id', $e_id)->count_all_results('event_assignments');
-                $config['per_page'] = 10;
-                $config['uri_segment'] = 5;
+                $config['per_page'] = (is_numeric($per_page)) ? $per_page : NULL;
+                $config['uri_segment'] = 6;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
@@ -330,10 +343,14 @@
                 $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset, $sort_by, $order_by);
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
+                $data['per_page'] = $per_page;
+                $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+                $pagination['offset'] = $offset;
+
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_view', $data);
-                $this->load->view('templates/footer');
+                $this->load->view('templates/footer', $pagination);
             } else {
                 redirect('events');
             }
@@ -458,7 +475,7 @@
 
 
         //Views all actions taken by teams in the event
-        public function actions($e_id, $offset = 0, $order_by = 'DESC', $sort_by = 'created_at'){
+        public function actions($e_id, $per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'created_at'){
             //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -475,10 +492,10 @@
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination configuration
-                $config['base_url'] = base_url('events/actions/'.$e_id.'/');
+                $config['base_url'] = base_url("events/actions/$e_id/$per_page");
                 $config['total_rows'] = $this->db->where('student_actions.event_id', $e_id)->count_all_results('student_actions');
-                $config['per_page'] = 10;
-                $config['uri_segment'] = 4;
+                $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'] ;
+                $config['uri_segment'] = 5;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
@@ -490,11 +507,14 @@
                 $data['e_id'] = $data['event']['e_id'];
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
+                $data['per_page'] = $per_page;
+                $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+                $pagination['offset'] = $offset;
 
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/actions', $data);
-                $this->load->view('templates/footer');
+                $this->load->view('templates/footer', $pagination);
             } else {
                 //Not a member or admin
                 redirect('events');
@@ -703,7 +723,7 @@
                     $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
                     $pdf->SetCreator(PDF_CREATOR);
                     $pdf->SetTitle('Assignment PDF');
-                    $pdf->SetAutoPageBreak(TRUE, 10);
+                    $pdf->SetAutoPageBreak(FALSE, 10);
                     //$pdf->setCellPaddings(1, 1, 1, 1);
                     //$pdf->setCellMargins(1, 1, 1, 1);
                     $pdf->SetPrintHeader(FALSE);
@@ -729,8 +749,10 @@
                     $qr_answer_index = 0;
                     //Calculate amount of rows for each assignment
                     $rows = ceil($answers_left/3);
-
+                    
                     //Create 1-3 rows
+                    $answer_counter = 1;
+                    $qr_counter = 1;
                     for($i = 0; $i <= $rows; $i++){
                         //Figure out how many times to iterate the loops
                         if($answers_left >= 3){
@@ -742,10 +764,11 @@
                         //Write out up to 3 answers per line
                         for($o = 0; $o < $loops; $o++){
                             if($o == $loops-1){
-                                $pdf->MultiCell(60, 20, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 1, '', '', true);
+                                $pdf->MultiCell(60, 5, $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 1, '', '', true);
                             } else {
-                                $pdf->MultiCell(60, 20, $ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 0, '', '', true);
+                                $pdf->MultiCell(60, 5, $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 0, '', '', true);
                             }
+                            $answer_counter++;
                         }
                         //Create and input QR codes for each answer
                         for($o = 0; $o < $loops; $o++){
@@ -753,31 +776,32 @@
                             //URL the QR leads to
                             $url = $ass_url . $ass_answers[$qr_answer_index+$o]['id'];
                             //Instantiate new object with the URL as parameter
-                            $qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$ass_answers[$qr_answer_index+$o]['answer']."\nTryk 'åben link' for at svare\n\n".$url);
-                            //QR Settings
+                            //$qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$ass_answers[$qr_answer_index+$o]['answer']."\nTryk 'åben link' for at svare\n\n".$url);
+                            $qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$qr_counter."\nTryk 'åben link' for at svare\n\n".$url);                            //QR Settings
                             $qrcode->setSize(125);
                             //$qrcode->setMargin(10);
                             $qrcode->setEncoding('UTF-8');
-
+                            
                             //Set path+filename for the QR
                             $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.$ass_answers[$qr_answer_index+$o]['id'].'-'.$o.'.png';
                             //Save QR to machine
                             $qrcode->writeFile($qrpath);
-
+                            
                             $content .= '
                             <div>
-                                <img src="'.$qrpath.'" />
+                            <img src="'.$qrpath.'" />
                             </div>
                             ';
-
+                            
                             //Ensure the QR Code is placed beneath the relevant Answer
                             if($o == $loops-1){
-                                $pdf->MultiCell(60, 25, $content, 0, 'C', 0, 1, '', '', true, 0, true);
+                                $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 1, '', '', true, 0, true);
                             } else {
-                                $pdf->MultiCell(60, 25, $content, 0, 'C', 0, 0, '', '', true, 0, true);
-                            }
+                                $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 0, '', '', true, 0, true);
+                            }//60, 65, $content
                             //Delete the .png file from the machine
                             unlink($qrpath);
+                            $qr_counter++;
                         }
                         $qr_answer_index += 3;
                         $answers_left -= 3;

@@ -2,7 +2,7 @@
 <h2><?= $title ?></h2>
 <hr>
 
-<!-- Info -->
+    <!-- Info -->
 <div>
     <dl class="dl-horizontal">
         <dt>Opgave navn:</dt>
@@ -38,32 +38,37 @@
     <div class="md-col-1" style="margin-left:1.33%;">
         <a href="<?= base_url('assignments/edit/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-warning">Rediger opgave</button></a>
     </div>
+        
         <!-- Delete button -->
     <div class="md-col-1" style="margin-left:1%;">
         <button type="button" class="btn btn-danger" onclick="submitHidden('input', 'inputForm', 'opgaven');">Slet opgave</button>
+            
             <!-- Hidden form to be submitted in case the assignments title contains an illegal URI character -->
         <?= form_open('assignments/delete/'.$ass['ass_id'], array('id'=>'inputForm', 'method'=>'post')); ?>
             <input type="hidden" name="input" id="input" value="" />
         <?= form_close(); ?>
     </div>
-
 </div>
+
 <br>
+
     <!-- Back button -->
 <div>
-    <a href="<?= base_url('assignments'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("assignments/index/5/0/ASC/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
-<br/>
 
+<br/>
+    <!-- Table -->
 <div>
     <table class="table">
         <tbody>
+                <!-- Table headers -->
             <tr>
                 <th>Svar #</th>
                 <th>Svar</th>
                 <th>Point</th>
             </tr>
-            <!-- create a <tr> with <td> children for each answer in this assignment -->
+                <!-- Table data -->
             <?php $count = 1; foreach($ass[0] as $answer):?>
                 <tr>
                     <td><?= $count ?></td>
@@ -74,4 +79,5 @@
         </tbody>
     </table>
 </div>
+
 <br>

@@ -1,15 +1,20 @@
+	<!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
+
+	<!-- Form -->
 <?= validation_errors(); ?>
 <?= form_open('departments/create'); ?>
 <div class="row">
 	<div class="col-md-3 offset-md-1">
-		<!-- <div class="from-group"> -->
 			<label>Afdelingsnavn:</label>
-			<input type="text" name="name" placeholder="Afdelingsnavn"/> <!-- class="form-control" -->
+			<input type="text" name="name" placeholder="Afdelingsnavn"/>
 			<input type="submit" value="Opret" class="btn btn-secondary" />
-		<!-- </div> -->
 	</div>
 </div>
 <?= form_close(); ?>
-<a type="button" class="btn btn-primary" href="<?= base_url('departments'); ?>">Tilbage til oversigt</a>
+
+	<!-- Back button -->
+<div>
+	<a href="<?= base_url('departments/index'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+</div>

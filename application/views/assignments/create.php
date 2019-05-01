@@ -19,7 +19,7 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 			<!-- Amount of answers dropdown -->
 		<div class="col-md-3">
 			<label>Antal svarmuligheder:</label>
-			<!-- fill the combobox with available number of answers an assignment can have -->
+				<!-- Fill the combobox with available number of answers an assignment can have -->
 			<select id="answerAmount" class="form-control">
 				<option selected hidden><?= $options['optionsAmount'] ?></option>
 				<?php foreach(range(1, $options['maxOptions']) as $option):?>
@@ -69,9 +69,11 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 		</div>
 	<?php endforeach; ?>
 </div>
+	<!-- Submit buttom -->
 <input type="submit" value="Opret" class="btn btn-secondary"/>
 <?= form_close(); ?>
+
 		<!-- Back button -->
 <div>
-	<a href="<?= base_url('assignments'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+	<a href="<?= base_url("assignments/index/5/0/ASC/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

@@ -26,13 +26,15 @@
 <div>
     <table class="table">
         <tbody>
+                <!-- Table header -->
             <tr>
-                <th><a href="<?= base_url('teams/view/'.$e_id.'/'.$pagination_offset.'/'.$order_by.'/number'); ?>">Hold #</a></th>
-                <th><a href="<?= base_url('teams/view/'.$e_id.'/'.$pagination_offset.'/'.$order_by.'/score'); ?>">Point</a></th>
+                <th><a href="<?= base_url("teams/view/$e_id/$per_page/$pagination_offset/$order_by/number"); ?>">Hold #</a></th>
+                <th><a href="<?= base_url("teams/view/$e_id/$per_page/$pagination_offset/$order_by/score"); ?>">Point</a></th>
                 <th>Sidste handling</th>
                 <th>Medlemmer</th>
                 <th>Besvarede opgaver</th>
             </tr>
+                <!-- Table data -->
             <?php foreach($teams as $team):?>
                 <tr>
                     <td><?= $team['t_num'] ?></td>
@@ -46,12 +48,7 @@
     </table>
 </div>
 
-	<!-- Pagination -->
-<div class="pagination-links">
-	<?= $this->pagination->create_links(); ?>
-</div>
-
     <!-- Back button -->
 <div>
-    <a class="btn btn-primary" href="<?= base_url('events/view/'.$e_id); ?>">Tilbage til event</a>
+    <a href="<?= base_url('events/view/'.$e_id); ?>"><button class="btn btn-primary">Tilbage til event</button></a>
 </div>

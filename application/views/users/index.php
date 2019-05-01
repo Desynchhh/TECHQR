@@ -28,19 +28,18 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 			<th>Afdelinger</th>
 			<th><a href="<?= base_url("users/index/$per_page/$offset/$order_by/email"); ?>" >Email</a></th>
 		</tr>
-			<!-- create a <tr> with <td> children for each user in the database -->
-		<?php foreach($users as $user): ?>
 			<!-- Table data -->
-		<tr>
-			<td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
-			<td><?= $user['permissions'] ?></td>
-			<td>
-				<?php foreach($user_depts[array_search($user, $users)] as $department):?>
-					<a href="<?= base_url('departments/view/'.$department['d_id']); ?>" ><?= $department['name'] ?></a><br>
-				<?php endforeach;?>
-			</td>
-			<td><?= $user['email'] ?></td>
-		</tr>
+		<?php foreach($users as $user): ?>
+			<tr>
+				<td><a href="<?= base_url("users/view/$user[u_id]"); ?>"><?= $user['username'] ?></a></td>
+				<td><?= $user['permissions'] ?></td>
+				<td>
+					<?php foreach($user_depts[array_search($user, $users)] as $department):?>
+						<a href="<?= base_url("departments/view/$department[d_id]"); ?>" ><?= $department['name'] ?></a><br>
+					<?php endforeach;?>
+				</td>
+				<td><?= $user['email'] ?></td>
+			</tr>
 		<?php endforeach;?>
 	</tbody>
 </table>

@@ -4,11 +4,12 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
+    <a href="<?= base_url("events/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
 
 <br>
-    
+
+    <!-- Table -->    
 <?php foreach($event_ass as $ass):?>
     <div class="row">
             <!-- Info -->
@@ -36,12 +37,7 @@
     
     <!-- Back button -->
 <div>
-    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
-</div>
-    
-    <!-- Pagination -->
-<div class="pagination-links">
-    <?= $this->pagination->create_links(); ?>
+    <a href="<?= base_url("events/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
 
     <!-- Scripts -->

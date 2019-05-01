@@ -1,16 +1,19 @@
-
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
     <!-- Back button -->
 <div class="row">
     <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
+
 <br/>
+
 <!-- Get CKEditor (used for sending messages to the students) -->
 <script src="http://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
 
+    <!-- Tools -->
 <div class="row">
-    <!-- Tildel/Fratag Point -->
+        <!-- Tildel/Fratag Point -->
     <div class="col-md-4">
     <h4>Tildel/Fratag Point</h4>
     <h5>Indtast et negativt tal for at fratage point.</h5>
@@ -31,7 +34,7 @@
         </div>
     </div>
 
-    <!-- Check Hold -->
+        <!-- Check Hold -->
     <div class="col-md-4" style="border-right:solid lightgrey;border-left:solid lightgrey;">
         <h4>Disse hold har ingen medlemmer:</h4>
         <h5>Genindlæs siden for at opdatere.</h5>
@@ -49,12 +52,11 @@
     <?php endif; ?>
     </div>
 
-    <!-- Reset event -->
+        <!-- Reset event -->
     <div class="col-md-4">
         <h4>Reset event</h4>
         <h5>Start eventet forfra.</h5>
         <p>Dette vil: Ubemande alle hold, fjerne alle point, slette alle handlinger, og gøre alle opgaver besvarlige igen.</p>
-        <!-- <a href="<?//= base_url('events/confirm_reset/'.$e_id); ?>"><button type="button" class="btn btn-danger">Reset</button></a> -->
         <button class="btn btn-danger" onclick="resetEvent('<?= base_url('events/reset/'.$e_id); ?>')">Reset</button>
     </div>
 </div>

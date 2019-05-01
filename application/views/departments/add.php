@@ -1,19 +1,22 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <br>
 
+    <!-- Table -->
 <table class="table">
 	<tbody>
+            <!-- Table headers -->
 		<tr>
 			<th>Brugernavn</th>
 			<th>Afdelinger</th>
             <th>Tilføj</th>
 		</tr>
-		<!-- create a <tr> with <td> children for each user in the database -->
+            <!-- Table data -->
 		<?php foreach($users as $user): ?>
             <tr>
                 <td><?= $user['username'] ?></td>
-                <!-- get all departments for each individual user and show them in the table -->
-                <td>NYI</td>
+                    <!-- get all departments for each individual user and show them in the table -->
+                <td><?= $department['name'] ?></td>
                 <td>
                     <?= form_open('departments/add/'.$department['id'].'/0/'.$user['u_id']); ?>
                         <input type="submit" class="btn btn-sm btn-secondary" value="Tilføj" />
@@ -29,6 +32,7 @@
 	<?= $this->pagination->create_links(); ?>
 </div>
 
+    <!-- Back button -->
 <div>
-    <a type="button" class="btn btn-primary" href="<?= base_url('departments/view/'.$department['id']); ?>">Tilbage til oversigt</a>
+    <a href="<?= base_url("departments/view/$department[id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

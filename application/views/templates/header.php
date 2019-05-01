@@ -5,7 +5,7 @@
 	<title>TECHQR</title>
 	<link rel="shortcut icon" type="image/png" href="<?= base_url('assets/favicon.png')?>"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="<?= base_url('assets/js/submit-hidden.js')?>"></script>
+	<script src="<?= base_url('assets/js/main.js')?>"></script>
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/bootstrap.min.css')?>">
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/styles.css')?>"/>
 </head>
@@ -25,17 +25,17 @@
 			<!-- enable base_url by adding 'url' to the 'helper' array in /config/autoload.php -->
 			<?php if($this->session->userdata('logged_in') && $this->session->userdata('permissions') == 'Admin'): ?>
 				<li class="nav-item">
-					<a href="<?= base_url('users/index')?>" class="nav-link">Brugere</a>
+					<a href="<?= base_url("users/index/5/0/ASC/username")?>" class="nav-link">Brugere</a>
 				</li>
 				<li class="nav-item">
 					<a href="<?= base_url('departments/index')?>" class="nav-link">Afdelinger</a>
 				</li>
 			<?php endif; ?>
 			<li class="nav-item">
-				<a href="<?= base_url('events/index')?>" class="nav-link">Events</a>
+				<a href="<?= base_url("events/index/5/0/ASC/e_name")?>" class="nav-link">Events</a>
 			</li>
 			<li class="nav-item">
-				<a href="<?= base_url('assignments/index')?>" class="nav-link">Opgaver</a>
+				<a href="<?= base_url("assignments/index/5/0/ASC/title")?>" class="nav-link">Opgaver</a>
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">

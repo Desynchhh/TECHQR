@@ -1,3 +1,4 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
 
@@ -8,17 +9,18 @@
 
 <br>
 
+    <!-- Table -->
 <div>
     <table class="table">
         <tbody>
-                    <!-- Table Headers -->
+                <!-- Table Headers -->
             <tr>
-                <th><a href="<?= base_url('events/actions/'.$e_id.'/'.$offset.'/'.$order_by.'/t_num'); ?>" >Hold #</a></th>
-                <th><a href="<?= base_url('events/actions/'.$e_id.'/'.$offset.'/'.$order_by.'/action'); ?>" >Handling</a></th>
-                <th><a href="<?= base_url('events/actions/'.$e_id.'/'.$offset.'/'.$order_by.'/title'); ?>" >Opgavenavn</a></th>
-                <th><a href="<?= base_url('events/actions/'.$e_id.'/'.$offset.'/'.$order_by.'/answer'); ?>" >Svar</a></th>
-                <th><a href="<?= base_url('events/actions/'.$e_id.'/'.$offset.'/'.$order_by.'/points'); ?>" >Point</a></th>
-                <th><a href="<?= base_url('events/actions/'.$e_id.'/'.$offset.'/'.$order_by.'/created_at'); ?>" >Tidspunkt</a></th>
+                <th><a href="<?= base_url("events/actions/$e_id/$per_page/$offset/$order_by/t_num"); ?>" >Hold #</a></th>
+                <th><a href="<?= base_url("events/actions/$e_id/$per_page/$offset/$order_by/action"); ?>" >Handling</a></th>
+                <th><a href="<?= base_url("events/actions/$e_id/$per_page/$offset/$order_by/title"); ?>" >Opgavenavn</a></th>
+                <th><a href="<?= base_url("events/actions/$e_id/$per_page/$offset/$order_by/answer"); ?>" >Svar</a></th>
+                <th><a href="<?= base_url("events/actions/$e_id/$per_page/$offset/$order_by/points"); ?>" >Point</a></th>
+                <th><a href="<?= base_url("events/actions/$e_id/$per_page/$offset/$order_by/created_at"); ?>" >Tidspunkt</a></th>
             </tr>
             <?php foreach($actions as $action): ?>
                     <!-- Table Data -->
@@ -39,9 +41,4 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-
-        <!-- Pagination -->
-    <div class="pagination-links">
-        <?= $this->pagination->create_links(); ?>
-    </div>
 </div>

@@ -33,7 +33,8 @@
 			$data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
 			$data['offset'] = $offset;
 			$data['per_page'] = $per_page;
-			$pagination['per_page'] = $per_page;
+			//Only set if pagination is needed on the page
+			$pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
 			$pagination['offset'] = $offset;
 
 			//Get assignments
@@ -72,7 +73,7 @@
 			if($ismember || $this->session->userdata('permissions') == 'Admin'){
 					//Allow the user to view the assignment details if they are a member of its department
 					$data['events'] = $this->assignment_model->get_ass_events($ass_id);
-					var_export($data['events']);
+
 					$this->load->view('templates/header');
 					$this->load->view('assignments/view', $data);
 					$this->load->view('templates/footer');
@@ -145,7 +146,7 @@
 				//If validation was successful
 				$this->assignment_model->create_ass($data['options']['optionsAmount']);
 				$this->session->set_flashdata('ass_created','Opgave oprettet!');
-				redirect('assignments');
+				redirect("assignments/index/5/0/ASC/title");
 			}
 		}
 

@@ -1,6 +1,8 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
 
+    <!-- Form -->
 <div class="row">
     <div class="col-md-3 offset-md-1">
         <?= form_open('events/create'); ?>
@@ -21,3 +23,5 @@
         <?= form_close(); ?>
     </div>
 </div>
+
+<div><a href="<?= base_url("events/index/5/0/ASC/e_name"); ?>"><button class="btn btn-primary">Tilbage til oversigt</button></a></div>
