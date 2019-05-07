@@ -24,7 +24,7 @@
             foreach($data['users'] as $user){
                 $data['user_depts'][] = $this->user_department_model->get_user_departments($user['u_id']);
             }
-            $pagination['per_page'] = $per_page;
+            $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
 

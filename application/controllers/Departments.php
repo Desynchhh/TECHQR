@@ -142,7 +142,7 @@
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('departments/add', $data);
-                $this->load->view('templates/footer');
+                $this->load->view('templates/footer', $pagination);
             } else {
                 //User has been selected. Add them to the department
                 $this->user_department_model->assign_user_to_department($u_id, $d_id);

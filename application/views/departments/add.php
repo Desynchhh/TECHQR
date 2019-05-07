@@ -31,3 +31,10 @@
 <div>
     <a href="<?= base_url("departments/view/$department[id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
+
+    <!-- Temporary warning until issue is solved -->
+<h2><b>
+    NOTE: Du kan endnu ikke selv vælge hvor mange brugere du vil se per side.
+    <br>
+    Du vil ødelægge siden hvis du forsøger på dette.
+</b></h2>
