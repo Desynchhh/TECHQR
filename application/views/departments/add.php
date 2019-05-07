@@ -18,7 +18,7 @@
                     <!-- get all departments for each individual user and show them in the table -->
                 <td><?= $department['name'] ?></td>
                 <td>
-                    <?= form_open('departments/add/'.$department['id'].'/0/'.$user['u_id']); ?>
+                    <?= form_open("departments/add/$department[id]/$per_page/0/$user[u_id]"); ?>
                         <input type="submit" class="btn btn-sm btn-secondary" value="Tilføj" />
                     <?= form_close(); ?>
                 </td>
@@ -26,11 +26,6 @@
 		<?php endforeach;?>
 	</tbody>
 </table>
-
-	<!-- Pagination -->
-<div class="pagination-links">
-	<?= $this->pagination->create_links(); ?>
-</div>
 
     <!-- Back button -->
 <div>

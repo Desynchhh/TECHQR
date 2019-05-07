@@ -22,13 +22,11 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 		<tbody>
 				<!-- Table headers -->
 			<tr>
-				<th><a href="<?= base_url("assignments/index/$per_page/$offset/$order_by/title"); ?>">Opgavenavn</a></th>
-				<th><a href="<?= base_url("assignments/index/$per_page/$offset/$order_by/notes"); ?>">Notater</a></th>
-				<th><a href="<?= base_url("assignments/index/$per_page/$offset/$order_by/name"); ?>">Afdeling</a></th>
-				<th><a href="<?= base_url("assignments/index/$per_page/$offset/$order_by/created_by"); ?>">Oprettet af</a></th>
+				<th><a href="<?= base_url("assignments/index/$per_page/$order_by/title/$offset"); ?>">Opgavenavn</a></th>
+				<th><a href="<?= base_url("assignments/index/$per_page/$order_by/notes/$offset"); ?>">Notater</a></th>
+				<th><a href="<?= base_url("assignments/index/$per_page/$order_by/name/$offset"); ?>">Afdeling</a></th>
+				<th><a href="<?= base_url("assignments/index/$per_page/$order_by/created_by/$offset"); ?>">Oprettet af</a></th>
 			</tr>
-			
-				<!-- create <tr> with <td> children for each assignment in the DB -->
 			<?php foreach($asses as $ass): ?>
 					<!-- Table data -->
 				<tr>

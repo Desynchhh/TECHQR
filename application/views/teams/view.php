@@ -1,9 +1,10 @@
+    <!-- Title -->
 <h2><?= $title ?></h2>
 <br>
 
     <!-- Create field & button -->
 <div>
-    <?= form_open('teams/create/'.$e_id); ?>
+    <?= form_open("teams/create/$e_id"); ?>
         <label>Antal hold:</label>
         <input type="text" name="teams" placeholder="Antal hold" />
         <input type="submit" class="btn btn-secondary" value="Opret hold" />
@@ -18,7 +19,7 @@
 
     <!-- Back button -->
 <div>
-    <a class="btn btn-primary" href="<?= base_url('events/view/'.$e_id); ?>">Tilbage til event</a>
+    <a class="btn btn-primary" href="<?= base_url("events/view/$e_id"); ?>">Tilbage til event</a>
 </div>
 
 <br>
@@ -28,8 +29,8 @@
         <tbody>
                 <!-- Table header -->
             <tr>
-                <th><a href="<?= base_url("teams/view/$e_id/$per_page/$pagination_offset/$order_by/number"); ?>">Hold #</a></th>
-                <th><a href="<?= base_url("teams/view/$e_id/$per_page/$pagination_offset/$order_by/score"); ?>">Point</a></th>
+                <th><a href="<?= base_url("teams/view/$e_id/$per_page/$order_by/number/$pagination_offset"); ?>">Hold #</a></th>
+                <th><a href="<?= base_url("teams/view/$e_id/$per_page/$order_by/score/$pagination_offset"); ?>">Point</a></th>
                 <th>Sidste handling</th>
                 <th>Medlemmer</th>
                 <th>Besvarede opgaver</th>
@@ -39,7 +40,7 @@
                 <tr>
                     <td><?= $team['t_num'] ?></td>
                     <td><?= $team['t_score']?></td>
-                    <td><?php $action = ($team['action']) ? $team['action'] : 'Ingen handlinger'; echo $action ?></td>
+                    <td><?= $action[array_search($team, $teams)]['action'] ?></td>
                     <td><?= $students[array_search($team['t_num']-$offset, array_keys($teams))]; ?></td>
                     <td><?= count($team_ans[array_search($team, $teams)]).'/'.$event_asses ?></td>
                 </tr>
@@ -50,5 +51,5 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url('events/view/'.$e_id); ?>"><button class="btn btn-primary">Tilbage til event</button></a>
+    <a href="<?= base_url("events/view/$e_id"); ?>"><button class="btn btn-primary">Tilbage til event</button></a>
 </div>

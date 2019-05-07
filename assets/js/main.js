@@ -14,6 +14,39 @@ function deleteTeam(url){
 }
 
 
+function checkFields(amount, formID){
+    var emptyFields = Array();
+        //Check title
+    var title = document.getElementById("title").value;
+    if(!title){
+        emptyFields.push("Opgavetitel ");
+    }
+
+    for(var i = 1; i <= amount; i++){
+            //Get answer field
+        var answerValue = document.getElementById("answer"+i).value;
+            //Get check point field
+        var pointsValue = document.getElementById("points"+i).value;
+        if(!answerValue){
+            emptyFields.push("Svarmulighed "+i+" ");
+        }
+        if(!pointsValue || isNaN(pointsValue)){
+            emptyFields.push("Point "+i+" ");
+        }
+    }
+    
+    //Check if emptyFields array is empty
+    var noEmptyFields = (emptyFields && emptyFields.length) ? false : true;
+    if(noEmptyFields){
+            //If empty, submit create form
+        document.getElementById(formID).submit();
+    } else {
+            //Else, show missing field number
+        alert("Du mangler at udfylde felterne: " + emptyFields);
+    }
+}
+
+
 //View more results per page
 function pagPerPage(offset, e_id = null){
     //Get value from the view's <select> tag

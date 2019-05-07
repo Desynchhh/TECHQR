@@ -25,17 +25,17 @@
 			<!-- enable base_url by adding 'url' to the 'helper' array in /config/autoload.php -->
 			<?php if($this->session->userdata('logged_in') && $this->session->userdata('permissions') == 'Admin'): ?>
 				<li class="nav-item">
-					<a href="<?= base_url("users/index/5/0/ASC/username")?>" class="nav-link">Brugere</a>
+					<a href="<?= base_url("users/index/5/asc/username")?>" class="nav-link">Brugere</a>
 				</li>
 				<li class="nav-item">
 					<a href="<?= base_url('departments/index')?>" class="nav-link">Afdelinger</a>
 				</li>
 			<?php endif; ?>
 			<li class="nav-item">
-				<a href="<?= base_url("events/index/5/0/ASC/e_name")?>" class="nav-link">Events</a>
+				<a href="<?= base_url("events/index/5/asc/e_name")?>" class="nav-link">Events</a>
 			</li>
 			<li class="nav-item">
-				<a href="<?= base_url("assignments/index/5/0/ASC/title")?>" class="nav-link">Opgaver</a>
+				<a href="<?= base_url("assignments/index/5/asc/title")?>" class="nav-link">Opgaver</a>
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">

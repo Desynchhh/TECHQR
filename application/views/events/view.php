@@ -11,7 +11,7 @@
     <dt>Opgaver:</dt>
     <dd class="event-dd">
         <?= count($event_asses) ?> - 
-        <a href="<?= base_url("events/assignments/view/$event[e_id]/5/0/ASC/title"); ?>">
+        <a href="<?= base_url("events/assignments/view/$event[e_id]/5/asc/title"); ?>">
             <button class="btn btn-sm btn-primary">Vis</button>
         </a>
     </dd>
@@ -20,14 +20,14 @@
     <dt>Hold & Score:</dt>
     <dd class="event-dd">
         <?= count($teams) ?> - 
-        <a href="<?= base_url("teams/view/$event[e_id]/5/0/ASC/number"); ?>">
+        <a href="<?= base_url("teams/view/$event[e_id]/5/asc/number"); ?>">
             <button class="btn btn-sm btn-primary">Vis</button>
         </a>
     </dd>
         
         <!-- Event buttons -->
-    <dd><a href="<?= base_url("events/actions/$event[e_id]/5/0/DESC/created_at"); ?>"><button type="button" class="btn btn-primary">Se alle handlinger</button></a> 
-    <a href="<?= base_url("events/stats/$event[e_id]/5/0"); ?>"><button type="button" class="btn btn-primary">Opgave statistik</button></a>
+    <dd><a href="<?= base_url("events/actions/$event[e_id]/5/desc/created_at"); ?>"><button type="button" class="btn btn-primary">Se alle handlinger</button></a> 
+    <a href="<?= base_url("events/stats/$event[e_id]/5"); ?>"><button type="button" class="btn btn-primary">Opgave statistik</button></a>
     <a href="<?= base_url("events/pdf/$event[e_id]"); ?>"><button type="button" class="btn btn-primary">Se PDF</button></a>
     </dd>
 </div>
@@ -43,7 +43,7 @@
 
     <!-- Back button -->
 <div>
-    <a class="btn btn-primary" href="<?= base_url("events/index/5/0/ASC/e_name"); ?>">Tilbage til oversigt</a>
+    <a class="btn btn-primary" href="<?= base_url("events/index/5/asc/e_name"); ?>">Tilbage til oversigt</a>
 </div>
 
     <!-- Hidden delete form -->

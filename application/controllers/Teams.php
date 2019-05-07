@@ -20,6 +20,8 @@
                 $data['title'] = 'HOLD '.$cookie['t_num'].' - '.$cookie['e_name'];
                 $data['message'] = $this->event_model->get_message($cookie['e_id']);
                 $data['score'] = $team['t_score'];
+                $data['action'] = $this->student_action_model->get_latest_assignment($e_id, $cookie['t_id']);
+
             } else {
                 //Correct cookie not found
                 redirect('teams/noteam');
@@ -142,23 +144,23 @@
                 //Set message to inform the user of the successful creation of teams
                 $this->session->set_flashdata('team_created','Hold oprettet');
                 //Reload the page
-                redirect('teams/view/'.$e_id);
+                redirect("teams/view/$e_id/5/asc/number");
             }
         }
 
 
         //List all created teams in an event
-        public function view($e_id, $per_page = 5, $offset = 0, $order_by = 'ASC', $sort_by = 'number'){
+        public function view($e_id, $per_page = 5, $order_by = 'asc', $sort_by = 'number', $offset = 0){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
 
             //Pagination configuration
-            $config['base_url'] = base_url("teams/view/$e_id/$per_page");
+            $config['base_url'] = base_url("teams/view/$e_id/$per_page/$order_by/$sort_by");
             $config['total_rows'] = $this->db->where('teams.event_id', $e_id)->count_all_results('teams');
             $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
-            $config['uri_segment'] = 5;
+            $config['uri_segment'] = 7;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -169,10 +171,14 @@
             $event = $this->event_model->get_event($e_id);
             $data['teams'] = $this->team_model->get_teams($e_id, NULL, $config['per_page'], $offset, $sort_by, $order_by);
             $data['title'] = "Hold oversigt - ".$event['e_name'];
+            foreach($data['teams'] as $team){
+                $data['action'][] = $this->student_action_model->get_latest_action($team['t_id']);
+            }
             $data['offset'] = $offset+(($offset+1) % $config['per_page']);
-            $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+            $data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
             $data['e_id'] = $e_id;
             $data['event_asses'] = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
+            //Get amount of assignments each team has answered
             foreach($data['teams'] as $team){
                 $data['team_ans'][] = $this->team_model->get_team_answers($e_id, $team['t_id']);
             }
@@ -181,20 +187,13 @@
             $data['per_page'] = $per_page;
             $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
-            /*  ECHO DATA IN team_ans
-            foreach($data['team_ans'] as $test){
-                var_export($test);
-                echo'<br>';
-            }
-            */
-
-            //Get the total amount of members per team and store them in a separate array
+            $pagination['total_rows'] = $config['total_rows'];
+            
+            //Get the total amount of members per team
             $student_array = array();
             foreach($data['teams'] as $team){
-                $student_array[] = $this->db->where('students.team_id', $team['t_id'])->count_all_results('students');
+                $data['students'][] = $this->db->where('students.team_id', $team['t_id'])->count_all_results('students');
             }
-            //Store the array in the $data array
-            $data['students'] = $student_array;
 
             //Load the page
             $this->load->view('templates/header');
@@ -214,6 +213,6 @@
             //Set flashdata message
             $this->session->set_flashdata('teams_deleted', 'Alle hold slettet');
             //Reload page
-            redirect('teams/view/'.$e_id);
+            redirect("teams/view/$e_id/5/asc/number");
         }
     }

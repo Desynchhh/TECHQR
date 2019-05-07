@@ -1,12 +1,12 @@
 <?php
 	class Assignments extends CI_Controller{
-		public function index($per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'assignments.created_at'){
-			//Check if anyone is logged in
+		public function index($per_page = 5, $order_by = 'asc', $sort_by = 'title', $offset = 0){
+				//Check if anyone is logged in
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
 			}
 			
-			//Prep
+				//Prep
 			$isAdmin = ($this->session->userdata('permissions') == 'Admin') ? true : false;
 			$user_depts = $this->session->userdata('departments');
 			$total_rows = 0;
@@ -18,35 +18,36 @@
 				}
 			}
 
-			//Pagination config
-			$config['base_url'] = base_url("assignments/index/$per_page");
+				//Pagination config
+			$config['base_url'] = base_url("assignments/index/$per_page/$order_by/$sort_by");
 			$config['total_rows'] = $total_rows;
 			$config['per_page'] = (is_numeric($per_page)) ? $per_page : $total_rows;
-			$config['uri_segment'] = 4;
+			$config['uri_segment'] = 6;
 			$config['first_link'] = 'Første';
 			$config['last_link'] = 'Sidste';
 			$config['attributes'] = array('class' => 'pagination-link');// btn btn-primary
 			$this->pagination->initialize($config);
 
-			//Data variables
+				//Data variables
 			$data['title'] = 'Opgave oversigt';
-			$data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+			$data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
 			$data['offset'] = $offset;
 			$data['per_page'] = $per_page;
-			//Only set if pagination is needed on the page
+				//Only set if pagination is needed on the page
 			$pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
 			$pagination['offset'] = $offset;
+			$pagination['total_rows'] = $total_rows;
 
-			//Get assignments
+				//Get assignments
 			if($this->form_validation->run() === FALSE){
-				//Get all assignments
+					//Get all assignments
 				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, NULL, $sort_by, $order_by);
 			} else {
-				//Search the DB for assignments LIKE what the user searched for
+					//Search the DB for assignments LIKE what the user searched for
 				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, $this->input->post('search_string'));
 			}
 			
-			//Load the page
+				//Load the page
 			$this->load->view('templates/header');
 			$this->load->view('assignments/index', $data);
 			$this->load->view('templates/footer', $pagination);
@@ -79,7 +80,7 @@
 					$this->load->view('templates/footer');
 				} else {
 					//Return the user to the overview page if they tried to access an assignment they are not allowed to access
-					redirect('assignments');
+					redirect('assignments/index/5/asc/title');
 				}
 		}
 
@@ -107,7 +108,7 @@
 					//Names match
 					$this->assignment_model->delete_ass($ass_id);
 					$this->session->set_flashdata('ass_delete_success','Opgave slettet');
-					redirect('assignments');
+					redirect('assignments/index/5/asc/title');
 				} else {
 					//Names don't match
 					$this->session->set_flashdata('ass_delete_fail','Den indtastede titel matcher ikke opgavens titel!');
@@ -116,7 +117,7 @@
 			} else {
 				//Redirect if they are not
 				$this->session->set_flashdata('ass_delete_fail', 'Du kan kun slette opgaver fra din egne afdelinger!');
-				redirect('assignments');
+				redirect('assignments/index/5/asc/title');
 			}
 		}
 
@@ -130,7 +131,7 @@
 			$data['title'] = 'Opret opgave';
 			$data['options'] = $this->set_answer_amount($answerAmount);
 
-			$this->form_validation->set_rules('title','"opgave titel"','required');
+			$this->form_validation->set_rules('title','"opgavetitel"','required');
 			//Set validation rules for all generated 'answer' and 'points' fields
 			for($i = 1; $i<= $data['options']['optionsAmount']; $i++){
 				$this->form_validation->set_rules('answer'.$i,'"svar mulighed '.$i.'"','required');
@@ -146,7 +147,7 @@
 				//If validation was successful
 				$this->assignment_model->create_ass($data['options']['optionsAmount']);
 				$this->session->set_flashdata('ass_created','Opgave oprettet!');
-				redirect("assignments/index/5/0/ASC/title");
+				redirect("assignments/index");
 			}
 		}
 

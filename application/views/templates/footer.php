@@ -1,7 +1,8 @@
 
             
-                    <!-- Pagination -->
+                    <!-- Pagination -->	
             <?php if(isset($per_page) && $per_page != NULL): ?>
+            <p>Side <?= $offset / $per_page + 1 ?> af <?= ceil($total_rows / $per_page) ?></p>
                 <div class="pagination-links">
                     <?= $this->pagination->create_links(); ?>
                     <select id="pag_per_page" onchange="pagPerPage(<?= $offset ?>, <?= (isset($e_id)) ? $e_id : NULL; ?>)">

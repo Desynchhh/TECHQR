@@ -19,27 +19,29 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 <?= form_close(); ?>
 
 	<!-- Table -->
-<table class="table">
-	<tbody>
-			<!-- Table headers -->
-		<tr>
-			<th><a href="<?= base_url("users/index/$per_page/$offset/$order_by/username"); ?>">Brugernavn</a></th>
-			<th><a href="<?= base_url("users/index/$per_page/$offset/$order_by/permissions"); ?>" >Type</a></th>
-			<th>Afdelinger</th>
-			<th><a href="<?= base_url("users/index/$per_page/$offset/$order_by/email"); ?>" >Email</a></th>
-		</tr>
-			<!-- Table data -->
-		<?php foreach($users as $user): ?>
+<div>
+	<table class="table">
+		<tbody>
+				<!-- Table headers -->
 			<tr>
-				<td><a href="<?= base_url("users/view/$user[u_id]"); ?>"><?= $user['username'] ?></a></td>
-				<td><?= $user['permissions'] ?></td>
-				<td>
-					<?php foreach($user_depts[array_search($user, $users)] as $department):?>
-						<a href="<?= base_url("departments/view/$department[d_id]"); ?>" ><?= $department['name'] ?></a><br>
-					<?php endforeach;?>
-				</td>
-				<td><?= $user['email'] ?></td>
+				<th><a href="<?= base_url("users/index/$per_page/$order_by/username/$offset"); ?>">Brugernavn</a></th>
+				<th><a href="<?= base_url("users/index/$per_page/$order_by/permissions/$offset"); ?>" >Type</a></th>
+				<th>Afdelinger</th>
+				<th><a href="<?= base_url("users/index/$per_page/$order_by/email/$offset"); ?>" >Email</a></th>
 			</tr>
-		<?php endforeach;?>
-	</tbody>
-</table>
+				<!-- Table data -->
+			<?php foreach($users as $user): ?>
+				<tr>
+					<td><a href="<?= base_url("users/view/$user[u_id]"); ?>"><?= $user['username'] ?></a></td>
+					<td><?= $user['permissions'] ?></td>
+					<td>
+						<?php foreach($user_depts[array_search($user, $users)] as $department):?>
+							<a href="<?= base_url("departments/view/$department[d_id]"); ?>" ><?= $department['name'] ?></a><br>
+						<?php endforeach;?>
+					</td>
+					<td><?= $user['email'] ?></td>
+				</tr>
+			<?php endforeach;?>
+		</tbody>
+	</table>
+</div>

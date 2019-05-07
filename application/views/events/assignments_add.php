@@ -11,7 +11,7 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("events/assignments/view/$e_id/5/0/ASC/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("events/assignments/view/$e_id/5/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 
 <br>
@@ -22,9 +22,9 @@
         <tbody>
                 <!-- Table headers -->
             <tr>
-                <th><a href="<?= base_url("events/assignments/add/$e_id/$per_page/$offset/$order_by/title"); ?>" >Opgavenavn</a></th>
+                <th><a href="<?= base_url("events/assignments/add/$e_id/$per_page/$order_by/title/$offset"); ?>" >Opgavenavn</a></th>
                 <th>Afdeling</th>
-                <th><a href="<?= base_url("events/assignments/add/$e_id/$per_page/$offset/$order_by/notes"); ?>" >Notater</a></th>
+                <th><a href="<?= base_url("events/assignments/add/$e_id/$per_page/$order_by/notes/$offset"); ?>" >Notater</a></th>
                 <th>Tilføj</th>
             </tr>
                 <!-- Table data -->
@@ -43,5 +43,5 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url('events/assignments/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("events/assignments/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

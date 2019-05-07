@@ -13,26 +13,31 @@
 <?php foreach($event_ass as $ass):?>
     <div class="row">
             <!-- Info -->
-        <div class="col-md-6">
-            <dl class="dl-horizontal">
-                <h3>Opgave: <?= $ass['title'] ?></h3>
+        <div class="col-md-5">
+            <h3>Opgave: <?= $ass['title'] ?></h3>
+            <p><b>Sidst besvaret dato:</b> <?php $date = ($ass['last_answered'] == NULL) ? 'Endnu ikke besvaret.' : $ass['last_answered']; echo $date; ?></p>
+            <table class="table">
+                    <!-- Table headers -->
+                <tr>
+                    <th>Svarmulighed</th>
+                    <th>Besvarelsesprocent</th>
+                </tr>
+                    <!-- Table data -->
                 <?php foreach($event_ans[array_search($ass, $event_ass)] as $ans):?>
-                    <dt><?= $ans['answer'] ?>:</dt>
-                    <br>
-                    <dd id="dd<?= $ans['id'] ?>" class="ass-dd">[VALG PROCENT]</dd>
+                    <tr>
+                        <td><?= $ans['answer'] ?></td>
+                        <td id="dd<?= $ans['id'] ?>">[VALG PROCENT]</td>
+                    </tr>
                 <?php endforeach;?>
-                <dt>Sidst besvaret dato:</dt>
-                <br>
-                <dd><?php $date = ($ass['last_answered'] == NULL) ? 'Endnu ikke besvaret.' : $ass['last_answered']; echo $date; ?></dd>
-            </dl>
+            </table>
         </div>
            
             <!-- Chart -->
-        <div class="col-md-6">
+        <div class="col-md-7">
             <canvas id="piechart<?= $ass['ass_id'] ?>"></canvas>
         </div>
     </div>
-    <hr>
+    <hr class="thick-hr">
 <?php endforeach;?>
     
     <!-- Back button -->

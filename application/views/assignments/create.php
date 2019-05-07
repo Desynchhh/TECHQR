@@ -14,34 +14,34 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 <hr>
 
 <?= validation_errors(); ?>
-<?= form_open('assignments/create/'.$options['optionsAmount']); ?>
+<?= form_open('assignments/create/'.$options['optionsAmount'], array('id' => 'formCreate')); ?>
 <div class="row">
-			<!-- Amount of answers dropdown -->
-		<div class="col-md-3">
-			<label>Antal svarmuligheder:</label>
-				<!-- Fill the combobox with available number of answers an assignment can have -->
-			<select id="answerAmount" class="form-control">
-				<option selected hidden><?= $options['optionsAmount'] ?></option>
-				<?php foreach(range(1, $options['maxOptions']) as $option):?>
-					<option value="<?=$option?>"><?=$option?></option>
-				<?php endforeach; ?> 
-			</select>
-		</div>
-			<!-- Title box -->
+		<!-- Title box -->
 	<div class="col-md-3">
 		<div class="form-group">
-			<label>Opgave titel:</label>
+			<label>Opgavetitel:</label>
 			<input type="text" id="title" name="title" placeholder="Opgave titel" class="form-control"/>
 		</div>
 	</div>
-			<!-- Note field box -->
+		<!-- Amount of answers dropdown -->
+	<div class="col-md-3">
+		<label>Antal svarmuligheder:</label>
+			<!-- Fill the combobox with available number of answers an assignment can have -->
+		<select id="answerAmount" class="form-control">
+			<option selected hidden><?= $options['optionsAmount'] ?></option>
+			<?php foreach(range(1, $options['maxOptions']) as $option):?>
+				<option value="<?=$option?>"><?=$option?></option>
+			<?php endforeach; ?> 
+		</select>
+	</div>
+		<!-- Note field box -->
 	<div class="col-md-3">
 		<div class="form-group">
 			<label>Notater:</label>
 			<input type="text" id="notes" name="notes" placeholder="Notater" class="form-control"/>
 		</div>
 	</div>
-			<!-- Department dropdown -->
+		<!-- Department dropdown -->
 	<div class="col-md-3">
 		<div class="form-group">
 			<label>Afdeling:</label>
@@ -55,25 +55,26 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 	</div>
 
 </div>
-		<!-- Create as many input fields as the user wants -->
+	<!-- Create as many input fields as the user wants -->
 <div class="row">
 	<?php foreach(range(1, $options['optionsAmount']) as $option):?>
 		<div class="col-md-4">	<!-- Fit 3 answers per row -->
 			<div class="form-group">
 				<label>Svarmulighed <?= $option ?>:</label>
-				<input type="text" name="answer<?= $option ?>" placeholder="Svarmulighed <?= $option ?>" class="form-control"/>
+				<input type="text" name="answer<?= $option ?>" id="answer<?= $option ?>" placeholder="Svarmulighed <?= $option ?>" class="form-control"/>
 				<label style="padding-top:1.8%;">Point <?= $option ?>:</label>
-				<input type="text" name="points<?= $option ?>" placeholder="Point <?= $option ?>" class="form-control"/>
+				<input type="text" name="points<?= $option ?>" id="points<?= $option ?>" placeholder="Point <?= $option ?>" class="form-control"/>
 			</div>
 			<br>
 		</div>
 	<?php endforeach; ?>
 </div>
 	<!-- Submit buttom -->
-<input type="submit" value="Opret" class="btn btn-secondary"/>
+<!-- <input type="submit" value="Opret" class="btn btn-secondary"/> -->
+<button onclick="checkFields(<?= $options['optionsAmount'] ?>, 'formCreate')" type="button" class="btn btn-secondary">Opret</button>
 <?= form_close(); ?>
 
-		<!-- Back button -->
+	<!-- Back button -->
 <div>
-	<a href="<?= base_url("assignments/index/5/0/ASC/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+	<a href="<?= base_url("assignments/index"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

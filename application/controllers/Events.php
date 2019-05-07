@@ -1,6 +1,6 @@
 <?php
     class Events extends CI_Controller{
-        public function index($per_page = 5, $offset = 0, $order_by = 'ASC', $sort_by = 'e_name'){
+        public function index($per_page = 5, $order_by = 'asc', $sort_by = 'e_name', $offset = 0){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
             redirect('login');
@@ -16,10 +16,10 @@
             }
 
             //Pagination config
-            $config['base_url'] = base_url('events/index/');
+            $config['base_url'] = base_url("events/index/$per_page/$order_by/$sort_by");
             $config['total_rows'] = $total_rows;
             $config['per_page'] = (is_numeric($per_page)) ? $per_page : $total_rows;
-            $config['uri_segment'] = 4;
+            $config['uri_segment'] = 6;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -30,9 +30,10 @@
             $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset, $sort_by, $order_by);
             $data['offset'] = $offset;
             $data['per_page'] = $per_page;
-            $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+            $data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
             $pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
+            $pagination['total_rows'] = $total_rows;
 
             //Load page
             $this->load->view('templates/header');
@@ -62,7 +63,7 @@
                 //Create event in the DB
                 $this->event_model->create_event();
                 $this->session->set_flashdata('event_created','Event oprettet');
-                redirect('events');
+                redirect('events/index/5/asc/e_name');
             }
         }
 
@@ -90,24 +91,23 @@
                     $this->session->set_flashdata('event_edited_fail','Eventets navn kan ikke være tomt!');
                 } else {
                     //Inputted name is valid
+                    
+                    //Get event name
+                    $event = $this->event_model->get_event($e_id);
+                    $e_name = url_title($event['e_name']);
+                    //Rename folder
+                    $path = APPPATH."../assets/gen-files/";
+                    $old_name = $path . url_title($e_name.'-'.$e_id);
+                    $new_name = $path . url_title($input.'-'.$e_id);
+                    if(is_dir($old_name)){
+                        rename($old_name, $new_name);
+                    }
+                    
+                    //Edit event name
                     $this->event_model->edit_event($e_id, $input);
                     $this->session->set_flashdata('event_edited_success','Eventet er blevet omdøbt');
                 }
-                redirect('events/view/'.$e_id);
-                /*
-                //Set rules for form input fields
-                $this->form_validation->set_rules('e_name','"event navn"','required');
-
-                if($this->form_validation->run() === FALSE){
-                    //Load the page if the validation failed OR didn't run
-                    $this->load->view('templates/header');
-                    $this->load->view('events/edit', $data);
-                    $this->load->view('templates/footer');
-                } else {
-                    //Update/rename the event if validation is successful
-                    redirect('events');
-                }
-                */
+                redirect("events/view/$e_id");
             }
         }
 
@@ -143,7 +143,7 @@
                 $this->load->view('templates/footer');
             } else {
                 //The user is NOT a part of the events department
-                redirect('events/index');
+                redirect('events/index/5/asc/e_name');
             }
         }
 
@@ -178,6 +178,7 @@
             $data['event_ans'] = $event_ans;
             $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
+            $pagination['total_rows'] = $config['total_rows'];
 
             //Load the page
             $this->load->view('templates/header');
@@ -256,7 +257,7 @@
 
 
         //Loads the page where assignments can be added to the event, so teams can answer it.
-        public function assignments_add($e_id, $per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
+        public function assignments_add($e_id, $per_page = 5, $order_by = 'asc', $sort_by = 'title', $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -281,10 +282,10 @@
                 $total_rows = $ass_count - $event_ass_count;
 
                 //Pagination config
-                $config['base_url'] = base_url("events/assignments/add/$e_id/$per_page");
-                $config['per_page'] = (is_numeric($per_page)) ? $per_page : NULL;
+                $config['base_url'] = base_url("events/assignments/add/$e_id/$per_page/$order_by/$sort_by");
                 $config['total_rows'] = $total_rows;
-                $config['uri_segment'] = 6;
+                $config['per_page'] = (is_numeric($per_page)) ? $per_page : $total_rows;
+                $config['uri_segment'] = 8;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
@@ -295,29 +296,30 @@
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
                 $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset, $sort_by, $order_by);
                 $data['offset'] = $offset;
-                $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
+                $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
                 $data['per_page'] = $per_page;
-                $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+                $pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
-                
+                $pagination['total_rows'] = $total_rows;
+
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_add', $data);
                 $this->load->view('templates/footer', $pagination);
             } else {
                 //If the user is NOT a member of the events department, redirect them to the event index
-                redirect('events');
+                redirect('events/index/5/asc/e_name');
             }
         }
 
 
-        //Views all the assignments added to the event
-        public function assignments_view($e_id, $per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'title'){
+            //Views all the assignments added to the event
+        public function assignments_view($e_id, $per_page = 5, $order_by = 'asc', $sort_by = 'title', $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
             $event = $this->event_model->get_event($e_id);
-            //Check if the user is in the same department as the event
+                //Check if the user is in the same department as the event
             $ismember = FALSE; //Throws an error if this variable is undefined
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $event['d_id']){
@@ -327,32 +329,34 @@
             }
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
-                //Pagination config
-                $config['base_url'] = base_url('events/assignments/view/'.$e_id.'/');
+                    //Pagination config
+                $config['base_url'] = base_url("events/assignments/view/$e_id/$per_page/$order_by/$sort_by");
                 $config['total_rows'] = $this->db->where('event_assignments.event_id', $e_id)->count_all_results('event_assignments');
-                $config['per_page'] = (is_numeric($per_page)) ? $per_page : NULL;
-                $config['uri_segment'] = 6;
+                $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
+                $config['uri_segment'] = 8;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
                 $this->pagination->initialize($config);
 
-                //Data variables
+                    //Data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
                 $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset, $sort_by, $order_by);
                 $data['offset'] = $offset;
-                $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
+                $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
                 $data['per_page'] = $per_page;
                 $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
+                $pagination['total_rows'] = $config['total_rows'];
 
-                //Load page
+                    //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_view', $data);
                 $this->load->view('templates/footer', $pagination);
             } else {
-                redirect('events');
+                    //User is not member or admin
+                redirect('events/index/5/asc/e_name');
             }
         }
 
@@ -378,7 +382,7 @@
                 $this->session->set_flashdata('event_removed_ass','Opgave fjernet fra eventet');
                 redirect('events/assignments/view/'.$e_id);
             } else {
-                redirect('events');
+                redirect('events/index/5/asc/e_name');
             }
         }
 
@@ -404,7 +408,7 @@
                 $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
                 redirect('events/assignments/add/'.$e_id);
             } else {
-                redirect('events');
+                redirect('events/index/5/asc/e_name');
             }
         }
 
@@ -446,7 +450,7 @@
                     $this->event_model->delete_event($e_id);
                     $this->session->set_flashdata('event_delete_success','Event slettet');
                     //Load index page
-                    redirect('events');
+                    redirect('events/index/5/asc/e_name');
                 } else {
                     $this->session->set_flashdata('event_delete_fail', 'Det indtastede navn matcher ikke med eventets navn!');
                     redirect('events/view/'.$e_id);
@@ -475,7 +479,7 @@
 
 
         //Views all actions taken by teams in the event
-        public function actions($e_id, $per_page = 5, $offset = 0, $order_by = 'DESC', $sort_by = 'created_at'){
+        public function actions($e_id, $per_page = 5, $order_by = 'desc', $sort_by = 'created_at', $offset = 0){
             //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -492,10 +496,10 @@
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination configuration
-                $config['base_url'] = base_url("events/actions/$e_id/$per_page");
+                $config['base_url'] = base_url("events/actions/$e_id/$per_page/$order_by/$sort_by");
                 $config['total_rows'] = $this->db->where('student_actions.event_id', $e_id)->count_all_results('student_actions');
                 $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'] ;
-                $config['uri_segment'] = 5;
+                $config['uri_segment'] = 7;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
@@ -506,18 +510,19 @@
                 $data['actions'] = $this->student_action_model->get_actions($e_id, $config['per_page'], $offset, $sort_by, $order_by);
                 $data['e_id'] = $data['event']['e_id'];
                 $data['offset'] = $offset;
-                $data['order_by'] = ($order_by == 'ASC') ? 'DESC' : 'ASC';
+                $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
                 $data['per_page'] = $per_page;
                 $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
-
+                $pagination['total_rows'] = $config['total_rows'];
+                
                 //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/actions', $data);
                 $this->load->view('templates/footer', $pagination);
             } else {
                 //Not a member or admin
-                redirect('events');
+                redirect('events/index/5/asc/e_name');
             }
         }
 
@@ -529,7 +534,7 @@
             }
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = false;
+            $ismember = FALSE;
             foreach($this->session->userdata('departments') as $department){
                 if($department['d_id'] == $data['event']['d_id']){
                     $ismember = TRUE;
@@ -724,8 +729,9 @@
                     $pdf->SetCreator(PDF_CREATOR);
                     $pdf->SetTitle('Assignment PDF');
                     $pdf->SetAutoPageBreak(FALSE, 10);
-                    //$pdf->setCellPaddings(1, 1, 1, 1);
-                    //$pdf->setCellMargins(1, 1, 1, 1);
+                    //$left='', $top='', $right='', $bottom='' (CellPadding & CellMargin params)
+                    $pdf->setCellPaddings(1, 1, 1, 1);
+                    $pdf->setCellMargins(1, 3, 1, 1);
                     $pdf->SetPrintHeader(FALSE);
                     $pdf->SetPrintFooter(FALSE);
                     //MUST add a new page, otherwise it will throw an error due to not containing any pages
@@ -760,13 +766,19 @@
                         } else {
                             $loops = $answers_left;
                         }
-
+                        
+                        $cellHeights = array();
                         //Write out up to 3 answers per line
                         for($o = 0; $o < $loops; $o++){
+                            $text = $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'];
+                                // Multicell params
+                                //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+                            $pdf->MultiCell(60, 5, $text, 0, 'C', 0, 0, '', '', true);
+                            //Ensure linebreak accommodates for the longest answer.
+                            $cellHeights[] = ceil($pdf->getStringHeight(100, $text));
                             if($o == $loops-1){
-                                $pdf->MultiCell(60, 5, $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 1, '', '', true);
-                            } else {
-                                $pdf->MultiCell(60, 5, $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'], 0, 'C', 0, 0, '', '', true);
+                                $linebreak = max($cellHeights)*1.7;
+                                $pdf->Ln($linebreak);
                             }
                             $answer_counter++;
                         }
@@ -784,12 +796,12 @@
                             
                             //Set path+filename for the QR
                             $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.$ass_answers[$qr_answer_index+$o]['id'].'-'.$o.'.png';
-                            //Save QR to machine
+                            //Save QR to local machine
                             $qrcode->writeFile($qrpath);
                             
                             $content .= '
                             <div>
-                            <img src="'.$qrpath.'" />
+                                <img src="'.$qrpath.'" />
                             </div>
                             ';
                             
@@ -798,7 +810,7 @@
                                 $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 1, '', '', true, 0, true);
                             } else {
                                 $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 0, '', '', true, 0, true);
-                            }//60, 65, $content
+                            }
                             //Delete the .png file from the machine
                             unlink($qrpath);
                             $qr_counter++;
@@ -807,8 +819,6 @@
                         $answers_left -= 3;
                     }
 
-                    // Multicell params
-                    //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
                     $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.url_title($ass['title']).'.pdf','F');
                 }
                 $this->session->set_flashdata('pdf_ass_created',"Opgave PDF'er oprettet!");

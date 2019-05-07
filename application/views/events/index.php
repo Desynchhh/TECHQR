@@ -16,8 +16,8 @@
         <tbody>
                 <!-- Table headers -->
             <tr>
-                <th><a href="<?= base_url("events/index/$per_page/$offset/$order_by/e_name"); ?>">Eventnavn</a></th>
-                <th><a href="<?= base_url("events/index/$per_page/$offset/$order_by/d_name"); ?>">Afdeling</a></th>
+                <th><a href="<?= base_url("events/index/$per_page/$order_by/e_name/$offset"); ?>">Eventnavn</a></th>
+                <th><a href="<?= base_url("events/index/$per_page/$order_by/d_name/$offset"); ?>">Afdeling</a></th>
             </tr>
                 <!-- Table data -->
             <?php foreach($events as $event):?>

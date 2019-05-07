@@ -75,20 +75,6 @@
         }
 
 
-        /* DEPRECATED.
-        //Save the fact that a team has answered an assignment
-        public function answer_assignment($t_id, $ass_id, $ans_id, $e_id){
-            $data = array(
-                'team_id' => $t_id,
-                'assignment_id' => $ass_id,
-                'answer_id' => $ans_id,
-                'event_id' => $e_id
-            );
-            $this->db->insert('team_assignments', $data);
-        }
-        */
-
-
         //Check if the team has already answered the assignment they are attempting to answer
         public function check_already_answered($t_id, $ass_id){
             $data =  array(
@@ -128,7 +114,7 @@
                 assignment_id as ass_id,
                 answer_id as ans_id
             ')
-            ->from('student_actions')//team_assignments
+            ->from('student_actions')
             ->where('event_id', $e_id)
             ->where('assignment_id !=', NULL);
             if($t_id){
@@ -145,15 +131,6 @@
             $this->db->where('team_id', $t_id)
             ->delete('students');
         }
-
-
-        /*
-        //Reset all the teams answers
-        public function delete_answers($t_id){
-            $this->db->where('team_id', $t_id)
-            ->delete('team_assignments');
-        }
-        */
         
 
         //Delete all teams from an event

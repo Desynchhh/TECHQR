@@ -65,18 +65,6 @@
             ->where('user_departments.department_id !=', $d_id)
             ->group_by('user_departments.user_id');
             $query = $this->db->get();
-
-            /*
-            $this->db->distinct('user_departments.user_id')
-            ->select('
-                users.id as u_id,
-                users.username
-            ')
-            ->join('users', 'users.id = user_departments.user_id')
-            ->where('user_departments.department_id !=', $d_id)
-            ->from('user_departments');
-            $query = $this->db->get();
-            */
             return $query->result_array();
         }
 

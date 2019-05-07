@@ -1,15 +1,15 @@
 <?php
     class Users extends CI_Controller{
-        public function index($per_page = 5, $offset = 0, $order_by = 'ASC', $sort_by = 'username'){
+        public function index($per_page = 5, $order_by = 'asc', $sort_by = 'username', $offset = 0){
             //Check is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
             //Pagination config
-            $config['base_url'] = base_url("users/index/$per_page");
+            $config['base_url'] = base_url("users/index/$per_page/$order_by/$sort_by");
             $config['total_rows'] = $this->db->count_all_results('users');
             $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
-            $config['uri_segment'] = 4;
+            $config['uri_segment'] = 6;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -19,15 +19,15 @@
             $data['title'] = 'Bruger oversigt';
             $data['offset'] = $offset;
             $data['per_page'] = $per_page;
-            $data['order_by'] = ($order_by == 'DESC') ? 'ASC' : 'DESC';
+            $data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
             $data['users'] = $this->user_model->get_user(NULL, $config['per_page'], $offset, $sort_by, $order_by);
             foreach($data['users'] as $user){
                 $data['user_depts'][] = $this->user_department_model->get_user_departments($user['u_id']);
             }
-
             $pagination['per_page'] = $per_page;
             $pagination['offset'] = $offset;
-            
+            $pagination['total_rows'] = $config['total_rows'];
+
             //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
@@ -42,7 +42,7 @@
             
             if($id === NULL){
                 //No user given
-                redirect('users');
+                redirect('users/index/5/asc/username');
             } else {
                 //Get user
                 if($this->session->userdata('permissions') != 'Admin'){
@@ -136,7 +136,7 @@
                 $enc_pass = $this->hash_password($this->input->post('password'));
                 $this->user_model->create_user($enc_pass);
                 $this->session->set_flashdata('user_created','Brugeren '.$this->input->post('username').' er blevet oprettet!');
-                redirect('users');
+                redirect('users/index/5/asc/username');
             }
         }
 
@@ -223,7 +223,7 @@
                 //Username matches
                 $this->user_model->delete_user($u_id);
                 $this->session->set_flashdata('user_delete_success', 'Bruger slettet');
-                redirect('users');
+                redirect('users/index/5/asc/username');
             } else {
                 //Username does not match
                 $this->session->set_flashdata('user_delete_fail', 'Indtastet brugernavn matcher ikke!');

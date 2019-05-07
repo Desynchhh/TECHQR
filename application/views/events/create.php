@@ -24,4 +24,4 @@
     </div>
 </div>
 
-<div><a href="<?= base_url("events/index/5/0/ASC/e_name"); ?>"><button class="btn btn-primary">Tilbage til oversigt</button></a></div>
+<div><a href="<?= base_url("events/index"); ?>"><button class="btn btn-primary">Tilbage til oversigt</button></a></div>

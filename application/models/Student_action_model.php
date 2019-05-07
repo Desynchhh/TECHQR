@@ -16,6 +16,22 @@
             $this->db->insert('student_actions', $data);
         }
 
+
+        //Get the newest answered assignment
+        public function get_latest_assignment($e_id, $t_id){
+            $this->db->select('
+                student_actions.created_at,
+                assignments.title as ass_title
+            ')
+            ->where('student_actions.answer_id !=', NULL)
+            ->join('assignments', 'assignments.id = student_actions.assignment_id', 'left')
+            ->order_by('student_actions.created_at', 'desc')
+            ->from('student_actions');
+            $query = $this->db->get();
+            return $query->row_array(0);
+        }
+
+
         //Returns all actions in a single event 
         public function get_actions($e_id, $limit = FALSE, $offset = FALSE, $sort_by = 'created_at', $order_by = 'DESC'){
             if($limit){
@@ -40,7 +56,20 @@
             $query = $this->db->get();
             return $query->result_array();
         }
-        
+
+        //Get the newest action
+        public function get_latest_action($t_id){
+            $this->db->select('
+                student_actions.action
+            ')
+            ->where('student_actions.team_id', $t_id)
+            ->order_by('student_actions.created_at', 'desc')
+            ->from('student_actions');
+            $query = $this->db->get();
+            return $query->row_array(0);
+        }
+
+        //Delete all actions from the table
         public function delete_actions($e_id){
             $this->db->where('student_actions.event_id', $e_id)
             ->delete('student_actions');

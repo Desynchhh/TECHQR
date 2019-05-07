@@ -5,8 +5,13 @@
     <!-- Info -->
 <div>
     <p>Dit holds score er: <?= $score ?></p>
-    <p>Seneste besvaret spørgsmål: [handling]</p>
-    <p>Tidspunkt: [datetime]</p>
+    <?php if($action['ass_title']): ?>
+        <p>Seneste besvaret spørgsmål: <?=$action['ass_title'] ?></p>
+        <p>Tidspunkt: <?= $action['created_at'] ?></p>
+    <?php else: ?>
+        <p>Seneste besvaret spørgsmål:</p>
+        <p>Tidspunkt:</p>
+    <?php endif; ?>
 </div>
 
 <?php if(!empty($message['message'])):?>

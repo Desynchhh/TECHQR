@@ -48,7 +48,7 @@
                 //Valdidation succeeded
                 $this->department_model->create_department();
                 $this->session->set_flashdata('department_created',$this->input->post('name').' er succesfuldt oprettet!');
-                redirect('departments');
+                redirect('departments/index');
             }
         }
 
@@ -100,7 +100,7 @@
         }
 
 
-        public function add($d_id, $offset = 0, $u_id = NULL){
+        public function add($d_id, $per_page = 5, $offset = 0, $u_id = NULL){
             //Check the user is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
@@ -109,7 +109,6 @@
             //Check if a user has been selected to be added
             if($u_id === NULL){
                 //Dont add a user. List all users NOT in the specified department
-                $per_page = 10;
 
                 //Find and sort users not in the specified department
                 $temp = array();
@@ -123,10 +122,10 @@
                 $data['users'] = $temp;
                 
                 //Pagination config
-                $config['base_url'] = base_url('departments/add/'.$d_id.'/');
+                $config['base_url'] = base_url("departments/add/$d_id/$per_page");
                 $config['total_rows'] = $this->db->where('user_departments.department_id !=', $d_id)->count_all_results('user_departments');
-                $config['per_page'] = $per_page;
-                $config['uri_segment'] = 4;
+                $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
+                $config['uri_segment'] = 5;
                 $config['attributes'] = array('class' => 'pagination-link');
                 $config['first_link'] = 'Første';
                 $config['last_link'] = 'Sidste';
@@ -135,6 +134,10 @@
                 //Set data variables
                 $data['department'] = $this->department_model->get_department($d_id);
                 $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
+                $data['per_page'] = $per_page;
+                $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
+                $pagination['offset'] = $offset;
+                $pagination['total_rows'] = $config['total_rows'];
 
                 //Load page
                 $this->load->view('templates/header');
@@ -167,9 +170,8 @@
                 //Department exists
                 $this->session->set_flashdata('department_edit_fail', 'Der findes allerede en afdeling med det navn!');
             }
-
             //Reload page
-            redirect('departments/');
+            redirect('departments/index');
         }
 
 
@@ -200,7 +202,7 @@
                 $this->event_model->delete_department_event($d_id);
                 $this->department_model->delete_department($d_id);
                 $this->session->set_flashdata('department_delete_success','Afdeling slettet.');
-                redirect('departments');
+                redirect('departments/index');
             } else {
                 //Input name doesn't match
                 $this->session->set_flashdata('department_delete_fail','Indtastet navn matcher ikke!');

@@ -54,7 +54,7 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("assignments/index/5/0/ASC/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("assignments/index/5/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 
 <br/>
