@@ -3,7 +3,7 @@
 <hr>
     <!-- Back button -->
 <div class="row">
-    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
+    <a href="<?= base_url("events/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
 
 <br/>
@@ -18,17 +18,20 @@
     <h4>Tildel/Fratag Point</h4>
     <h5>Indtast et negativt tal for at fratage point.</h5>
         <div>
+                <!-- Form -->
             <?= form_open('events/manage_points/'.$e_id); ?>
                 <p class="same-line">Tildel </p>
                 <input style="width:50px;" type="text" name="points" placeholder="point" class="same-line" /> 
                 <p class="same-line"> point til hold </p>
-                <select name="t_num" class="same-line">
+                    <!-- Team dropdown -->
+                <select name="t_id" class="same-line">
                     <option selected hidden value=""></option>
                     <?php foreach($teams as $team): ?>
-                        <option value="<?= $team['t_num'] ?>"><?= $team['t_num'] ?></option>
+                        <option value="<?= $team['t_id'] ?>"><?= $team['t_num'] ?></option>
                     <?php endforeach; ?>
                 </select>
                 <br>
+                    <!-- Submit button -->
                 <input type="submit" class="btn btn-secondary" value="Tildel" />
             <?= form_close(); ?>
         </div>
@@ -36,8 +39,12 @@
 
         <!-- Check Hold -->
     <div class="col-md-4" style="border-right:solid lightgrey;border-left:solid lightgrey;">
-        <h4>Disse hold har ingen medlemmer:</h4>
-        <h5>Genindlæs siden for at opdatere.</h5>
+        <div>
+            <h4>Disse hold har ingen medlemmer:</h4>
+            <h5>Genindlæs siden for at opdatere listen.</h5>
+            <a href="<?= base_url("events/manage/$e_id") ?>"><button type="button" class="btn btn-secondary">Opdater</button></a>
+        </div>
+        <br>
         <?php if(!empty($empty_teams)): ?>
         <div class="row">
         <?php foreach($empty_teams as $team): ?>

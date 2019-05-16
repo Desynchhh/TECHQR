@@ -1,6 +1,6 @@
 <?php
     class Events extends CI_Controller{
-        public function index($per_page = 5, $order_by = 'asc', $sort_by = 'e_name', $offset = 0){
+        public function index($per_page = 10, $order_by = 'asc', $sort_by = 'e_name', $offset = 0){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
             redirect('login');
@@ -63,7 +63,7 @@
                 //Create event in the DB
                 $this->event_model->create_event();
                 $this->session->set_flashdata('event_created','Event oprettet');
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
@@ -143,7 +143,7 @@
                 $this->load->view('templates/footer');
             } else {
                 //The user is NOT a part of the events department
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
@@ -165,13 +165,24 @@
             $team_ans = $this->team_model->get_team_answers($e_id);
             //Get all answers to the events assignments
             $event_ans = array();
+            $answered_array = array();
+            $count = 0;
             foreach($event_ass as $ass){
                 $event_ans[] = $this->assignment_model->get_ass_answers($ass['ass_id']);
+                foreach($team_ans as $ans){
+                    if($ans['ass_id'] == $ass['ass_id']){
+                        $count++;
+                    }
+                }
+                array_push($answered_array, $count);
+                $count = 0;
             }
             
             //Set data variables
             $event = $this->event_model->get_event($e_id);
             $data['title'] = 'Stats - '.$event['e_name'];
+            $data['total_teams'] = $this->db->where('teams.event_id', $e_id)->count_all_results('teams');
+            $data['answered_array'] = $answered_array;
             $data['e_id'] = $e_id;
             $data['team_ans'] = $team_ans;
             $data['event_ass'] = $event_ass;
@@ -211,15 +222,15 @@
         public function manage_points($e_id){
             //Set validation rules
             $this->form_validation->set_rules('points', '"point"', 'required|numeric');
-            $this->form_validation->set_rules('t_num', '"hold nummer"', 'required|numeric');
+            $this->form_validation->set_rules('t_id', '"hold nummer"', 'required|numeric');
 
             if($this->form_validation->run() === FALSE){
                 //Validation didn't run or failed
                 $this->session->set_flashdata('manage_points_fail', 'Point feltet må kun indeholde tal!');
             } else {
                 //Get relevant team
-                $t_num = $this->input->post('t_num');
-                $team = $this->team_model->get_teams($e_id, $t_num);
+                $t_id = $this->input->post('t_id');
+                $team = $this->team_model->get_team($t_id);
                 //Calculate the teams new score
                 $t_score = $team['t_score'];
                 $points = $this->input->post('points');
@@ -227,9 +238,13 @@
                 //Update score in DB
                 $this->team_model->update_score($team['t_id'], $newscore);
                 $this->session->set_flashdata('manage_points_success', 'Holdets point er blevet opdateret');
+                //Log action
+                $user = $this->session->userdata['username'];
+                $action = ($points < 0) ? "$user fratog point" : "$user tildelte point";
+                $this->student_action_model->create_action($e_id, $t_id, $action, NULL, NULL, $points);
             }
             //Reload page
-            redirect('events/manage/'.$e_id);
+            redirect("events/manage/$e_id");
         }
 
 
@@ -252,12 +267,12 @@
         public function message($e_id){
             $msg = $this->input->post('message');
             $this->event_model->update_message($e_id, $msg);
-            redirect('events/manage/'.$e_id);
+            redirect("events/manage/$e_id");
         }
 
 
         //Loads the page where assignments can be added to the event, so teams can answer it.
-        public function assignments_add($e_id, $per_page = 5, $order_by = 'asc', $sort_by = 'title', $offset = 0){
+        public function assignments_add($e_id, $per_page = 10, $order_by = 'asc', $sort_by = 'title', $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -308,13 +323,13 @@
                 $this->load->view('templates/footer', $pagination);
             } else {
                 //If the user is NOT a member of the events department, redirect them to the event index
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
 
             //Views all the assignments added to the event
-        public function assignments_view($e_id, $per_page = 5, $order_by = 'asc', $sort_by = 'title', $offset = 0){
+        public function assignments_view($e_id, $per_page = 10, $order_by = 'asc', $sort_by = 'title', $offset = 0){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
@@ -356,7 +371,7 @@
                 $this->load->view('templates/footer', $pagination);
             } else {
                     //User is not member or admin
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
@@ -380,9 +395,9 @@
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->remove_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_removed_ass','Opgave fjernet fra eventet');
-                redirect('events/assignments/view/'.$e_id);
+                redirect("events/assignments/view/$e_id");
             } else {
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
@@ -406,9 +421,9 @@
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->add_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
-                redirect('events/assignments/add/'.$e_id);
+                redirect("events/assignments/add/$e_id");
             } else {
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
@@ -450,10 +465,10 @@
                     $this->event_model->delete_event($e_id);
                     $this->session->set_flashdata('event_delete_success','Event slettet');
                     //Load index page
-                    redirect('events/index/5/asc/e_name');
+                    redirect('events/index/10/asc/e_name');
                 } else {
                     $this->session->set_flashdata('event_delete_fail', 'Det indtastede navn matcher ikke med eventets navn!');
-                    redirect('events/view/'.$e_id);
+                    redirect("events/view/$e_id");
                 }
             }
         }
@@ -474,12 +489,12 @@
                 $this->team_model->update_score($team['t_id'], 0);
             }
             $this->session->set_flashdata('event_reset', 'Eventet er blevet resat');
-            redirect('events/manage/'.$e_id);
+            redirect("events/manage/$e_id");
         }
 
 
         //Views all actions taken by teams in the event
-        public function actions($e_id, $per_page = 5, $order_by = 'desc', $sort_by = 'created_at', $offset = 0){
+        public function actions($e_id, $per_page = 10, $order_by = 'desc', $sort_by = 'created_at', $offset = 0){
             //Check logged in
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -522,7 +537,7 @@
                 $this->load->view('templates/footer', $pagination);
             } else {
                 //Not a member or admin
-                redirect('events/index/5/asc/e_name');
+                redirect('events/index/10/asc/e_name');
             }
         }
 
@@ -613,7 +628,7 @@
                 $teams = $this->team_model->get_teams($e_id);
                 if(empty($teams)){
                     //Don't run the function if there are no teams, otherwise it creates an empty PDF
-                    redirect('events/pdf/'.$e_id);
+                    redirect("events/pdf/$e_id");
                 }
                 
                 //Set the path for where the PDF is to be saved (../assets/gen-files/..)
@@ -627,7 +642,7 @@
                 foreach($teams as $team){
                     //Set the URL to the 'join()' function in the 'Teams' Controller.
                     //event_id and team_id are given as parameters.
-                    $url = $url_template.$team['t_num'];
+                    $url = $url_template.$team['t_id'];
                     
                     //Instantiate a new Endroid\QrCode Object. Takes the URL the Code takes you to as a parameter
                     $qrcode = new Endroid\QrCode\QrCode($url);
@@ -679,7 +694,7 @@
                 
                 $this->session->set_flashdata('pdf_team_created',"Hold PDF oprettet!");
                 set_time_limit (ini_get('max_executuion_time'));
-                redirect('events/pdf/'.$e_id);
+                redirect("events/pdf/$e_id");
             }
         }
 
@@ -714,11 +729,11 @@
                 $this->delete_dir_contents($path.$assfolder);
                 if(empty($asses)){
                     //Stop running the function if there are no assignments, otherwise it will create an empty PDF
-                    redirect('events/pdf/'.$e_id);
+                    redirect("events/pdf/$e_id");
                 }
 
                 //URL
-                $url_template = base_url('teams/answer/'.$e_id.'/');
+                $url_template = base_url("teams/answer/$e_id/");
                 //Get fonts
                 $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
                 $main_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
@@ -738,7 +753,7 @@
                     $pdf->AddPage();
                     
                     //URL template for each assignment (used later)
-                    $ass_url = $url_template . $ass['ass_id'].'/';
+                    $ass_url = $url_template.$ass['ass_id'].'/';
                     //Get all answers for the current assignment
                     $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
                     
@@ -771,8 +786,8 @@
                         //Write out up to 3 answers per line
                         for($o = 0; $o < $loops; $o++){
                             $text = $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'];
-                                // Multicell params
-                                //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+                            // Multicell params
+                            //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
                             $pdf->MultiCell(60, 5, $text, 0, 'C', 0, 0, '', '', true);
                             //Ensure linebreak accommodates for the longest answer.
                             $cellHeights[] = ceil($pdf->getStringHeight(100, $text));
@@ -823,7 +838,7 @@
                 }
                 $this->session->set_flashdata('pdf_ass_created',"Opgave PDF'er oprettet!");
                 set_time_limit(ini_get('max_execution_time'));
-                redirect('events/pdf/'.$e_id);
+                redirect("events/pdf/$e_id");
             }
         }
 

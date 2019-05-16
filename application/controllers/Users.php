@@ -1,11 +1,11 @@
 <?php
     class Users extends CI_Controller{
-        public function index($per_page = 5, $order_by = 'asc', $sort_by = 'username', $offset = 0){
-            //Check is admin
+        public function index($per_page = 10, $order_by = 'asc', $sort_by = 'username', $offset = 0){
+                //Check is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
-            //Pagination config
+                //Pagination config
             $config['base_url'] = base_url("users/index/$per_page/$order_by/$sort_by");
             $config['total_rows'] = $this->db->count_all_results('users');
             $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
@@ -15,7 +15,7 @@
             $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
 
-            //Set data array
+                //Set data array
             $data['title'] = 'Bruger oversigt';
             $data['offset'] = $offset;
             $data['per_page'] = $per_page;
@@ -28,32 +28,33 @@
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
 
-            //Load page
+                //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
             $this->load->view('templates/footer', $pagination);
         }
 
 
+            //View details about an individual user
         public function view($id = NULL){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
             
             if($id === NULL){
-                //No user given
-                redirect('users/index/5/asc/username');
+                    //No user given
+                redirect('users/index/10/asc/username');
             } else {
-                //Get user
+                    //Get user
                 if($this->session->userdata('permissions') != 'Admin'){
                     $id = $this->session->userdata('u_id');
                 }
-                //Set $data variables
+                    //Set $data variables
                 $data['title'] = 'Bruger detaljer';
                 $data['user'] = $this->user_model->get_user($id);
                 $data['departments'] = $this->user_department_model->get_user_departments($id);
 
-                //Load page
+                    //Load page
                 $this->load->view('templates/header');
                 $this->load->view('users/view', $data);
                 $this->load->view('templates/footer');
@@ -77,15 +78,15 @@
                 $this->load->view('users/login', $data);
                 $this->load->view('templates/footer');
             } else {
-                //Attempt login
+                    //Attempt login
                 $username = $this->input->post('username');
                 if(password_verify($this->input->post('password'), $this->user_model->get_password())){
-                    //Password and username matches with the DB
+                        //Password and username matches with the DB
                     $this->update_userdata($username);
                     $this->session->set_flashdata('user_login_success','Du er nu logget ind!');
                     redirect('home');
                 } else {
-                    //Login details does not match with the DB
+                        //Login details does not match with the DB
                     $this->session->set_flashdata('user_login_fail','Den indtastede bruger findes ikke');
                     redirect('login');
                 }
@@ -93,7 +94,7 @@
         }
 
 
-        //Clear session->userdata
+            //Clear session->userdata
         public function logout(){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -108,7 +109,7 @@
         }
 
 
-        //Create new user in DB
+            //Create new user in DB
         public function register(){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
@@ -136,7 +137,7 @@
                 $enc_pass = $this->hash_password($this->input->post('password'));
                 $this->user_model->create_user($enc_pass);
                 $this->session->set_flashdata('user_created','Brugeren '.$this->input->post('username').' er blevet oprettet!');
-                redirect('users/index/5/asc/username');
+                redirect('users/index/10/asc/username');
             }
         }
 
@@ -200,7 +201,7 @@
                     }
                 }
                 $this->session->set_flashdata('user_edited','Brugeren er blevet opdateret');
-                redirect('users/view/'.$u_id);
+                redirect("users/view/$u_id");
             }
         }
 
@@ -223,11 +224,11 @@
                 //Username matches
                 $this->user_model->delete_user($u_id);
                 $this->session->set_flashdata('user_delete_success', 'Bruger slettet');
-                redirect('users/index/5/asc/username');
+                redirect('users/index/10/asc/username');
             } else {
                 //Username does not match
                 $this->session->set_flashdata('user_delete_fail', 'Indtastet brugernavn matcher ikke!');
-                redirect('users/view/'.$u_id);
+                redirect("users/view/$u_id");
             }
         }
 

@@ -52,5 +52,5 @@
 
 	<!-- Back button -->
 <div>
-	<a href="<?= base_url("users/index/5/0/ASC/username"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+	<a href="<?= base_url("users/index/10/asc/username/0"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

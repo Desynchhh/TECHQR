@@ -1,5 +1,6 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
+<h5>Tilføj en bruger til afdelingen.</h5>
 <br>
 
     <!-- Table -->
@@ -36,5 +37,5 @@
 <h2><b>
     NOTE: Du kan endnu ikke selv vælge hvor mange brugere du vil se per side.
     <br>
-    Du vil ødelægge siden hvis du forsøger på dette.
+    Du vil ødelægge siden hvis du forsøger på dette. Du kan dog stadig bladre.
 </b></h2>

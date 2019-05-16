@@ -1,5 +1,7 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
+<h5>Se alle handlinger der har fundet sted under dette event.<br>
+Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
 <hr>
 
     <!-- Back Button -->
@@ -27,15 +29,9 @@
                 <tr>
                     <td><?= $action['t_num'] ?></td>
                     <td><?= $action['action'] ?></td>
-                    <?php if(isset($action['ass_title'])): ?>
-                        <td><?= $action['ass_title'] ?></td>
-                        <td><?= $action['answer'] ?></td>
-                        <td><?= $action['points'] ?></td>
-                    <?php else: ?>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    <?php endif;?>
+                    <td><?= ($action['ass_title']) ? $action['ass_title'] : '';?></td>
+                    <td><?= ($action['answer']) ? $action['answer'] : '';?></td>
+                    <td><?= ($action['points']) ? $action['points'] : ''; ?></td>
                     <td><?= $action['created_at'] ?></td>
                 </tr>
             <?php endforeach; ?>

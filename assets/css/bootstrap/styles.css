@@ -9,7 +9,7 @@ dt {
 }
 
 .department-dd {
-    margin-left: 11%;
+    margin-left: 32%;
 }
 
 .user-dd {
@@ -17,7 +17,7 @@ dt {
 }
 
 .ass-dd{
-    margin-left: 14%;
+    margin-left: 32%;
 }
 
 .event-dd{
@@ -64,5 +64,5 @@ tr:nth-child(even){
 }
 
 .thick-hr{
-    border:solid black 
+    border: 0.5px solid black 
 }

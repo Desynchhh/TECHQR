@@ -96,11 +96,11 @@
                 $this->session->set_flashdata('department_user_remove_success','Brugeren er blevet fjernet fra afdelingen');
                 $this->user_department_model->remove_user_from_department($u_id, $d_id);
             }
-            redirect('departments/view/'.$d_id);
+            redirect("departments/view/$d_id");
         }
 
 
-        public function add($d_id, $per_page = 5, $offset = 0, $u_id = NULL){
+        public function add($d_id, $per_page = 10, $offset = 0, $u_id = NULL){
             //Check the user is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
@@ -148,7 +148,7 @@
                 $this->user_department_model->assign_user_to_department($u_id, $d_id);
                 $this->session->set_flashdata('department_user_added','Brugeren er blevet tilføjet til '.$data['department']['name']);
                 //Reload department details page
-                redirect('departments/view/'.$d_id);
+                redirect("departments/view/$d_id");
             }
         }
 
@@ -189,7 +189,7 @@
                 if(count($this->user_department_model->get_user_departments($user['u_id'])) <= 1){
                     //One or more users only has 1 department
                     $this->session->set_flashdata('department_delete_fail','Afdelingen kunne ikke slettes, da <strong>'.$user['username'].'</strong> kun har 1 afdeling');
-                    redirect('departments/view/'.$d_id);
+                    redirect("departments/view/$d_id");
                 }
             }
 
@@ -206,7 +206,7 @@
             } else {
                 //Input name doesn't match
                 $this->session->set_flashdata('department_delete_fail','Indtastet navn matcher ikke!');
-                redirect('departments/view/'.$d_id);
+                redirect("departments/view/$d_id");
             }
         }
 

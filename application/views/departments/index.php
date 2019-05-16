@@ -26,6 +26,7 @@ Klik på en afdelings navn for at se flere detaljer.</h5>
         onclick="submitHidden('inputDelete<?= $department['id'] ?>', 'formDelete<?= $department['id'] ?>', 'afdelingen')">
         Slet</button>
     </div>
+
         <!-- Hidden rename form -->
     <?= form_open('departments/edit/'.$department['id'], array('id' => 'formRename'.$department['id']));?>
         <input type="hidden" name="input" id="inputRename<?= $department['id'] ?>" value="">
@@ -36,7 +37,10 @@ Klik på en afdelings navn for at se flere detaljer.</h5>
     <?= form_close(); ?>
 <?php endforeach; ?>
 </div>
-	<!-- Pagination -->
+
+<!--
+	 Pagination 
 <div class="pagination-links">
-	<?= $this->pagination->create_links(); ?>
+	<?=  " "//$this->pagination->create_links(); ?>
 </div>
+-->

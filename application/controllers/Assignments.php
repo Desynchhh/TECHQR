@@ -1,6 +1,6 @@
 <?php
 	class Assignments extends CI_Controller{
-		public function index($per_page = 5, $order_by = 'asc', $sort_by = 'title', $offset = 0){
+		public function index($per_page = 10, $order_by = 'asc', $sort_by = 'title', $offset = 0){
 				//Check if anyone is logged in
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -11,8 +11,10 @@
 			$user_depts = $this->session->userdata('departments');
 			$total_rows = 0;
 			if($isAdmin){
+				//Get all assignments
 				$total_rows = $this->db->count_all_results('assignments');
 			} else {
+				//Get all assignments in the users departments
 				foreach($user_depts as $dep){
 					$total_rows += $this->db->where('assignments.department_id', $dep['d_id'])->count_all_results('assignments');
 				}
@@ -41,10 +43,10 @@
 				//Get assignments
 			if($this->form_validation->run() === FALSE){
 					//Get all assignments
-				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, NULL, $sort_by, $order_by);
+				$data['asses'] = $this->assignment_model->get_asses($user_depts, $isAdmin, $config['per_page'], $offset, NULL, $sort_by, $order_by);
 			} else {
 					//Search the DB for assignments LIKE what the user searched for
-				$data['asses'] = $this->assignment_model->get_ass_index($user_depts, $isAdmin, $config['per_page'], $offset, $this->input->post('search_string'));
+				$data['asses'] = $this->assignment_model->get_asses($user_depts, $isAdmin, $config['per_page'], $offset, $this->input->post('search_string'));
 			}
 			
 				//Load the page
@@ -73,14 +75,14 @@
 
 			if($ismember || $this->session->userdata('permissions') == 'Admin'){
 					//Allow the user to view the assignment details if they are a member of its department
-					$data['events'] = $this->assignment_model->get_ass_events($ass_id);
+					$data['events'] = $this->assignment_model->get_ass($ass_id);
 
 					$this->load->view('templates/header');
 					$this->load->view('assignments/view', $data);
 					$this->load->view('templates/footer');
 				} else {
 					//Return the user to the overview page if they tried to access an assignment they are not allowed to access
-					redirect('assignments/index/5/asc/title');
+					redirect('assignments/index/10/asc/title');
 				}
 		}
 
@@ -108,16 +110,16 @@
 					//Names match
 					$this->assignment_model->delete_ass($ass_id);
 					$this->session->set_flashdata('ass_delete_success','Opgave slettet');
-					redirect('assignments/index/5/asc/title');
+					redirect('assignments/index/10/asc/title');
 				} else {
 					//Names don't match
 					$this->session->set_flashdata('ass_delete_fail','Den indtastede titel matcher ikke opgavens titel!');
-					redirect('assignments/view/'.$ass_id);
+					redirect("assignments/view/$ass_id");
 				}
 			} else {
-				//Redirect if they are not
+				//Redirect if the user is not a member
 				$this->session->set_flashdata('ass_delete_fail', 'Du kan kun slette opgaver fra din egne afdelinger!');
-				redirect('assignments/index/5/asc/title');
+				redirect('assignments/index/10/asc/title');
 			}
 		}
 
@@ -128,9 +130,11 @@
                 redirect('login');
 			}
 			
+			//Set data variables
 			$data['title'] = 'Opret opgave';
 			$data['options'] = $this->set_answer_amount($answerAmount);
 
+			//Set form validation
 			$this->form_validation->set_rules('title','"opgavetitel"','required');
 			//Set validation rules for all generated 'answer' and 'points' fields
 			for($i = 1; $i<= $data['options']['optionsAmount']; $i++){
@@ -147,7 +151,7 @@
 				//If validation was successful
 				$this->assignment_model->create_ass($data['options']['optionsAmount']);
 				$this->session->set_flashdata('ass_created','Opgave oprettet!');
-				redirect("assignments/index");
+				redirect("assignments/index/10/asc/title");
 			}
 		}
 
@@ -181,7 +185,7 @@
 				//If validation succeeded
 				$this->assignment_model->edit_ass($ass_id, $data['options']['optionsAmount']);
 				$this->session->set_flashdata('ass_edited','Opgaven er blevet redigeret');
-				redirect('assignments/view/'.$ass_id);
+				redirect("assignments/view/$ass_id");
 			}
 		}
 

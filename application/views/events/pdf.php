@@ -11,6 +11,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
         <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/team-pdf', array('target' => '_blank')); ?>
             <h4>Hold PDF</h4>
             <label>Vælg hold</label>
+                <!-- PDF dropdown -->
             <select name="filename" class="form-control">
                     <!-- Add all PDFs from the events team-pdf folder as a selectable option  -->
                 <?php foreach($team_pdf as $pdf): ?>
@@ -46,11 +47,13 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
 
         <!-- Create PDF Buttons -->
     <div class="col-md-4 form-group">
+            <!-- Create team PDF -->
         <h4>Lav PDF</h4>
         <label>Lav PDF til ALLE hold</label>
         <br>
         <a class="btn btn-secondary" href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>">Lav Hold</a>
         <br><br>
+            <!-- Create assignment PDF -->
         <label>Lav PDF til ALLE opgaver</label>
         <br>
         <a class="btn btn-secondary" href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>">Lav Opgaver</a>

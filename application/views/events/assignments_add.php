@@ -1,5 +1,7 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
+<h5>Tilføj opgaver til eventet.<br>
+NOTE: Man kan kun tilføje opgaver i samme afdeling som eventet.</h5>
 
 <br>
     <!-- Create assignment button -->
@@ -11,7 +13,7 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("events/assignments/view/$e_id/5/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("events/assignments/view/$e_id/10/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 
 <br>
@@ -43,5 +45,5 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("events/assignments/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("events/assignments/view/$e_id/10/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

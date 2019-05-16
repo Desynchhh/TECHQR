@@ -89,7 +89,7 @@
 
 
 		//Get all assignments without their answers
-		public function get_ass_index($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL, $sort_by, $order_by){
+		public function get_asses($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL, $sort_by, $order_by){
 			if($limit){
 				$this->db->limit($limit, $offset);
 			}
@@ -142,7 +142,7 @@
 		}
 
 		//Get all events an assignment is in
-		public function get_ass_events($ass_id){
+		public function get_ass($ass_id){
 			$this->db->select('
 				events.id as e_id,
 				events.name as e_name

@@ -1,5 +1,7 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
+<h5>Kør musen hen over en portion i cirkel diagrammet, for at se hvor mange hold der har valgt den svarmulighed.<br>
+Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
 <hr>
 
     <!-- Back button -->
@@ -15,7 +17,10 @@
             <!-- Info -->
         <div class="col-md-5">
             <h3>Opgave: <?= $ass['title'] ?></h3>
-            <p><b>Sidst besvaret dato:</b> <?php $date = ($ass['last_answered'] == NULL) ? 'Endnu ikke besvaret.' : $ass['last_answered']; echo $date; ?></p>
+            <div>
+                <p><b>Sidst besvaret dato:</b> <?php $date = ($ass['last_answered'] == NULL) ? 'Endnu ikke besvaret.' : $ass['last_answered']; echo $date; ?></p>
+                <p>Besvaret af <?= $answered_array[array_search($ass, $event_ass)] ?> ud af <?= $total_teams ?> hold</p>
+            </div>
             <table class="table">
                     <!-- Table headers -->
                 <tr>
@@ -48,6 +53,7 @@
     <!-- Scripts -->
 <script type="text/javascript" src="<?= base_url('assets/js/imports/Chart.js')?>"></script>
 <script type="text/javascript">
+        //Convert PHP arrays to JSON objects, so JS can use it
     var teamAns = <?= json_encode($team_ans) ?>;
     var eventAss = <?= json_encode($event_ass) ?>;
     var eventAns = <?= json_encode($event_ans) ?>;

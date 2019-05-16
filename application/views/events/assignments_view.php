@@ -1,10 +1,11 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
+<h5>Se alle opgaver i eventet eller fjern dem herfra.</h5>
 
 <br>
     <!-- Add assignments button -->
 <div>
-    <a href="<?= base_url("events/assignments/add/$e_id/5/asc/title"); ?>"><button type="button" class="btn btn-warning">Tilføj opgave</button></a>
+    <a href="<?= base_url("events/assignments/add/$e_id/10/asc/title"); ?>"><button type="button" class="btn btn-warning">Tilføj opgave</button></a>
 </div>
 
 <br>

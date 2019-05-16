@@ -6,17 +6,12 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 <hr>
 
 	<!-- link to register new user -->
-<a href="<?= base_url('users/register');?>"><button type="button" class="btn btn-warning">Opret ny bruger</button></a>
-
-	<!-- Search field -->
-<?= form_open('users/search');?>
-<br>
 <div>
-	<label>Søg på brugernavn:</label>
-	<input type="text" name="search_string" placeholder="Brugernavn" />
-	<input type="submit" value="Søg" class="btn btn-secondary" />
+	<a href="<?= base_url('users/register');?>"><button type="button" class="btn btn-warning">Opret ny bruger</button></a>
 </div>
-<?= form_close(); ?>
+
+	<!-- Insert search field -->
+<br>
 
 	<!-- Table -->
 <div>

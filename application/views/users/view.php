@@ -45,7 +45,7 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url('users/index/5/asc/username'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url('users/index/10/asc/username'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 
 <!-- User control panel / change password -->

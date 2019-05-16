@@ -56,7 +56,7 @@ Efterlad afdelings feltet tomt hvis du ikke ønsker at tildele brugeren endnu en
 				<?php endforeach;?>
 			</select>
 		</div>
-			<!-- Submit -->
+			<!-- Submit button -->
 		<input type="submit" value="Gem" class="btn btn-secondary" />
 		<?= form_close(); ?>
 	</div>

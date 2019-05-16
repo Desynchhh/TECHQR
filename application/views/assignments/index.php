@@ -5,16 +5,12 @@ Klik på en opgaves navn for at se flere detaljer eller redigere den.</h5>
 <hr>
 
 	<!-- Create button -->
-<a href="<?= base_url('assignments/create'); ?>"><button type="button" class="btn btn-warning">Opret ny opgave</button></a>
-
-	<!-- Search field -->
-<?= form_open('assignments/index'); ?>
 <div>
-	<label>Søg på opgavenavn, brugernavn eller notat:</label>
-	<input type="text" name="search_string" />
-	<input type="submit" value="Søg" class="btn btn-secondary" />
+	<a href="<?= base_url('assignments/create'); ?>"><button type="button" class="btn btn-warning">Opret ny opgave</button></a>
 </div>
-<?= form_close(); ?>
+
+	<!-- Insert search field -->
+<br>
 
 	<!-- Table -->
 <div>

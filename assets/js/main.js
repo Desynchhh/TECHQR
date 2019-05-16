@@ -27,9 +27,11 @@ function checkFields(amount, formID){
         var answerValue = document.getElementById("answer"+i).value;
             //Get check point field
         var pointsValue = document.getElementById("points"+i).value;
+        //Check answer field is not empty
         if(!answerValue){
             emptyFields.push("Svarmulighed "+i+" ");
         }
+        //Check points field is not empty and is a number
         if(!pointsValue || isNaN(pointsValue)){
             emptyFields.push("Point "+i+" ");
         }
@@ -54,6 +56,7 @@ function pagPerPage(offset, e_id = null){
     //Get the current url and split each segment into an array
     var url = window.location + '';
     var url_segments = url.split("/");
+    //Create array of possible indexes, along with a counter
     var nums = (e_id != null) ? [e_id, per_page, offset] : [per_page, offset];
     var numCount = 0;
     //Construct new url based on segments
