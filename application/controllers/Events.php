@@ -3,7 +3,7 @@
         public function index($per_page = 10, $order_by = 'asc', $sort_by = 'e_name', $offset = 0){
             //Check user is logged in
             if(!$this->session->userdata('logged_in')){
-            redirect('login');
+                redirect('login');
             }
 
             //Prep
@@ -76,13 +76,7 @@
             
             //Check the user is part of the events department
             $data['event'] = $this->event_model->get_event($e_id);
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($data['event']);
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $input = $this->input->post('input');
@@ -120,13 +114,7 @@
 
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = false;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($data['event']);
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //The user is a part of the events department
@@ -200,6 +188,16 @@
 
         //Load manage options and data
         public function manage($e_id, $empty_teams = NULL){
+            /*
+            //TEST TEST TEST TEST TEST TEST TEST TEST TEST 
+            $date = new DateTime();
+            $date->add(new DateInterval('P2D'));
+            var_dump($date->format('Y-m-d H:i:s')); // formatted
+            echo '<br><br>';
+            var_dump($date->format('U')); // timestamp
+            */
+
+
             //Check if any students cookie has expired
             $this->team_model->check_expire_date();
 
@@ -278,14 +276,7 @@
             }
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $event['d_id']){
-                    $ismember = TRUE;
-                    $d_id = $department['d_id'];
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($event);
 
             //Run if the user is a member of the events department or is admin
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
@@ -335,13 +326,7 @@
             }
             $event = $this->event_model->get_event($e_id);
                 //Check if the user is in the same department as the event
-            $ismember = FALSE; //Throws an error if this variable is undefined
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $event['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($event);
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                     //Pagination config
@@ -382,15 +367,10 @@
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
+
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $event['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($event);
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->remove_ass($e_id, $ass_id);
@@ -408,15 +388,9 @@
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
+
             $event = $this->event_model->get_event($e_id);
-            $ismember = FALSE;
-            //Check if the user is in the same department as the event
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $event['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($event);
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->add_ass($e_id, $ass_id);
@@ -435,13 +409,7 @@
             }
             $event = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $event['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($event);
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Check if entered name matches name in DB
@@ -475,7 +443,7 @@
 
 
         //Resets the event. Empties all teams, resets scores, deletes message and action, and removes teams logged answers, so they can answer the same assignments again.
-        function reset($e_id){
+        public function reset($e_id){
             //Get all teams in the event
             $teams = $this->team_model->get_teams($e_id);
 
@@ -499,15 +467,10 @@
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
+
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($data['event']);
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Pagination configuration
@@ -549,13 +512,7 @@
             }
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($data['event']);
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 //Get data
@@ -592,21 +549,36 @@
         }
         
 
+        private function create_qr_code($url, $filepath, $size){
+            //Instantiate a new Endroid\QrCode Object. Takes the URL the Code takes you to as a parameter
+            $qr = new Endroid\QrCode\QrCode($url);
+            //Qr Code settings
+            $qr->setSize($size);
+            $qr->setMargin(10);
+            $qr->setEncoding('UTF-8');
+
+            //Create QR Code image file
+            $qr->writeFile($filepath);
+            
+            //Store text, image, and layout for each page in the PDF
+            $content = '
+                <div>
+                    <img src="'.$filepath.'" />
+                </div>
+            ';
+            return $content;
+        }
+
+
         //Create team pdf
         public function create_team_pdf($e_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
             
-            $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $data['event'] = $this->event_model->get_event($e_id);
+            $ismember = $this->check_has_department($data['event']);
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 set_time_limit ( 300 );
@@ -621,7 +593,7 @@
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
                 
                 //Ensure folders exist and are empty
-                $this->check_dir_exists($path, $teamfolder);
+                $this->create_dirs($path, $teamfolder);
                 $this->delete_dir_contents($path.$teamfolder);
                 
                 //Get teams
@@ -639,32 +611,12 @@
                 //Create a QR Code for each team in the event, with a URL that calls the correct Controller when scanned.
                 mkdir($qr_path, 0777, TRUE);
                 $content_array = array();
+                //Create a QR Code for each team in the event
                 foreach($teams as $team){
                     //Set the URL to the 'join()' function in the 'Teams' Controller.
-                    //event_id and team_id are given as parameters.
                     $url = $url_template.$team['t_id'];
-                    
-                    //Instantiate a new Endroid\QrCode Object. Takes the URL the Code takes you to as a parameter
-                    $qrcode = new Endroid\QrCode\QrCode($url);
-                    //Qr Code settings
-                    $qrcode->setSize(150);
-                    $qrcode->setMargin(10);
-                    $qrcode->setEncoding('UTF-8');
-
-                    //Create QR Code image file
-                    $qr_filename = 'Hold-'.$team['t_num'].'.png';
-                    $qrcode->writeFile($qr_path.$qr_filename);
-                    
-                    //Store text, image, and layout for each page in the PDF
-                    $content = '	
-                        <div align="center">
-                            <h1>Tilføj min mobil til hold '.$team["t_num"].'</h1>
-                            <div>
-                                <img src="'.$qr_path.$qr_filename.'" />
-                            </div>
-                        </div>
-                    ';
-                    $content_array[] = $content;
+                    $filepath = $qr_path . 'Hold-'.$team['t_num'].'.png';
+                    $content_array[] = $this->create_qr_code($url, $filepath, 150);
                 }
                 
                 //PDF settings
@@ -672,10 +624,10 @@
                 $pdf->SetCreator(PDF_CREATOR);
                 $pdf->SetTitle('Team PDF');
                 $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
-                $pdf->SetFont($title_font,'', 12);
-                $pdf->SetAutoPageBreak(true, 10);
-                $pdf->SetPrintHeader(false);
-                $pdf->SetPrintFooter(false);
+                $pdf->SetFont($title_font,'', 30);
+                $pdf->SetAutoPageBreak(TRUE, 10);
+                $pdf->SetPrintHeader(FALSE);
+                $pdf->SetPrintFooter(FALSE);
 
                 //Create a PDF containing all QR Codes (1 per page)
                 foreach($teams as $team){
@@ -685,7 +637,9 @@
                     //Go the the last page
                     $pdf->LastPage();
                     //Insert QR Code in PDF file
-                    $pdf->writeHTML($content_array[$team['t_num']-1]);
+                    $pdf->MultiCell(180, 20, "Tilføj min mobil til Hold $team[t_num]", 0, 'C', 0, 1, '15', '15', true, 0, true);
+                    $pdf->MultiCell(60, 60, $content_array[$team['t_num']-1], 0, 'J', 0, 1, '75', '', true, 0, true);
+                    //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
                 }
                 //Save PDF file to path.
                 $pdf->Output($pdf_path.'Hold.pdf', 'F');
@@ -706,13 +660,7 @@
             }
             $data['event'] = $this->event_model->get_event($e_id);
             //Check if the user is in the same department as the event
-            $ismember = FALSE;
-            foreach($this->session->userdata('departments') as $department){
-                if($department['d_id'] == $data['event']['d_id']){
-                    $ismember = TRUE;
-                    break;
-                }
-            }
+            $ismember = $this->check_has_department($data['event']);
             
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 set_time_limit(300);
@@ -725,127 +673,129 @@
                 $asses = $this->event_assignment_model->get_ass($e_id);
                 
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
-                $this->check_dir_exists($path, $assfolder);            
+                $this->create_dirs($path, $assfolder);            
                 $this->delete_dir_contents($path.$assfolder);
                 if(empty($asses)){
                     //Stop running the function if there are no assignments, otherwise it will create an empty PDF
                     redirect("events/pdf/$e_id");
                 }
 
-                //URL
+                //Start of URL assignment QR Codes lead to
                 $url_template = base_url("teams/answer/$e_id/");
-                //Get fonts
-                $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
-                $main_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
+                
                 //Create a PDF for each assignment containing a QR code for each answer
+                $pdf_all = $this->instantiate_pdf('Assignment PDF');
                 foreach($asses as $ass){
-                    //PDF settings
-                    $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
-                    $pdf->SetCreator(PDF_CREATOR);
-                    $pdf->SetTitle('Assignment PDF');
-                    $pdf->SetAutoPageBreak(FALSE, 10);
-                    //$left='', $top='', $right='', $bottom='' (CellPadding & CellMargin params)
-                    $pdf->setCellPaddings(1, 1, 1, 1);
-                    $pdf->setCellMargins(1, 3, 1, 1);
-                    $pdf->SetPrintHeader(FALSE);
-                    $pdf->SetPrintFooter(FALSE);
-                    //MUST add a new page, otherwise it will throw an error due to not containing any pages
-                    $pdf->AddPage();
-                    
-                    //URL template for each assignment (used later)
+                    //URL template for each assignment
                     $ass_url = $url_template.$ass['ass_id'].'/';
-                    //Get all answers for the current assignment
-                    $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
-                    
-                    //Create and save a QR Code for each answer
-                    //Set a title with the assignments title in the PDF
-                    $pdf->SetFont($title_font,'', 22);
-                    $ass_title = '<h1>'.$ass['title'].'</h1>';
-                    $pdf->MultiCell(180, 20, $ass_title, 0, 'L', 0, 1, '15', '15', true, 0, true);
-                    $pdf->SetFont($main_font, '', 12);
-                    
-                    //Create PDF
-                    //Check amount of answers for the assignment
-                    $answers_left = count($ass_answers);
-                    $qr_answer_index = 0;
-                    //Calculate amount of rows for each assignment
-                    $rows = ceil($answers_left/3);
-                    
-                    //Create 1-3 rows
-                    $answer_counter = 1;
-                    $qr_counter = 1;
-                    for($i = 0; $i <= $rows; $i++){
-                        //Figure out how many times to iterate the loops
-                        if($answers_left >= 3){
-                            $loops = 3;
-                        } else {
-                            $loops = $answers_left;
-                        }
-                        
-                        $cellHeights = array();
-                        //Write out up to 3 answers per line
-                        for($o = 0; $o < $loops; $o++){
-                            $text = $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'];
-                            // Multicell params
-                            //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
-                            $pdf->MultiCell(60, 5, $text, 0, 'C', 0, 0, '', '', true);
-                            //Ensure linebreak accommodates for the longest answer.
-                            $cellHeights[] = ceil($pdf->getStringHeight(100, $text));
-                            if($o == $loops-1){
-                                $linebreak = max($cellHeights)*1.7;
-                                $pdf->Ln($linebreak);
-                            }
-                            $answer_counter++;
-                        }
-                        //Create and input QR codes for each answer
-                        for($o = 0; $o < $loops; $o++){
-                            $content = '';
-                            //URL the QR leads to
-                            $url = $ass_url . $ass_answers[$qr_answer_index+$o]['id'];
-                            //Instantiate new object with the URL as parameter
-                            //$qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$ass_answers[$qr_answer_index+$o]['answer']."\nTryk 'åben link' for at svare\n\n".$url);
-                            $qrcode = new Endroid\QrCode\QrCode('Valgt svar: '.$qr_counter."\nTryk 'åben link' for at svare\n\n".$url);                            //QR Settings
-                            $qrcode->setSize(125);
-                            //$qrcode->setMargin(10);
-                            $qrcode->setEncoding('UTF-8');
-                            
-                            //Set path+filename for the QR
-                            $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.$ass_answers[$qr_answer_index+$o]['id'].'-'.$o.'.png';
-                            //Save QR to local machine
-                            $qrcode->writeFile($qrpath);
-                            
-                            $content .= '
-                            <div>
-                                <img src="'.$qrpath.'" />
-                            </div>
-                            ';
-                            
-                            //Ensure the QR Code is placed beneath the relevant Answer
-                            if($o == $loops-1){
-                                $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 1, '', '', true, 0, true);
-                            } else {
-                                $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 0, '', '', true, 0, true);
-                            }
-                            //Delete the .png file from the machine
-                            unlink($qrpath);
-                            $qr_counter++;
-                        }
-                        $qr_answer_index += 3;
-                        $answers_left -= 3;
-                    }
-
+                    $pdf = $this->instantiate_pdf('Assignment PDF');
+                    $pdf = $this->write_ass_pdf($pdf, $ass, $ass_url, $eventfolder, $assfolder);
                     $pdf->Output(APPPATH.'../assets/gen-files/'.$eventfolder.'/assignment-pdf/'.url_title($ass['title']).'.pdf','F');
+                    $pdf_all = $this->write_ass_pdf($pdf_all, $ass, $ass_url, $eventfolder, $assfolder);
+                    //Manually add a new page for each assignment in $pdf_all, if it isn't the last assignment
+                    if($asses[array_search($ass, $asses)] != end($asses)){
+                        $pdf_all->AddPage();
+                    }
                 }
-                $this->session->set_flashdata('pdf_ass_created',"Opgave PDF'er oprettet!");
+                $pdf_all_filename = 'ALLE-OPGAVER-' . url_title(strtoupper($event['e_name']));
+                $pdf_all->Output(APPPATH.'../assets/gen-files/'.$eventfolder.$assfolder.'/'.$pdf_all_filename,'F');
+                $this->session->set_flashdata('pdf_ass_created', "Opgave PDF'er oprettet!");
                 set_time_limit(ini_get('max_execution_time'));
                 redirect("events/pdf/$e_id");
             }
         }
 
+        private function instantiate_pdf($pdf_title){
+            //PDF settings
+            $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetTitle($pdf_title);
+            $pdf->SetAutoPageBreak(FALSE, 10);
+            //$left='', $top='', $right='', $bottom='' (CellPadding & CellMargin params)
+            $pdf->setCellPaddings(1, 1, 1, 1);
+            $pdf->setCellMargins(1, 3, 1, 1);
+            $pdf->SetPrintHeader(FALSE);
+            $pdf->SetPrintFooter(FALSE);
+            //MUST add a new page, otherwise it will throw an error due to not containing any pages
+            $pdf->AddPage();
+            return $pdf;
+        }
+        //Instantiate and write a PDF file(s)
+        private function write_ass_pdf($pdf, $ass, $url_template, $eventfolder, $assfolder)
+        {    
+            //Get fonts
+            $title_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/Frutiger_Black.ttf','TrueTypeUnicode','',96);
+            $main_font = TCPDF_FONTS::addTTFfont(APPPATH.'../assets/fonts/FrutigerNext_LT_Regular.ttf','TrueTypeUnicode','',96);
+            
+            //Get all answers for the current assignment
+            $ass_answers = $this->assignment_model->get_ass_answers($ass['ass_id']);
+            
+            //Create and save a QR Code for each answer
+            //Set a title with the assignments title in the PDF
+            $pdf->SetFont($title_font,'', 22);
+            $ass_title = '<h1>'.$ass['title'].'</h1>';
+            $pdf->MultiCell(180, 20, $ass_title, 0, 'L', 0, 1, '15', '15', true, 0, true);
+            $pdf->SetFont($main_font, '', 12);
+            
+            //Create PDF
+            //Check amount of answers for the assignment
+            $answers_left = count($ass_answers);
+            $qr_answer_index = 0;
+            //Calculate amount of rows for each assignment
+            $rows = ceil($answers_left/3);
+            
+            //Create 1-3 rows
+            $answer_counter = 1;
+            $qr_counter = 1;
+            for($i = 0; $i <= $rows; $i++){
+                //Figure out how many times to iterate the loops
+                if($answers_left >= 3){
+                    $loops = 3;
+                } else {
+                    $loops = $answers_left;
+                }
+                
+                $cellHeights = array();
+                //Write out up to 3 answers per line
+                for($o = 0; $o < $loops; $o++){
+                    $answer_text = $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'];
+                    // Multicell params
+                    //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+                    $pdf->MultiCell(60, 5, $answer_text, 0, 'C', 0, 0, '', '', true);
+                    //Ensure linebreak accommodates for the longest answer.
+                    $cellHeights[] = ceil($pdf->getStringHeight(100, $answer_text));
+                    if($o == $loops-1){
+                        $linebreak = max($cellHeights)*1.5;
+                        $pdf->Ln($linebreak);
+                    }
+                    $answer_counter++;
+                }
+                //Create and input QR codes for each answer
+                for($o = 0; $o < $loops; $o++){
+                    $qrpath = APPPATH.'../assets/gen-files/'.$eventfolder.$assfolder.$ass_answers[$qr_answer_index+$o]['id'].'.png';
+                    //URL the QR leads to
+                    $url = $url_template . $ass_answers[$qr_answer_index+$o]['id'];
+                    $content = $this->create_qr_code($url, $qrpath, 117);
+                    //Ensure the QR Code is placed beneath the relevant Answer
+                    if($o == $loops-1){
+                        $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 1, '', '', true, 0, true);
+                    } else {
+                        $pdf->MultiCell(60, 60, $content, 0, 'C', 0, 0, '', '', true, 0, true);
+                    }
+                    //Delete the .png file from the machine
+                    unlink($qrpath);
+                    $qr_counter++;
+                }
+                $qr_answer_index += 3;
+                $answers_left -= 3;
+            }
+            return $pdf;
+        }
+
 
         // ONLY PRIVATE FUNCTIONS BELOW THIS POINT
         //Checks if the given folder exists at the specified path. Creates it if it doesn't
-        private function check_dir_exists($path, $folder){
+        private function create_dirs($path, $folder){
             if(!is_dir($path)){
                 mkdir($path, 0777, TRUE);
                 mkdir($path.$folder, 0777, TRUE);
@@ -898,7 +848,10 @@
                     $ass_points[] = $answer['points'];
                 }
                 //Add the highest amount of points to the $max_points
+                //Adds negative points to the mix
                 $max_points += max($ass_points);
+                //Ignores points lower than 0
+                //$max_points += (max($ass_points) > 0) ? max($ass_points) : 0;
             }
             //Return highest possible attainable score for the event
             return $max_points;
@@ -921,5 +874,15 @@
             }
             */
             return $files;
+        }
+
+
+        private function check_has_department($event){
+            foreach($this->session->userdata('departments') as $department){
+                if($department['d_id'] == $event['d_id']){
+                    return TRUE;
+                }
+            }
+            return FALSE;
         }
     }

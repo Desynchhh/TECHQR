@@ -12,7 +12,7 @@
     <dd class="event-dd">
         <?= count($event_asses) ?> - 
         <a href="<?= base_url("events/assignments/view/$event[e_id]/10/asc/title"); ?>">
-            <button class="btn btn-sm btn-primary">Vis</button>
+            <button class="btn btn-sm btn-primary">Opret / Tilføj</button>
         </a>
     </dd>
     <dt>Maks point:</dt>

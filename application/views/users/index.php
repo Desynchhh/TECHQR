@@ -9,9 +9,16 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 <div>
 	<a href="<?= base_url('users/register');?>"><button type="button" class="btn btn-warning">Opret ny bruger</button></a>
 </div>
+<br>
 
 	<!-- Insert search field -->
-<br>
+	<!--
+	<?= form_open("users/index/$search_string/$per_page/$order_by/$sort_by/$offset"); ?>
+		<label for="search_string">Søg efter brugernavn, type, eller email:</label>
+		<input type="text" id="search_string" name="search_string" value="<?= $search_string ?>">
+		<input type="submit" class="btn btn-secondary" value="Søg">
+	<?= form_close(); ?>
+	-->
 
 	<!-- Table -->
 <div>
@@ -19,10 +26,10 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 		<tbody>
 				<!-- Table headers -->
 			<tr>
-				<th><a href="<?= base_url("users/index/$per_page/$order_by/username/$offset"); ?>">Brugernavn</a></th>
-				<th><a href="<?= base_url("users/index/$per_page/$order_by/permissions/$offset"); ?>" >Type</a></th>
+				<th><a href="<?= base_url("users/index/$search_string/$per_page/$order_by/username/$offset"); ?>">Brugernavn</a></th>
+				<th><a href="<?= base_url("users/index/$search_string/$per_page/$order_by/permissions/$offset"); ?>" >Type</a></th>
 				<th>Afdelinger</th>
-				<th><a href="<?= base_url("users/index/$per_page/$order_by/email/$offset"); ?>" >Email</a></th>
+				<th><a href="<?= base_url("users/index/$search_string/$per_page/$order_by/email/$offset"); ?>" >Email</a></th>
 			</tr>
 				<!-- Table data -->
 			<?php foreach($users as $user): ?>

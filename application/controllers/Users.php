@@ -1,15 +1,15 @@
 <?php
     class Users extends CI_Controller{
-        public function index($per_page = 10, $order_by = 'asc', $sort_by = 'username', $offset = 0){
+        public function index($search_string = NULL, $per_page = 10, $order_by = 'asc', $sort_by = 'username', $offset = 0){
                 //Check is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
                 //Pagination config
-            $config['base_url'] = base_url("users/index/$per_page/$order_by/$sort_by");
+            $config['base_url'] = base_url("users/index/$search_string/$per_page/$order_by/$sort_by");
             $config['total_rows'] = $this->db->count_all_results('users');
             $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
-            $config['uri_segment'] = 6;
+            $config['uri_segment'] = 7;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
@@ -20,15 +20,25 @@
             $data['offset'] = $offset;
             $data['per_page'] = $per_page;
             $data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
-            $data['users'] = $this->user_model->get_user(NULL, $config['per_page'], $offset, $sort_by, $order_by);
+            $data['sort_by'] = $sort_by;
+            
+            if(!empty($this->input->post('search_string'))){
+                $search_string = $this->input->post('search_string');
+                $data['users'] = $this->user_model->search($search_string, $config['per_page'], $offset, $sort_by, $order_by);
+            } else {
+                $data['users'] = $this->user_model->get_users($config['per_page'], $offset, $sort_by, $order_by);
+            }
+            $data['search_string'] = (isset($search_string)) ? $search_string : ' ';
+
             foreach($data['users'] as $user){
                 $data['user_depts'][] = $this->user_department_model->get_user_departments($user['u_id']);
             }
+
             $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
 
-                //Load page
+            //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
             $this->load->view('templates/footer', $pagination);
@@ -36,23 +46,23 @@
 
 
             //View details about an individual user
-        public function view($id = NULL){
+        public function view($u_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
             
-            if($id === NULL){
+            if($u_id === NULL){
                     //No user given
                 redirect('users/index/10/asc/username');
             } else {
                     //Get user
                 if($this->session->userdata('permissions') != 'Admin'){
-                    $id = $this->session->userdata('u_id');
+                    $u_id = $this->session->userdata('u_id');
                 }
                     //Set $data variables
                 $data['title'] = 'Bruger detaljer';
-                $data['user'] = $this->user_model->get_user($id);
-                $data['departments'] = $this->user_department_model->get_user_departments($id);
+                $data['user'] = $this->user_model->get_user($u_id);
+                $data['departments'] = $this->user_department_model->get_user_departments($u_id);
 
                     //Load page
                 $this->load->view('templates/header');

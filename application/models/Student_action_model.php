@@ -22,7 +22,8 @@
         public function get_latest_assignment($e_id, $t_id){
             $this->db->select('
                 student_actions.created_at,
-                assignments.title as ass_title
+                assignments.title as ass_title,
+                student_actions.points
             ')
             ->where('student_actions.answer_id !=', NULL)
             ->join('assignments', 'assignments.id = student_actions.assignment_id', 'left')

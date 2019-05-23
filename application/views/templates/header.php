@@ -3,6 +3,7 @@
 
 <head>
 	<title>TECHQR</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" >
 	<link rel="shortcut icon" type="image/png" href="<?= base_url('assets/favicon.png')?>"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="<?= base_url('assets/js/main.js')?>"></script>
@@ -25,7 +26,7 @@
 				<!-- enable base_url by adding 'url' to the 'helper' array in /config/autoload.php -->
 			<?php if($this->session->userdata('logged_in') && $this->session->userdata('permissions') == 'Admin'): ?>
 				<li class="nav-item">
-					<a href="<?= base_url("users/index/10/asc/username")?>" class="nav-link">Brugere</a>
+					<a href="<?= base_url("users/index/null/10/asc/username")?>" class="nav-link">Brugere</a>
 				</li>
 				<li class="nav-item">
 					<a href="<?= base_url('departments/index')?>" class="nav-link">Afdelinger</a>

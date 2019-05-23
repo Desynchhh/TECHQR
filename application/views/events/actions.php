@@ -29,9 +29,9 @@ Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
                 <tr>
                     <td><?= $action['t_num'] ?></td>
                     <td><?= $action['action'] ?></td>
-                    <td><?= ($action['ass_title']) ? $action['ass_title'] : '';?></td>
-                    <td><?= ($action['answer']) ? $action['answer'] : '';?></td>
-                    <td><?= ($action['points']) ? $action['points'] : ''; ?></td>
+                    <td><?= (isset($action['ass_title'])) ? $action['ass_title'] : '';?></td>
+                    <td><?= (isset($action['answer'])) ? $action['answer'] : '';?></td>
+                    <td><?= (isset($action['points'])) ? $action['points'] : ''; ?></td>
                     <td><?= $action['created_at'] ?></td>
                 </tr>
             <?php endforeach; ?>

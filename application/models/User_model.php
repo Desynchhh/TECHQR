@@ -4,6 +4,7 @@
             $this->load->database();
         }
 
+
         public function create_user($enc_pass){
             //Insert the user data into the users table
             $data = array(
@@ -23,38 +24,61 @@
             $this->db->insert('user_departments', $data);
         }
 
-        public function get_user($u_id = NULL, $limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'DESC'){
-            if($u_id === NULL){
-                if($limit){
-                    $this->db->limit($limit, $offset);
-                }
-                //Get all users
-                $this->db->select('
-                    users.id as u_id,
-                    users.username,
-                    users.email,
-                    users.permissions
-                ')
-                ->order_by($sort_by, $order_by)
-                ->from('users')
-                ->order_by('users.username', 'ASC');
-                $query = $this->db->get();
-                return $query->result_array();
-            } else {
-                //Get specific user
-                $this->db->select('
+
+        public function get_user($u_id){
+            $this->db->select('
                 users.id as u_id,
                 users.username,
                 users.email,
                 users.permissions,
                 users.created_at
-                ')
-                ->where('users.id', $u_id)
-                ->from('users');
-                $query = $this->db->get();
-                return $query->row_array();
-            }
+            ')
+            ->where('users.id', $u_id)
+            ->from('users');
+            $query = $this->db->get();
+            return $query->row_array();
         }
+
+
+        public function get_users($limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'desc'){
+            if($limit){
+                $this->db->limit($limit, $offset);
+            }
+            //Get all users
+            $this->db->select('
+                users.id as u_id,
+                users.username,
+                users.email,
+                users.permissions
+            ')
+            ->order_by($sort_by, $order_by)
+            ->from('users')
+            ->order_by($sort_by, $order_by);
+            
+            $query = $this->db->get();
+            return $query->result_array();
+        }
+
+
+        public function search($search_string, $limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'desc'){
+            if($limit){
+                $this->db->limit($limit, $offset);
+            }
+            $this->db->select('
+                users.id as u_id,
+                users.username,
+                users.email,
+                users.permissions
+            ')
+            ->like('username', $search_string)
+            ->or_like('permissions', $search_string)
+            ->or_like('email', $search_string)
+            ->from('users'); 
+            $query = $this->db->get();
+
+            return $query->result_array();
+        }
+
 
         public function edit_user($u_id){
             $data = array(
@@ -64,8 +88,8 @@
                 );
             $this->db->where('id',$u_id)
             ->update('users', $data);
-            //return true;
         }
+
 
         public function delete_user($u_id){
             $this->db->where('id', $u_id);
@@ -73,8 +97,8 @@
 
             $this->db->where('user_id', $u_id)
             ->delete('user_departments');
-            //return true;
         }
+
 
         public function get_password(){
             $this->db->select('users.password')
@@ -84,14 +108,15 @@
             return $query->row(0)->password;
         }
 
+
         public function change_password($u_id, $password){
             $data = array(
                 'password' => $password
             );
             $this->db->where('id', $u_id)
             ->update('users', $data);
-            //return true;
         }
+
 
         public function login($username){
             $query = $this->db->select('
@@ -108,6 +133,7 @@
             }
         }
 
+
         public function check_user_exists($username){
             $query = $this->db->get_where('users', array('username' => $username));
             if(empty($query->row_array())){
@@ -116,6 +142,7 @@
                 return TRUE;
             }
         }
+
 
         public function check_email_exists($email){
             $query = $this->db->get_where('users',array('email' => $email));
