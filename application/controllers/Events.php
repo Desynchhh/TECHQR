@@ -178,6 +178,7 @@
             $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
+            $pagination['id'] = $e_id;
 
             //Load the page
             $this->load->view('templates/header');
@@ -307,6 +308,7 @@
                 $pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
                 $pagination['total_rows'] = $total_rows;
+                $pagination['id'] = $e_id;
 
                 //Load page
                 $this->load->view('templates/header');
@@ -349,6 +351,7 @@
                 $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
                 $pagination['total_rows'] = $config['total_rows'];
+                $pagination['id'] = $e_id;
 
                     //Load page
                 $this->load->view('templates/header');
@@ -493,6 +496,7 @@
                 $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
                 $pagination['total_rows'] = $config['total_rows'];
+                $pagination['id'] = $e_id;
                 
                 //Load page
                 $this->load->view('templates/header');
@@ -669,12 +673,18 @@
                 $event = $data['event'];
 
                 $assfolder = '/assignment-pdf';
+                $allassfolder = '/all-assignments';
                 $eventfolder = url_title($event['e_name'].'-'.$e_id);
                 $asses = $this->event_assignment_model->get_ass($e_id);
                 
                 $path = APPPATH.'../assets/gen-files/'.$eventfolder;
-                $this->create_dirs($path, $assfolder);            
+                //Create folders
+                $this->create_dirs($path, $assfolder);
+                $this->create_dirs($path, $allassfolder);
+                //Delete folder contents, in case they already existed
                 $this->delete_dir_contents($path.$assfolder);
+                $this->delete_dir_contents($path.$allassfolder);
+
                 if(empty($asses)){
                     //Stop running the function if there are no assignments, otherwise it will create an empty PDF
                     redirect("events/pdf/$e_id");
@@ -697,8 +707,8 @@
                         $pdf_all->AddPage();
                     }
                 }
-                $pdf_all_filename = 'ALLE-OPGAVER-' . url_title(strtoupper($event['e_name']));
-                $pdf_all->Output(APPPATH.'../assets/gen-files/'.$eventfolder.$assfolder.'/'.$pdf_all_filename,'F');
+                $pdf_all_filename = 'ALLE-OPGAVER-' . url_title(strtoupper($event['e_name'])) . '.pdf';
+                $pdf_all->Output(APPPATH.'../assets/gen-files/'.$eventfolder.$allassfolder.'/'.$pdf_all_filename,'F');
                 $this->session->set_flashdata('pdf_ass_created', "Opgave PDF'er oprettet!");
                 set_time_limit(ini_get('max_execution_time'));
                 redirect("events/pdf/$e_id");
@@ -745,7 +755,6 @@
             $rows = ceil($answers_left/3);
             
             //Create 1-3 rows
-            $answer_counter = 1;
             $qr_counter = 1;
             for($i = 0; $i <= $rows; $i++){
                 //Figure out how many times to iterate the loops
@@ -758,7 +767,7 @@
                 $cellHeights = array();
                 //Write out up to 3 answers per line
                 for($o = 0; $o < $loops; $o++){
-                    $answer_text = $answer_counter.'. '.$ass_answers[$qr_answer_index+$o]['answer'];
+                    $answer_text = $ass_answers[$qr_answer_index+$o]['answer'];
                     // Multicell params
                     //$pdf->MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
                     $pdf->MultiCell(60, 5, $answer_text, 0, 'C', 0, 0, '', '', true);
@@ -768,7 +777,6 @@
                         $linebreak = max($cellHeights)*1.5;
                         $pdf->Ln($linebreak);
                     }
-                    $answer_counter++;
                 }
                 //Create and input QR codes for each answer
                 for($o = 0; $o < $loops; $o++){

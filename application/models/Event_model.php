@@ -14,7 +14,7 @@
         }
 
         //Gets either a single event or all events
-        public function get_event($e_id, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $sort_by = 'e_name', $order_by = 'desc'){
+        public function get_event($e_id = NULL, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $sort_by = 'e_name', $order_by = 'desc'){
             //Get all events
             if($limit){
 				$this->db->limit($limit, $offset);

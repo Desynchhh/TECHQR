@@ -13,7 +13,7 @@
                 'name' => $this->input->post('name')
             );
             //send POST request to database
-            return $this->db->insert('departments', $data);
+            $this->db->insert('departments', $data);
         }
 
 
@@ -24,12 +24,16 @@
             );
             $this->db->where('id', $d_id);
             $this->db->update('departments', $data);
-            return true;
         }
 
 
         //Get one or all departments from DB
         public function get_department($d_id = NULL, $limit = FALSE, $offset = FALSE){
+            $this->db->select('
+                departments.id as d_id,
+                departments.name as d_name,
+                departments.created_at
+            ');
             if($d_id == NULL){
                 if($limit){
                     $this->db->limit($limit, $offset);
@@ -53,7 +57,6 @@
 
             $this->db->where('department_id', $id)
             ->delete('user_departments');
-            return true;
         }
 
         
@@ -62,10 +65,10 @@
             $result = $this->db->get_where('departments', array('name' => $d_name));
             if(empty($result->row_array())){
                 //Department exist
-                return true;
+                return TRUE;
             } else {
                 //Department doesn't exists
-                return false;
+                return FALSE;
             }
         }
     }

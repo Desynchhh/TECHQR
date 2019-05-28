@@ -233,6 +233,7 @@
             $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
+            $pagination['id'] = $e_id;
             
             //Get the total amount of members per team
             $student_array = array();

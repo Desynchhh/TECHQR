@@ -17,9 +17,9 @@
             <tr>
                 <td><?= $user['username'] ?></td>
                     <!-- get all departments for each individual user and show them in the table -->
-                <td><?= $department['name'] ?></td>
+                <td><?= $department['d_name'] ?></td>
                 <td>
-                    <?= form_open("departments/add/$department[id]/$per_page/0/$user[u_id]"); ?>
+                    <?= form_open("departments/add/$department[d_id]/$per_page/0/$user[u_id]"); ?>
                         <input type="submit" class="btn btn-sm btn-secondary" value="Tilføj" />
                     <?= form_close(); ?>
                 </td>
@@ -30,12 +30,5 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("departments/view/$department[id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("departments/view/$department[d_id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
-
-    <!-- Temporary warning until issue is solved -->
-<h2><b>
-    NOTE: Du kan endnu ikke selv vælge hvor mange brugere du vil se per side.
-    <br>
-    Du vil ødelægge siden hvis du forsøger på dette. Du kan dog stadig bladre.
-</b></h2>

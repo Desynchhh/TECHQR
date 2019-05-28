@@ -16,24 +16,24 @@ Klik på en afdelings navn for at se flere detaljer.</h5>
 <?php foreach($departments as $department): ?>
     <div style="margin-bottom:1%;">
             <!-- Name -->
-        <a href="<?= base_url('departments/view/'.$department['id']); ?>" ><strong><?= $department['name'] ?>:</strong></a>
+        <a href="<?= base_url('departments/view/'.$department['d_id']); ?>" ><strong><?= $department['d_name'] ?>:</strong></a>
             <!-- Rename button -->
         <button type="button" class="btn btn-warning btn-sm"
-        onclick="submitHidden('inputRename<?= $department['id'] ?>', 'formRename<?= $department['id'] ?>')">
+        onclick="submitHidden('inputRename<?= $department['d_id'] ?>', 'formRename<?= $department['d_id'] ?>')">
         Omdøb</button>
             <!-- Delete button -->
         <button type="button" class="btn btn-danger btn-sm" 
-        onclick="submitHidden('inputDelete<?= $department['id'] ?>', 'formDelete<?= $department['id'] ?>', 'afdelingen')">
+        onclick="submitHidden('inputDelete<?= $department['d_id'] ?>', 'formDelete<?= $department['d_id'] ?>', 'afdelingen')">
         Slet</button>
     </div>
 
         <!-- Hidden rename form -->
-    <?= form_open('departments/edit/'.$department['id'], array('id' => 'formRename'.$department['id']));?>
-        <input type="hidden" name="input" id="inputRename<?= $department['id'] ?>" value="">
+    <?= form_open('departments/edit/'.$department['d_id'], array('id' => 'formRename'.$department['d_id']));?>
+        <input type="hidden" name="input" id="inputRename<?= $department['d_id'] ?>" value="">
     <?= form_close(); ?>
         <!-- Hidden delete form -->
-    <?= form_open('departments/delete/'.$department['id'], array('id' => 'formDelete'.$department['id']));?>
-        <input type="hidden" name="input" id="inputDelete<?= $department['id'] ?>" value="">
+    <?= form_open('departments/delete/'.$department['d_id'], array('id' => 'formDelete'.$department['d_id']));?>
+        <input type="hidden" name="input" id="inputDelete<?= $department['d_id'] ?>" value="">
     <?= form_close(); ?>
 <?php endforeach; ?>
 </div>

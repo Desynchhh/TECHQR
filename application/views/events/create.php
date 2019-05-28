@@ -1,6 +1,6 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
-<h5>Opret nyt event i systemet.</h5>
+<h5>Opret et nyt event i systemet.</h5>
 <hr>
 
     <!-- Form -->

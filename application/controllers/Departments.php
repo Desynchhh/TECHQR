@@ -47,7 +47,7 @@
             } else {
                 //Valdidation succeeded
                 $this->department_model->create_department();
-                $this->session->set_flashdata('department_created',$this->input->post('name').' er succesfuldt oprettet!');
+                $this->session->set_flashdata('department_created', $this->input->post('name').' er succesfuldt oprettet!');
                 redirect('departments/index');
             }
         }
@@ -133,11 +133,12 @@
                 
                 //Set data variables
                 $data['department'] = $this->department_model->get_department($d_id);
-                $data['title'] = 'Tilføj bruger til <b>'.$data['department']['name'].'</b>';
+                $data['title'] = 'Tilføj bruger til <b>'.$data['department']['d_name'].'</b>';
                 $data['per_page'] = $per_page;
                 $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
                 $pagination['total_rows'] = $config['total_rows'];
+                $pagination['id'] = $d_id;
 
                 //Load page
                 $this->load->view('templates/header');
@@ -196,7 +197,7 @@
             //Check inputted name is the same as department name
             $department = $this->department_model->get_department($d_id);
             $input = $this->input->post('input');
-            if($input === $department['name']){
+            if($input === $department['d_name']){
                 //Input name matches
                 $this->assignment_model->delete_department_ass($d_id);
                 $this->event_model->delete_department_event($d_id);

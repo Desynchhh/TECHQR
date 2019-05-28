@@ -1,15 +1,16 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
 <hr>
+
+<!-- Get CKEditor (used for sending messages to the students) -->
+<script src="http://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+
     <!-- Back button -->
 <div class="row">
     <a href="<?= base_url("events/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
 
 <br/>
-
-<!-- Get CKEditor (used for sending messages to the students) -->
-<script src="http://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
 
     <!-- Tools -->
 <div class="row">
@@ -46,17 +47,17 @@
         </div>
         <br>
         <?php if(!empty($empty_teams)): ?>
-        <div class="row">
-        <?php foreach($empty_teams as $team): ?>
-            <div class="col-md-3">
-                <p style="color:red;">Hold <?= $team ?></p>
+            <div class="row">
+                <?php foreach($empty_teams as $team): ?>
+                    <div class="col-md-3">
+                        <p style="color:red;">Hold <?= $team ?></p>
+                    </div>
+                    <br>
+                <?php endforeach; ?>
             </div>
-            <br>
-        <?php endforeach; ?>
-        </div>
-    <?php else: ?>
-        <p style="color:green;">Alle <?= count($teams) ?> hold bemandet.</p>
-    <?php endif; ?>
+        <?php else: ?>
+            <p style="color:green;">Alle <?= count($teams) ?> hold bemandet.</p>
+        <?php endif; ?>
     </div>
 
         <!-- Reset event -->
@@ -74,7 +75,7 @@
         <!-- Send Message -->
     <div class="col-md-8">
         <h4>Besked</h4>
-        <h5>Send en besked ud til alle hold. Det er også muligt at sende en tom besked.</h5>
+        <h5>Send en besked ud til alle hold. Beskeden kan slettes ved at sende en tom besked.</h5>
         <?= form_open('events/message/'.$e_id); ?>
             <textarea id="editor1" class="form-control" name="message" placeholder="Indtast besked.."></textarea>
             <br>
@@ -94,7 +95,7 @@
 
     <!-- Back button -->
 <div class="row">
-    <a href="<?= base_url('events/view/'.$e_id); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
+    <a href="<?= base_url("events/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>
 
 <!-- replace textarea with the ckeditor -->

@@ -38,3 +38,8 @@ Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
         </tbody>
     </table>
 </div>
+
+    <!-- Back Button -->
+<div>
+    <a href="<?= base_url("events/view/$event[e_id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
+</div>

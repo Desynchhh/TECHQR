@@ -38,6 +38,7 @@
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
 
+            //echo '.  CONTINUE WORK ON SEARCH FIELD';
             //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);

@@ -9,7 +9,7 @@
         <div>
             <dl class="dl-horizontal">
                 <dt>Afdelingsnavn:</dt>
-                <dd class="department-dd"><?= $department['name'] ?><br></dd>
+                <dd class="department-dd"><?= $department['d_name'] ?><br></dd>
                 <dt>Medlemmer:</dt>
                 <dd class="department-dd"><?= count($users) ?><br></dd>
                 <dt>Oprettet:</dt>
@@ -21,14 +21,14 @@
         <div class="row">
                 <!-- Add user to department -->
             <div class="md-col-1" style="margin-left:1.33%;">
-            <a href="<?= base_url('departments/add/'.$department['id']); ?>"><button type="button" class="btn btn-warning">Tilføj bruger</button></a>
+            <a href="<?= base_url('departments/add/'.$department['d_id']); ?>"><button type="button" class="btn btn-warning">Tilføj bruger</button></a>
             </div>
                 <!-- Delete department -->
             <div class="md-col-1" style="margin-left:1%;">
-                <button type="button" class="btn btn-danger" onclick="deleteDepartment()">Slet afdeling</button>
+                <button type="button" class="btn btn-danger" onclick="submitHidden('input', 'inputForm', 'afdelingen')">Slet afdeling</button>
                     
                     <!-- Hidden form to submit name when deleting the department -->
-                <?= form_open('departments/delete/'.$department['id'], array('id' => 'inputForm')); ?>
+                <?= form_open('departments/delete/'.$department['d_id'], array('id' => 'inputForm')); ?>
                     <input type="hidden" name="input" id="input" value="" class="btn btn-danger" />
                 <?= form_close(); ?>
                 
@@ -61,7 +61,7 @@
                             <td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
                             <td><?= $user['permissions'] ?></td>
                             <td><?= $user['email'] ?></td>
-                            <td><a class="btn btn-sm btn-danger" href="<?= base_url("departments/remove/$user[u_id]/$department[id]"); ?>">Fjern</a></td>
+                            <td><a class="btn btn-sm btn-danger" href="<?= base_url("departments/remove/$user[u_id]/$department[d_id]"); ?>">Fjern</a></td>
                         </tr>
                     <?php endforeach;?>
                 </tbody>

@@ -23,7 +23,8 @@ for(var index = 0; index < eventAss.length; index++){
     var answerCount = 0;
     for(var o = 0; o < eventAns[index].length; o++){
         //Store all answers from each assignment in an array
-        var nextAns = eventAns[index][o]['answer'] 
+        var nextAns = eventAns[index][o]['answer'];
+        //Limit length of answer shown if necessary
         nextAns = (nextAns.length >= 70) ? nextAns.substring(0, 70)+'...' : nextAns;
         answers.push(nextAns);
         //Get all needed colors, since not all assignments has 9 answers

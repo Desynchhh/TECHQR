@@ -2,6 +2,10 @@
     display:inline-block;
 }
 
+.error-field{
+    border-color: crimson;
+}
+
 dt {
     text-align: end;
     float: left;

@@ -133,13 +133,14 @@
 			//Set data variables
 			$data['title'] = 'Opret opgave';
 			$data['options'] = $this->set_answer_amount($answerAmount);
-
+			$data['departments'] = ($this->session->userdata('permissions') == 'Admin') ? $this->department_model->get_department() : $this->session->userdata('departments');
+			$data['events'] = $this->event_model->get_event(NULL, $data['departments']);
 			//Set form validation
 			$this->form_validation->set_rules('title','"opgavetitel"','required');
 			//Set validation rules for all generated 'answer' and 'points' fields
 			for($i = 1; $i<= $data['options']['optionsAmount']; $i++){
-				$this->form_validation->set_rules('answer'.$i,'"svar mulighed '.$i.'"','required');
-				$this->form_validation->set_rules('points'.$i,'"point '.$i.'"','required|numeric');
+				$this->form_validation->set_rules("answer$i",'"svar mulighed '.$i.'"','required');
+				$this->form_validation->set_rules("points$i",'"point '.$i.'"','required|numeric');
 			}
 			
 			if($this->form_validation->run() === FALSE){
@@ -149,7 +150,13 @@
 				$this->load->view('templates/footer');
 			} else {
 				//If validation was successful
-				$this->assignment_model->create_ass($data['options']['optionsAmount']);
+				$e_id = $this->input->post('eventbox');
+				if(isset($e_id)){
+					$ass_id = $this->assignment_model->create_ass($data['options']['optionsAmount'], TRUE);
+					$this->event_assignment_model->add_ass($e_id, $ass_id);
+				} else {
+					$this->assignment_model->create_ass($data['options']['optionsAmount']);
+				}
 				$this->session->set_flashdata('ass_created','Opgave oprettet!');
 				redirect("assignments/index/10/asc/title");
 			}

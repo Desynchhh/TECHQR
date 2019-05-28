@@ -6,7 +6,7 @@
 		
 
 		//Create an assignment in the DB
-		public function create_ass($answerAmount){
+		public function create_ass($answerAmount, $return = FALSE){
 			$data = array(
 				'title' => $this->input->post('title'),
 				'notes' => $this->input->post('notes'),
@@ -18,6 +18,9 @@
 
 			$ass_id = $this->db->insert_id();
 			$this->insert_answers($ass_id, $answerAmount);
+			if($return){
+				return $ass_id;
+			}
 		}
 
 

@@ -42,7 +42,7 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 			<!-- Note field box -->
 		<div class="col-md-3">
 			<div class="form-group">
-				<label>Notater:</label>
+				<label>Notater (Valgfri):</label>
 				<input type="text" id="notes" name="notes" placeholder="Notater" class="form-control"/>
 			</div>
 		</div>
@@ -50,10 +50,10 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Afdeling:</label>
-				<select name="d_id" class="form-control">
-					<option selected hidden value="<?= $this->session->userdata['departments'][0]['d_id'] ?>"><?= $this->session->userdata['departments'][0]['name'] ?></option>
-					<?php foreach($this->session->userdata('departments') as $department):?>
-						<option value="<?= $department['d_id'] ?>"><?= $department['name'] ?></option>
+				<select name="d_id" id="departmentbox" class="form-control" onchange="editDropdown()">
+					<option selected hidden value="<?= $departments[0]['d_id'] ?>"><?= $departments[0]['d_name'] ?></option>
+					<?php foreach($departments as $department):?>
+						<option value="<?= $department['d_id'] ?>"><?= $department['d_name'] ?></option>
 					<?php endforeach;?>
 				</select>
 			</div>
@@ -74,6 +74,23 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 			</div>
 		<?php endforeach; ?>
 	</div>
+
+	<!-- Dropdown for immediatly adding the assignment to an event -->
+	<?php if(isset($events)): ?>
+		<div class="row">
+			<div class="col-md-4 form-group">
+			<label for="eventbox">Tilføj til event (Valgfri):</label>
+				<select name="eventbox" id="eventbox" class="form-control">
+					<option selected value=""></option>
+					<?php foreach($events as $event): ?>
+						<?php if($departments[0]['d_id'] == $event['d_id']): ?>
+							<option value="<?= $event['e_id'] ?>"><?= $event['e_name'] ?></option>
+						<?php endif;?>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</div>
+	<?php endif;?>
 		<!-- Submit buttom -->
 	<button onclick="checkFields(<?= $options['optionsAmount'] ?>, 'formCreate')" type="button" class="btn btn-secondary">Opret</button>
 <?= form_close(); ?>
@@ -82,3 +99,8 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 <div>
 	<a href="<?= base_url("assignments/index/10/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
+<script type="text/javascript">
+    //Convert PHP arrays to JSON objects, so JS can use it
+	var events = <?= json_encode($events) ?>;
+</script>
+<!-- <script type="text/javascript" src="<?= ''//base_url('assets/js/create-assignment-event-dropdown.js')?>"></script> -->

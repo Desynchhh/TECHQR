@@ -6,7 +6,7 @@
                 <div class="pagination-links">
                     <?= $this->pagination->create_links(); ?>
                         <!-- Elements per page dropdown -->
-                    <select id="pag_per_page" onchange="pagPerPage(<?= $offset ?>, <?= (isset($e_id)) ? $e_id : NULL; ?>)">
+                    <select id="pag_per_page" onchange="pagPerPage(<?= $offset ?>, <?= (isset($id)) ? $id : NULL; ?>)">
                         <option selected hidden value="<?= $per_page ?>"><?= $per_page ?></option>
                         <option value="5">5</option>
                         <option value="10">10</option>

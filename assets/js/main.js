@@ -14,50 +14,85 @@ function deleteTeam(url){
 }
 
 
+//Check fields in assignments/create.php and assignments/edit.php are not empty
 function checkFields(amount, formID){
     var emptyFields = Array();
-        //Check title
-    var title = document.getElementById("title").value;
-    if(!title){
+    //Check title
+    var title = document.getElementById("title");
+    if(!title.value){
         emptyFields.push("Opgavetitel ");
+        title.classList.add('error-field');
+    } else {
+        title.classList.remove('error-field');
     }
 
     for(var i = 1; i <= amount; i++){
-            //Get answer field
-        var answerValue = document.getElementById("answer"+i).value;
-            //Get check point field
-        var pointsValue = document.getElementById("points"+i).value;
+        //Get answer field
+        var answerElement = document.getElementById("answer"+i);
+        //Get check point field
+        var pointsElement = document.getElementById("points"+i);
         //Check answer field is not empty
-        if(!answerValue){
+        if(!answerElement.value){
             emptyFields.push("Svarmulighed "+i+" ");
+            answerElement.classList.add('error-field');
+        } else {
+            answerElement.classList.remove('error-field');
         }
         //Check points field is not empty and is a number
-        if(!pointsValue || isNaN(pointsValue)){
+        if(!pointsElement.value || isNaN(pointsElement.value)){
             emptyFields.push("Point "+i+" ");
+            pointsElement.classList.add('error-field');
+        } else {
+            pointsElement.classList.remove('error-field');
         }
     }
     
     //Check if emptyFields array is empty
     var noEmptyFields = (emptyFields && emptyFields.length) ? false : true;
     if(noEmptyFields){
-            //If empty, submit create form
+        //If empty, submit create form
         document.getElementById(formID).submit();
     } else {
-            //Else, show missing field number
+        //Else, show missing field number
         alert("Du mangler at udfylde felterne: " + emptyFields);
     }
 }
 
 
+//Runs when "departmentbox" in assignments/create.php is changed
+function editDropdown(){
+    //Get the correct selectbox
+    var eventbox = document.getElementById("eventbox");
+    var selectedDepartmentID = document.getElementById("departmentbox").value;
+    
+    //Remove all elements from the selectbox except the first one (it's empty)
+    for(i = eventbox.options.length - 1; i >= 1; i--){
+        eventbox.remove(i);
+    }
+
+    //Add events to newEvents which have the selected department
+    for(i = 0; i < events.length; i++){
+        if(events[i]['d_id'] == selectedDepartmentID){
+            //Create option element to put event info in
+            var option = document.createElement("option");
+            option.text = events[i]['e_name'];
+            option.value = events[i]['e_id'];
+            //Add option element to event dropdown
+            eventbox.add(option);
+        }
+    }
+}
+
+
 //View more results per page
-function pagPerPage(offset, e_id = null){
+function pagPerPage(offset, id = null){
     //Get value from the view's <select> tag
     var per_page = document.getElementById('pag_per_page').value;
     //Get the current url and split each segment into an array
     var url = window.location + '';
     var url_segments = url.split("/");
     //Create array of possible indexes, along with a counter
-    var nums = (e_id != null) ? [e_id, per_page, offset] : [per_page, offset];
+    var nums = (id != null) ? [id, per_page, offset] : [per_page, offset];
     var numCount = 0;
     //Construct new url based on segments
     var newUrl = "";
@@ -75,7 +110,6 @@ function pagPerPage(offset, e_id = null){
     
     //"Reload" page with the new per_page parameter
     window.location.assign(newUrl);
-    //window.location.replace(newUrl);
 }
 
 

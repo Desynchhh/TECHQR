@@ -1,7 +1,7 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Benyt "Lav" knapperne hvis Holdene eller Opgaverne er blevet ændret siden Eventet sidst var brugt<br>
-OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller opgaver</h5>
+OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller opgaver!</h5>
 <hr>
 
 <div class="row">
@@ -21,7 +21,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
             <br>
             <?php if($team_pdf): ?>
                     <!-- Only show 'Open PDF' if there is any available -->
-                <input type="submit" class="btn btn-warning" value="Åben PDF" />
+                <input type="submit" class="btn btn-secondary" value="Åben PDF" />
             <?php endif; ?>
         <?= form_close(); ?>
     </div>
@@ -38,25 +38,36 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
                 <?php endforeach;?>
             </select>
             <br>
-            <?php if($ass_pdf): ?>                
-                    <!-- Only show 'Open PDF' if there is any available -->
-                <input type="submit" class="btn btn-warning" value="Åben PDF" />
-            <?php endif; ?>
+            <?php if($ass_pdf): ?>
+                <!-- Only show buttons if there are any files available -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="submit" class="btn btn-secondary" value="Åben PDF" />
         <?= form_close(); ?>
+                    </div>
+                    <!-- Hidden form. Open all PDFs -->
+                    <div class="col-md-6">
+                        <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/all-assignments', array('target' => '_blank')); ?>
+                            <input type="hidden" name="filename" value="ALLE-OPGAVER-<?= strtoupper(url_title($event['e_name'])) ?>.pdf">
+                            <input type="submit" class="btn btn-secondary" value="Åben alle opgaver">
+                        <?= form_close(); ?>
+                    </div>
+                </div>
+            <?php endif; ?>
     </div>
 
         <!-- Create PDF Buttons -->
     <div class="col-md-4 form-group">
             <!-- Create team PDF -->
         <h4>Lav PDF</h4>
-        <label>Lav PDF til ALLE hold</label>
+        <label for="create-team-btn">Lav PDF til ALLE hold</label>
         <br>
-        <a class="btn btn-secondary" href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>">Lav Hold</a>
+        <a href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-team-btn">Lav Hold</button></a>
         <br><br>
             <!-- Create assignment PDF -->
-        <label>Lav PDF til ALLE opgaver</label>
+        <label for="create-ass-btn">Lav PDF til ALLE opgaver</label>
         <br>
-        <a class="btn btn-secondary" href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>">Lav Opgaver</a>
+        <a href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-ass-btn">Lav Opgaver</button></a>
     </div>
 
 </div>
