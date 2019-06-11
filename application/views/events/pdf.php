@@ -1,7 +1,7 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
-<h5>Benyt "Lav" knapperne hvis Holdene eller Opgaverne er blevet ændret siden Eventet sidst var brugt<br>
-OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller opgaver!</h5>
+<h5>Benyt "Lav"-knapperne, hvis holdene eller opgaverne er blevet ændret, siden eventet sidst var brugt.<br>
+OBS!: Det kan tage op til 1 minut at lave PDF'erne, hvis der er mange hold eller opgaver!</h5>
 <hr>
 
 <div class="row">
@@ -30,7 +30,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
     <div class="col-md-4" style="border-right:1px solid lightgrey;">
         <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/assignment-pdf', array('target' => '_blank')); ?>
             <h4>Opgave PDF</h4>
-            <label>Vælg Opgave</label>
+            <label>Vælg opgave</label>
             <select name="filename" class="form-control">
                     <!-- Add all PDFs from the events assignment-pdf folder as a selectable option -->
                 <?php foreach($ass_pdf as $pdf):?>
@@ -62,12 +62,12 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne hvis der er mange hold eller 
         <h4>Lav PDF</h4>
         <label for="create-team-btn">Lav PDF til ALLE hold</label>
         <br>
-        <a href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-team-btn">Lav Hold</button></a>
+        <a href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-team-btn">Lav hold</button></a>
         <br><br>
             <!-- Create assignment PDF -->
         <label for="create-ass-btn">Lav PDF til ALLE opgaver</label>
         <br>
-        <a href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-ass-btn">Lav Opgaver</button></a>
+        <a href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-ass-btn">Lav opgaver</button></a>
     </div>
 
 </div>

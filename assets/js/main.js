@@ -16,9 +16,9 @@ function deleteTeam(url){
 
 //Check fields in assignments/create.php and assignments/edit.php are not empty
 function checkFields(amount, formID){
-    var emptyFields = Array();
+    const emptyFields = Array();
     //Check title
-    var title = document.getElementById("title");
+    const title = document.getElementById("title");
     if(!title.value){
         emptyFields.push("Opgavetitel ");
         title.classList.add('error-field');
@@ -26,11 +26,11 @@ function checkFields(amount, formID){
         title.classList.remove('error-field');
     }
 
-    for(var i = 1; i <= amount; i++){
+    for(let i = 1; i <= amount; i++){
         //Get answer field
-        var answerElement = document.getElementById("answer"+i);
+        const answerElement = document.getElementById("answer"+i);
         //Get check point field
-        var pointsElement = document.getElementById("points"+i);
+        const pointsElement = document.getElementById("points"+i);
         //Check answer field is not empty
         if(!answerElement.value){
             emptyFields.push("Svarmulighed "+i+" ");
@@ -48,22 +48,22 @@ function checkFields(amount, formID){
     }
     
     //Check if emptyFields array is empty
-    var noEmptyFields = (emptyFields && emptyFields.length) ? false : true;
+    const noEmptyFields = (emptyFields && emptyFields.length) ? false : true;
     if(noEmptyFields){
         //If empty, submit create form
         document.getElementById(formID).submit();
-    } else {
-        //Else, show missing field number
-        alert("Du mangler at udfylde felterne: " + emptyFields);
-    }
+    }// } else {
+    //     //Else, show missing field number
+    //     alert("Du mangler at udfylde felterne: " + emptyFields);
+    // }
 }
 
 
 //Runs when "departmentbox" in assignments/create.php is changed
 function editDropdown(){
     //Get the correct selectbox
-    var eventbox = document.getElementById("eventbox");
-    var selectedDepartmentID = document.getElementById("departmentbox").value;
+    const eventbox = document.getElementById("eventbox");
+    const selectedDepartmentID = document.getElementById("departmentbox").value;
     
     //Remove all elements from the selectbox except the first one (it's empty)
     for(i = eventbox.options.length - 1; i >= 1; i--){
@@ -74,7 +74,7 @@ function editDropdown(){
     for(i = 0; i < events.length; i++){
         if(events[i]['d_id'] == selectedDepartmentID){
             //Create option element to put event info in
-            var option = document.createElement("option");
+            let option = document.createElement("option");
             option.text = events[i]['e_name'];
             option.value = events[i]['e_id'];
             //Add option element to event dropdown
@@ -85,24 +85,25 @@ function editDropdown(){
 
 
 //View more results per page
-function pagPerPage(offset, id = null){
+function pagPerPage(id = null){
+    const offset = 0;
     //Get value from the view's <select> tag
-    var per_page = document.getElementById('pag_per_page').value;
+    const per_page = document.getElementById('pag_per_page').value;
     //Get the current url and split each segment into an array
-    var url = window.location + '';
-    var url_segments = url.split("/");
+    const url = window.location + '';
+    const url_segments = url.split("/");
     //Create array of possible indexes, along with a counter
-    var nums = (id != null) ? [id, per_page, offset] : [per_page, offset];
-    var numCount = 0;
+    const nums = (id != null) ? [id, per_page, offset] : [per_page, offset];
+    let numCount = 0;
     //Construct new url based on segments
-    var newUrl = "";
-    for(var i = 0; i < url_segments.length; i++){
+    let newUrl = "";
+    for(let i = 0; i < url_segments.length; i++){
         if(isNaN(url_segments[i]) || url_segments[i] == ""){
             //Add segment to new url
-            var newSegment = (i == 0) ? url_segments[i] : '/'+url_segments[i];
+            let newSegment = (i == 0) ? url_segments[i] : '/'+url_segments[i];
             newUrl = newUrl+newSegment;
         } else {
-            var newSegment = '/'+nums[numCount];
+            let newSegment = '/'+nums[numCount];
             newUrl = newUrl+newSegment;
             numCount++;
         }
@@ -116,11 +117,11 @@ function pagPerPage(offset, id = null){
 //Submit the form given as parameter, and set the given input fields value
 function submitHidden(inputID, formID, element = null){
     //Find message for the prompt
-    var warning = (element) 
+    const warning = (element) 
         ? "Er du sikker på du vil slette "+element+" fra systemet?\nIndtast navnet/titlen for at bekræfte:" 
         : "Indtast nye navn/titel:";
     //Display prompt and get input
-    var input = prompt(warning);
+    const input = prompt(warning);
     if(input != null && input != ""){
         //Set input field value
         document.getElementById(inputID).value = input;

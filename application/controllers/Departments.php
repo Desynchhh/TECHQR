@@ -17,7 +17,7 @@
             $this->pagination->initialize($config);
 
             //Set data variables
-            $data['title'] = 'Afdelings oversigt';
+            $data['title'] = 'Afdelingsoversigt';
             $data['departments'] = $this->department_model->get_department(NULL, $config['per_page'], $offset);
 
             //Load the page
@@ -70,10 +70,18 @@
             $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
             
+
+            $user_info = $this->user_department_model->get_department_members($d_id, $config['per_page'], $offset);
             //Set data variables
             $data['title'] = 'Afdelings detajler';
             $data['department'] = $this->department_model->get_department($d_id);
-            $data['users'] = $this->user_department_model->get_department_members($d_id, $config['per_page'], $offset);
+            $data['users'] = $user_info['result_array'];
+            $data['member_count'] = $user_info['num_rows'];
+            $data['fields'] = array(
+                'Brugernavn' => 'username',
+                'Type' => 'permissions',
+                'Email' => 'email'
+            );
             
             //Load the page
             $this->load->view('templates/header');

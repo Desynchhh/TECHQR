@@ -1,6 +1,6 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
-<h5>Kør musen hen over en portion i cirkel diagrammet, for at se hvor mange hold der har valgt den svarmulighed.<br>
+<h5>Kør musen hen over en portion i cirkel diagrammet for at se hvor mange hold, der har valgt den svarmulighed.<br>
 Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
 <hr>
 

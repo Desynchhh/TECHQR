@@ -29,7 +29,7 @@
 		</div>
 			<!-- Permissions -->
 		<div class="form-group">
-			<label>Bruger type:</label>
+			<label>Brugertype:</label>
 			<select name="permissions" class="form-control">
 				<option selected value="Bruger">Bruger</option>
 				<option value="Admin">Admin</option>
@@ -40,7 +40,7 @@
 			<label>Tildel afdeling:</label>
 			<select name="d_id" class="form-control">
 				<?php foreach($departments as $department):?>
-					<option value="<?= $department['id'] ?>"><?= $department['name'] ?></option>
+					<option value="<?= $department['d_id'] ?>"><?= $department['d_name'] ?></option>
 				<?php endforeach;?>
 			</select>
 		</div>

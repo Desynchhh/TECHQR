@@ -1,18 +1,34 @@
 <?php
 	class Assignments extends CI_Controller{
 		public function index($per_page = 10, $order_by = 'asc', $sort_by = 'title', $offset = 0){
-				//Check if anyone is logged in
+			//Check if anyone is logged in
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
 			}
+			//Get search string from form or userdata
+			$search_string = $this->input->post('search_string');
+			//check if new search string was submitted
+            $newsearch = (isset($search_string)) ? TRUE : FALSE;
+			//give value of new search string, or search string stored in session if no new search string was submitted
+			$search_string = ($newsearch) ? $this->input->post('search_string') : $this->session->userdata('search');
+
+            //Store search string in session
+            $this->session->set_userdata('search', $search_string);
 			
-				//Prep
-			$isAdmin = ($this->session->userdata('permissions') == 'Admin') ? true : false;
+			//Count necessary rows
+			$isAdmin = ($this->session->userdata('permissions') == 'Admin') ? TRUE : FALSE;
 			$user_depts = $this->session->userdata('departments');
 			$total_rows = 0;
 			if($isAdmin){
 				//Get all assignments
-				$total_rows = $this->db->count_all_results('assignments');
+				if(isset($search_string)){
+					$total_rows = $this->db->like('assignments.title', $search_string)
+					->or_like('assignments.notes', $search_string)
+					->or_like('assignments.created_by', $search_string)
+					->count_all_results('assignments');
+				} else {
+					$total_rows = $this->db->count_all_results('assignments');
+				}
 			} else {
 				//Get all assignments in the users departments
 				foreach($user_depts as $dep){
@@ -20,7 +36,17 @@
 				}
 			}
 
-				//Pagination config
+			//Check $sort_by string is a field that exists in db
+            $fields = array(
+				'Opgavenavn' => 'title',
+				'Notater' => 'notes',
+				'Afdeling' => 'name',
+				'Oprettet af' => 'username'
+            );
+            //Default to 'title'
+            $sort_by = (in_array($sort_by, $fields)) ? $sort_by : 'title';
+
+			//Pagination config
 			$config['base_url'] = base_url("assignments/index/$per_page/$order_by/$sort_by");
 			$config['total_rows'] = $total_rows;
 			$config['per_page'] = (is_numeric($per_page)) ? $per_page : $total_rows;
@@ -30,26 +56,27 @@
 			$config['attributes'] = array('class' => 'pagination-link');// btn btn-primary
 			$this->pagination->initialize($config);
 
-				//Data variables
-			$data['title'] = 'Opgave oversigt';
-			$data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
+			//Data variables
+			$data['title'] = 'Opgaveoversigt';
+			//$data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
+			$data['order_by'] = $order_by;
+			$data['sort_by'] = $sort_by;
 			$data['offset'] = $offset;
 			$data['per_page'] = $per_page;
-				//Only set if pagination is needed on the page
+			$data['search_string'] = $search_string;
+			$data['fields'] = $fields;
+			//Only set if pagination is needed on the page
 			$pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
 			$pagination['offset'] = $offset;
 			$pagination['total_rows'] = $total_rows;
 
-				//Get assignments
+			//Get assignments
 			if($this->form_validation->run() === FALSE){
-					//Get all assignments
-				$data['asses'] = $this->assignment_model->get_asses($user_depts, $isAdmin, $config['per_page'], $offset, NULL, $sort_by, $order_by);
-			} else {
-					//Search the DB for assignments LIKE what the user searched for
-				$data['asses'] = $this->assignment_model->get_asses($user_depts, $isAdmin, $config['per_page'], $offset, $this->input->post('search_string'));
+				//Get all assignments
+				$data['asses'] = $this->assignment_model->get_asses($user_depts, $isAdmin, $config['per_page'], $offset, $sort_by, $order_by, $this->session->userdata('search'));
 			}
-			
-				//Load the page
+
+			//Load the page
 			$this->load->view('templates/header');
 			$this->load->view('assignments/index', $data);
 			$this->load->view('templates/footer', $pagination);
@@ -108,6 +135,7 @@
 				//Check if the entered name matches the name in the DB
 				if($input == $data['ass']['ass_title']){
 					//Names match
+					$this->event_assignment_model->remove_ass_all($ass_id);
 					$this->assignment_model->delete_ass($ass_id);
 					$this->session->set_flashdata('ass_delete_success','Opgave slettet');
 					redirect('assignments/index/10/asc/title');
@@ -169,6 +197,7 @@
             }
 
 			$data['title'] = "Rediger opgave";
+			//Get info about assignment from DB
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			if($optionsAmount){
 				//Set the amount of answers to the user specified amount
@@ -177,12 +206,14 @@
 				//Get the amount of answers to the assignment from the DB
 				$data['options'] = $this->set_answer_amount(count($data['ass'][0]));
 			}
+
 			$this->form_validation->set_rules('title','"opgave titel"','required');
 			//Set validation rules for all generated 'answer' and 'points' fields
 			for($i = 1; $i<= $data['options']['optionsAmount']; $i++){
 				$this->form_validation->set_rules('answer'.$i,'"svar mulighed '.$i.'"','required');
 				$this->form_validation->set_rules('points'.$i,'"point '.$i.'"','required|numeric');
 			}
+
 			if($this->form_validation->run() === FALSE){
 				//If validation failed or didn't run
 				$this->load->view('templates/header');
@@ -190,6 +221,10 @@
 				$this->load->view('templates/footer');
 			} else {
 				//If validation succeeded
+				if($this->input->post('d_id') != $data['ass']['d_id']){
+					//Remove assignment from all events if the department was changed
+					$this->event_assignment_model->remove_ass_all($data['ass']['ass_id']);
+				}
 				$this->assignment_model->edit_ass($ass_id, $data['options']['optionsAmount']);
 				$this->session->set_flashdata('ass_edited','Opgaven er blevet redigeret');
 				redirect("assignments/view/$ass_id");

@@ -16,7 +16,7 @@
 <div class="row">
         <!-- Tildel/Fratag Point -->
     <div class="col-md-4">
-    <h4>Tildel/Fratag Point</h4>
+    <h4>Tildel/fratag point</h4>
     <h5>Indtast et negativt tal for at fratage point.</h5>
         <div>
                 <!-- Form -->
@@ -64,7 +64,7 @@
     <div class="col-md-4">
         <h4>Reset event</h4>
         <h5>Start eventet forfra.</h5>
-        <p>Dette vil: Ubemande alle hold, fjerne alle point, slette alle handlinger, og gøre alle opgaver besvarlige igen.</p>
+        <p>Dette vil ubemande alle hold, fjerne alle point, slette alle handlinger, og gøre alle opgaver besvarlige igen.</p>
         <button class="btn btn-danger" onclick="resetEvent('<?= base_url('events/reset/'.$e_id); ?>')">Reset</button>
     </div>
 </div>

@@ -1,6 +1,6 @@
     <!-- Title -->
 <h2><?= $title ?></h2>
-<h5>Se alle handlinger der har fundet sted under dette event.<br>
+<h5>Se alle handlinger, der har fundet sted under dette event.<br>
 Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
 <hr>
 

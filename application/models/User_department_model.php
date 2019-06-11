@@ -42,7 +42,10 @@
             ->from('user_departments')
             ->order_by('users.username', 'ASC')
             ->get();
-            return $query->result_array();
+            $num_rows = $this->db->where('department_id', $d_id)->count_all_results('user_departments');
+            $result_array = $query->result_array();
+            $ret = array('num_rows' => $num_rows, 'result_array' => $result_array);
+            return $ret;
         }
 
         //Get all users who are NOT assigned to the specified department

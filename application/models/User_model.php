@@ -40,7 +40,7 @@
         }
 
 
-        public function get_users($limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'desc'){
+        public function get_users($limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'asc', $search_string = NULL){
             if($limit){
                 $this->db->limit($limit, $offset);
             }
@@ -50,32 +50,17 @@
                 users.username,
                 users.email,
                 users.permissions
-            ')
-            ->order_by($sort_by, $order_by)
+            ');
+            if(isset($search_string)){
+                $this->db->like('username', $search_string)
+                ->or_like('permissions', $search_string)
+                ->or_like('email', $search_string);
+            }
+            $this->db->order_by($sort_by, $order_by)
             ->from('users')
             ->order_by($sort_by, $order_by);
             
             $query = $this->db->get();
-            return $query->result_array();
-        }
-
-
-        public function search($search_string, $limit = FALSE, $offset = FALSE, $sort_by = 'username', $order_by = 'desc'){
-            if($limit){
-                $this->db->limit($limit, $offset);
-            }
-            $this->db->select('
-                users.id as u_id,
-                users.username,
-                users.email,
-                users.permissions
-            ')
-            ->like('username', $search_string)
-            ->or_like('permissions', $search_string)
-            ->or_like('email', $search_string)
-            ->from('users'); 
-            $query = $this->db->get();
-
             return $query->result_array();
         }
 
@@ -85,8 +70,8 @@
                 'username' => $this->input->post('username'),
                 'email' => $this->input->post('email'),
                 'permissions' => $this->input->post('permissions')
-                );
-            $this->db->where('id',$u_id)
+            );
+            $this->db->where('id', $u_id)
             ->update('users', $data);
         }
 

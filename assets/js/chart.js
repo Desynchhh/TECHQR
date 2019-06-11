@@ -1,5 +1,5 @@
 //Works as a global counter for the percentage calculation
-var count = 0;
+let count = 0;
 //Set colors
 colorArray = [
     'rgb(255, 0, 0)',
@@ -13,23 +13,23 @@ colorArray = [
     'rgb(255, 0, 255)'
 ];
 
-for(var index = 0; index < eventAss.length; index++){
+for(let index = 0; index < eventAss.length; index++){
     //Set data as amount of times each answer was picked
-    var data = [];
+    let data = [];
     //Set answers
-    var answers = [];
-    var usedColors = [];
+    let answers = [];
+    let usedColors = [];
     //Variable to count each time a team has picked an answer
-    var answerCount = 0;
-    for(var o = 0; o < eventAns[index].length; o++){
+    let answerCount = 0;
+    for(let o = 0; o < eventAns[index].length; o++){
         //Store all answers from each assignment in an array
-        var nextAns = eventAns[index][o]['answer'];
+        let nextAns = eventAns[index][o]['answer'];
         //Limit length of answer shown if necessary
         nextAns = (nextAns.length >= 70) ? nextAns.substring(0, 70)+'...' : nextAns;
         answers.push(nextAns);
         //Get all needed colors, since not all assignments has 9 answers
         usedColors.push(colorArray[o]);
-        for(var u = 0; u < teamAns.length; u++){
+        for(let u = 0; u < teamAns.length; u++){
             if(teamAns[u]['ans_id'] == eventAns[index][o]['id']){
                 answerCount++;
             }
@@ -42,9 +42,9 @@ for(var index = 0; index < eventAss.length; index++){
     count++;
 
     //Get context
-    var ctx = document.getElementById('piechart'+eventAss[index]['ass_id']).getContext('2d');
+    const ctx = document.getElementById('piechart'+eventAss[index]['ass_id']).getContext('2d');
     //Instantiate chart
-    var chart = new Chart(ctx, {
+    const chart = new Chart(ctx, {
         //Chart type
         type: 'pie',
         
@@ -77,7 +77,7 @@ function calc_percentage(answers, count){
 
     for(i = 0; i < answers.length; i++){
         //Calculate how often each answer was picked in percent
-        var percent = Math.round(answers[i] / totalAnswerCount * 100);
+        let percent = Math.round(answers[i] / totalAnswerCount * 100);
         percent = (isNaN(percent)) ? 0 : percent;
         //Write percentage into dedicated <dd> tag on the page
         document.getElementById("dd"+eventAns[count][i]['id']).innerHTML = percent+"%";

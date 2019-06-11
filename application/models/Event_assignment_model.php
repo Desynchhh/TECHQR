@@ -6,7 +6,7 @@
 
 
         //Get an assignment from the event
-        public function get_ass($e_id, $limit = FALSE, $offset = FALSE, $sort_by = 'title', $order_by = 'ASC'){
+        public function get_ass($e_id, $limit = FALSE, $offset = FALSE, $sort_by = 'title', $order_by = 'ASC', $search_string = NULL){
             if($limit){
                 $this->db->limit($limit, $offset);
             }
@@ -21,15 +21,19 @@
             ->where('event_id', $e_id)
             ->join('assignments','assignments.id = event_assignments.assignment_id')
             ->join('departments','departments.id = assignments.department_id')
-            ->order_by($sort_by, $order_by)
-            ->from('event_assignments');
+            ->order_by($sort_by, $order_by);
+            if(!empty($search_string)){
+                $this->db->like('title', $search_string)
+                ->or_like('notes', $search_string);
+            }
+            $this->db->from('event_assignments');
             $query = $this->db->get();
             return $query->result_array();
         }
 
 
         //Get all assignments not in the specified event
-        public function get_ass_not_event($e_id, $d_id, $limit = FALSE, $offset = FALSE, $sort_by = 'title', $order_by = 'DESC'){
+        public function get_ass_not_event($e_id, $d_id, $limit = FALSE, $offset = FALSE, $sort_by = 'title', $order_by = 'DESC', $search_string = NULL){
             //Sub Query
             $this->db->select('assignment_id')
             ->from('event_assignments')
@@ -49,8 +53,12 @@
             ->from('assignments')
             ->join('departments', 'departments.id = assignments.department_id')
             ->where('assignments.department_id', $d_id)
-            ->where("assignments.id NOT IN ($subQuery)", NULL, FALSE)
-            ->order_by($sort_by, $order_by);
+            ->where("assignments.id NOT IN ($subQuery)", NULL, FALSE);
+            if(!empty($search_string)){
+                $this->db->like('assignments.title', $search_string)
+                ->or_like('assignments.notes', $search_string);
+            }
+            $this->db->order_by($sort_by, $order_by);
             $query = $this->db->get();
             return $query->result_array();
         }
@@ -85,6 +93,13 @@
         public function remove_ass($e_id, $ass_id){
             $this->db->where('event_id', $e_id)
             ->where('assignment_id', $ass_id)
+            ->delete('event_assignments');
+        }
+
+
+        //Delete an assignment from all events
+        public function remove_ass_all($ass_id){
+            $this->db->where('assignment_id', $ass_id)
             ->delete('event_assignments');
         }
 

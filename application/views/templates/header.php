@@ -13,7 +13,7 @@
 
 <body>
 <!--	USED FOR DEBUGGING
-	<?php //var_export($this->session->userdata()); ?>
+	<?php var_export($this->session->userdata()); ?>
 	-->
 	
 	<!-- students and teachers/admins get different navbars, for security reasons -->
@@ -26,7 +26,7 @@
 				<!-- enable base_url by adding 'url' to the 'helper' array in /config/autoload.php -->
 			<?php if($this->session->userdata('logged_in') && $this->session->userdata('permissions') == 'Admin'): ?>
 				<li class="nav-item">
-					<a href="<?= base_url("users/index/null/10/asc/username")?>" class="nav-link">Brugere</a>
+					<a href="<?= base_url("users/index/10/asc/username")?>" class="nav-link">Brugere</a>
 				</li>
 				<li class="nav-item">
 					<a href="<?= base_url('departments/index')?>" class="nav-link">Afdelinger</a>
@@ -169,4 +169,7 @@
 <?php endif; ?>
 <?php if($this->session->flashdata('team_wrong_event')): ?>
 	<?= '<p class="alert alert-danger">'.$this->session->flashdata('team_wrong_event').'</p>'; ?>
+<?php endif; ?>
+<?php if($this->session->flashdata('illegal_search_string')): ?>
+	<?= '<p class="alert alert-danger">'.$this->session->flashdata('illegal_search_string').'</p>'; ?>
 <?php endif; ?>

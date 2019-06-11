@@ -11,7 +11,7 @@
                 <dt>Afdelingsnavn:</dt>
                 <dd class="department-dd"><?= $department['d_name'] ?><br></dd>
                 <dt>Medlemmer:</dt>
-                <dd class="department-dd"><?= count($users) ?><br></dd>
+                <dd class="department-dd"><?= $member_count ?><br></dd>
                 <dt>Oprettet:</dt>
                 <dd class="department-dd"><?= $department['created_at'] ?><br></dd>
             </dl>
@@ -50,17 +50,21 @@
                 <tbody>
                         <!-- Table headers -->
                     <tr>
-                        <th>Brugernavn</th>
-                        <th>Type</th>
-                        <th>Email</th>
+                        <?php foreach($fields as $header => $data): ?>
+                            <th><?= $header ?></th>
+                        <?php endforeach; ?>
                         <th>Værktøj</th>
                     </tr>
                         <!-- Table data -->
                     <?php foreach($users as $user):?>
                         <tr>
-                            <td><a href="<?= base_url('users/view/'.$user['u_id']); ?>"><?= $user['username'] ?></a></td>
-                            <td><?= $user['permissions'] ?></td>
-                            <td><?= $user['email'] ?></td>
+                            <?php foreach($fields as $header => $data): ?>
+                                <?php if($data == 'username'): ?>
+                                    <td><a href="<?= base_url("users/view/$user[u_id]"); ?>"><?= $user[$data] ?></a></td>
+                                <?php else:?>
+                                    <td><?= $user[$data] ?></td>
+                                <?php endif;?>
+                            <?php endforeach; ?>
                             <td><a class="btn btn-sm btn-danger" href="<?= base_url("departments/remove/$user[u_id]/$department[d_id]"); ?>">Fjern</a></td>
                         </tr>
                     <?php endforeach;?>

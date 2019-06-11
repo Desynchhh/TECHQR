@@ -11,8 +11,8 @@
 
 	<!-- Title -->
 <h2><?= $title ?></h2>
-<h5><strong>NOTE: Hvis du ændre på dit antal svar muligheder, forsvinder dine indtastede oplysninger!</strong><br>
-Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
+<h5><strong>NOTE: Hvis du ændrer på antallet af svarmuligheder, forsvinder dine indtastede oplysninger!</strong><br>
+Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfyldes.</h5>
 <hr>
 
 	<!-- Form -->
@@ -23,7 +23,7 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Opgavetitel:</label>
-				<input type="text" id="title" name="title" placeholder="Opgave titel" class="form-control"/>
+				<input type="text" id="title" name="title" placeholder="Opgavetitel" class="form-control"/>
 			</div>
 		</div>
 			<!-- Amount of answers dropdown -->

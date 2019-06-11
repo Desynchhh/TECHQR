@@ -1,4 +1,3 @@
-
 	<!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Oversigt over alle brugere.<br/>
@@ -9,16 +8,15 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 <div>
 	<a href="<?= base_url('users/register');?>"><button type="button" class="btn btn-warning">Opret ny bruger</button></a>
 </div>
+
 <br>
 
-	<!-- Insert search field -->
-	<!--
-	<?= form_open("users/index/$search_string/$per_page/$order_by/$sort_by/$offset"); ?>
-		<label for="search_string">Søg efter brugernavn, type, eller email:</label>
-		<input type="text" id="search_string" name="search_string" value="<?= $search_string ?>">
+	<!-- Search field -->
+	<?= form_open("users/index/$per_page/$order_by/$sort_by/0"); ?>
+		<label for="search_string">Søg efter brugernavn, type eller email:</label>
+		<input type="text" id="search_string" name="search_string" placeholder="Søg" value="<?= (isset($search_string)) ? $search_string : ''; ?>">
 		<input type="submit" class="btn btn-secondary" value="Søg">
 	<?= form_close(); ?>
-	-->
 
 	<!-- Table -->
 <div>
@@ -26,22 +24,34 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 		<tbody>
 				<!-- Table headers -->
 			<tr>
-				<th><a href="<?= base_url("users/index/$search_string/$per_page/$order_by/username/$offset"); ?>">Brugernavn</a></th>
-				<th><a href="<?= base_url("users/index/$search_string/$per_page/$order_by/permissions/$offset"); ?>" >Type</a></th>
-				<th>Afdelinger</th>
-				<th><a href="<?= base_url("users/index/$search_string/$per_page/$order_by/email/$offset"); ?>" >Email</a></th>
+				<?php foreach($fields as $header => $data): ?>
+					<th>
+						<a href="<?= base_url("users/index/$per_page/". (($order_by == 'asc' && $sort_by == $data) ? 'desc' : 'asc' ) ."/$data/$offset"); ?>">
+							<?= $header ?>
+						</a>
+					</th>
+				<?php endforeach;?>
+				<th>Afdeling</th>
 			</tr>
 				<!-- Table data -->
 			<?php foreach($users as $user): ?>
 				<tr>
-					<td><a href="<?= base_url("users/view/$user[u_id]"); ?>"><?= $user['username'] ?></a></td>
-					<td><?= $user['permissions'] ?></td>
+					<?php foreach($fields as $header => $data): ?>
+						<?php if($data == 'username'): ?>
+							<td>
+								<a href="<?= base_url("users/view/$user[u_id]") ?>">
+									<?= $user[$data] ?>	
+								</a>
+							</td>
+						<?php else: ?>
+							<td><?= $user[$data] ?></td>
+						<?php endif; ?>
+					<?php endforeach;?>
 					<td>
 						<?php foreach($user_depts[array_search($user, $users)] as $department):?>
 							<a href="<?= base_url("departments/view/$department[d_id]"); ?>" ><?= $department['name'] ?></a><br>
 						<?php endforeach;?>
 					</td>
-					<td><?= $user['email'] ?></td>
 				</tr>
 			<?php endforeach;?>
 		</tbody>

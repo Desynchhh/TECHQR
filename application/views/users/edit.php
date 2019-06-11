@@ -35,15 +35,11 @@ Efterlad afdelings feltet tomt hvis du ikke ønsker at tildele brugeren endnu en
 		</div>
 			<!-- Permissions -->
 		<div class="form-group">
-			<label>Bruger type:</label>
+			<label>Brugertype:</label>
 			<select name="permissions" class="form-control">
-				<?php if($user['permissions'] == 'Admin'):?>
-					<option selected value="Admin">Admin</option>
-					<option value="Bruger">Bruger</option>
-				<?php else:?>
-					<option selected value="Bruger">Bruger</option>
-					<option value="Admin">Admin</option>
-				<?php endif; ?>
+				<option selected hidden value="<?= $user['permissions'] ?>"><?= $user['permissions'] ?></option>
+				<option value="Admin">Admin</option>
+				<option value="Bruger">Bruger</option>
 			</select>
 		</div>
 			<!-- Department -->
@@ -52,7 +48,7 @@ Efterlad afdelings feltet tomt hvis du ikke ønsker at tildele brugeren endnu en
 			<select name="d_id" class="form-control">
 				<option selected value="0"></option>
 				<?php foreach($departments as $department):?>
-					<option value="<?= $department['id'] ?>"><?= $department['name'] ?></option>
+					<option value="<?= $department['d_id'] ?>"><?= $department['d_name'] ?></option>
 				<?php endforeach;?>
 			</select>
 		</div>

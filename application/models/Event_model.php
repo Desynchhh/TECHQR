@@ -14,7 +14,7 @@
         }
 
         //Gets either a single event or all events
-        public function get_event($e_id = NULL, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $sort_by = 'e_name', $order_by = 'desc'){
+        public function get_event($e_id = NULL, $department_array = NULL, $isAdmin = FALSE, $limit = FALSE, $offset = FALSE, $sort_by = 'e_name', $order_by = 'desc', $search_string = NULL){
             //Get all events
             if($limit){
 				$this->db->limit($limit, $offset);
@@ -25,8 +25,12 @@
                 events.name as e_name,
                 departments.id as d_id,
                 departments.name as d_name
-            ')
-            ->join('departments', "departments.id = events.department_id");
+            ');
+            if(isset($search_string)){
+                $this->db->like('events.name', $search_string)
+                ->or_like('departments.name', $search_string);
+            }
+            $this->db->join('departments', "departments.id = events.department_id");
             if($department_array){
                 //Get all the users events
                 if(!$isAdmin){
@@ -90,5 +94,28 @@
             ->from('events')
             ->get();
             return $query->row_array();
+        }
+
+
+        public function count_index($isAdmin = FALSE, $dep_array = NULL, $search_string = NULL){
+            $this->db->select('events.id');
+            if(isset($search_string)){
+                $this->db->like('events.name', $search_string)
+                ->or_like('departments.name', $search_string);
+            }
+            $this->db->join('departments', 'departments.id = events.department_id');
+            if(isset($dep_array)){
+                foreach($dep_array as $dep){
+                    if($dep == $dep_array[0]){
+                        $this->db->where('events.department_id', $dep['d_id']);
+                    } else {
+                        $this->db->or_where('events.department_id', $dep['d_id']);
+                    }
+                }
+            }
+            $this->db->from('events');
+            $query = $this->db->get();
+            return $query->num_rows();
+            
         }
     }

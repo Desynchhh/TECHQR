@@ -30,6 +30,7 @@
 			$data = array(
 				'title' => $this->input->post('title'),
 				'notes' => $this->input->post('notes'),
+				'department_id' => $this->input->post('d_id'),
 				'edited_by' => $this->session->userdata('username'),
 				'edited_at' => $edited_at
 			);
@@ -92,12 +93,11 @@
 
 
 		//Get all assignments without their answers
-		public function get_asses($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $search_string = NULL, $sort_by, $order_by){
+		public function get_asses($department_array, $isAdmin, $limit = FALSE, $offset = FALSE, $sort_by, $order_by, $search_string = NULL){
 			if($limit){
 				$this->db->limit($limit, $offset);
 			}
 
-			if($search_string === NULL){
 			//Get all assignments
 			$this->db->select('
 				assignments.id,
@@ -106,43 +106,47 @@
 				assignments.created_by as username,
 				departments.name,
 				departments.id as d_id
-			')
-			->join('departments', 'departments.id = assignments.department_id');
+			');
+			if(isset($search_string)){
+				$this->db->like('assignments.title', $search_string)
+				->or_like('assignments.notes', $search_string)
+				->or_like('departments.name', $search_string)
+				->or_like('assignments.created_by', $search_string);
+			}
+			$this->db->join('departments', 'departments.id = assignments.department_id');
 			if($isAdmin === FALSE){	
 				$this->db->where('assignments.department_id', $department_array[0]['d_id']);
 				foreach($department_array as $department){
 					$this->db->or_where('assignments.department_id', $department['d_id']);
 				}
 			}
-			$this->db->from('assignments')
-			->order_by($sort_by, $order_by);
+			$this->db->from('assignments');
+			$this->db->order_by($sort_by, $order_by);
 			$query = $this->db->get();
 			return $query->result_array();
-			} else {
-				//Search DB for the given string
-			}
 		}
 
 
 		//Get one or all answers to an assignment
 		public function get_ass_answers($ass_id, $ans_id = NULL){
-				$this->db->select('
-					answers.id,
-					answers.answer,
-					answers.points
-				')
-				->where('answers.assignment_id', $ass_id);
-				if($ans_id){
-					$this->db->where('answers.id', $ans_id);
-				}
-				$this->db->from('answers');
-				$query = $this->db->get();
-				if($ans_id){
-					return $query->row_array();
-				} else {
-					return $query->result_array();
+			$this->db->select('
+				answers.id,
+				answers.answer,
+				answers.points
+			')
+			->where('answers.assignment_id', $ass_id);
+			if($ans_id){
+				$this->db->where('answers.id', $ans_id);
+			}
+			$this->db->from('answers');
+			$query = $this->db->get();
+			if($ans_id){
+				return $query->row_array();
+			} else {
+				return $query->result_array();
 			}
 		}
+
 
 		//Get all events an assignment is in
 		public function get_ass($ass_id){

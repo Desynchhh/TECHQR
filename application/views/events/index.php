@@ -10,20 +10,41 @@
 
 <br>
 
+    <!-- Search bar -->
+<?= form_open("events/index/$per_page/$order_by/$sort_by/0"); ?>
+    <label for="search_string">Søg efter eventnavn eller afdeling:</label>
+    <input type="text" id="search_string" name="search_string" placeholder="Søg" value="<?= (isset($search_string)) ? $search_string : ''; ?>">
+    <input type="submit" value="Søg" class="btn btn-secondary">
+<?= form_close(); ?>
+
     <!-- Table -->
 <div>
     <table class="table">
         <tbody>
                 <!-- Table headers -->
             <tr>
-                <th><a href="<?= base_url("events/index/$per_page/$order_by/e_name/$offset"); ?>">Eventnavn</a></th>
-                <th><a href="<?= base_url("events/index/$per_page/$order_by/d_name/$offset"); ?>">Afdeling</a></th>
+                <?php foreach($fields as $header => $data): ?>
+                    <th>
+                        <a href="<?= base_url("events/index/$per_page/". (($order_by == 'asc' && $sort_by == $data) ? 'desc' : 'asc' ) ."/$data/$offset"); ?>">
+                            <?= $header ?>
+                        </a>
+                    </th>
+                <?php endforeach;?>
             </tr>
                 <!-- Table data -->
             <?php foreach($events as $event):?>
                 <tr>
-                    <td><a href="<?= base_url('events/view/'.$event['e_id']); ?>"><?= $event['e_name'] ?></a></td>
-                    <td><?= $event['d_name'] ?></td>
+                    <?php foreach($fields as $header => $data): ?>
+                        <?php if($data == 'e_name'):?>
+                            <td>
+                                <a href="<?= base_url("events/view/$event[e_id]"); ?>">
+                                    <?= $event[$data] ?>
+                                </a>
+                            </td>
+                        <?php else: ?>
+                            <td><?= $event[$data] ?></td>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
         </tbody>

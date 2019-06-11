@@ -6,14 +6,28 @@
                 redirect('login');
             }
 
+            //Get and store search string in session
+            $search_string = $this->store_search_string();
+            
             //Prep
             $isAdmin = ($this->session->userdata('permissions') == 'Admin') ? TRUE : FALSE;
 			$user_depts = $this->session->userdata('departments');
             //Count all rows in all the users department
             $total_rows = 0;
-            foreach($user_depts as $department){
-                $total_rows += $this->db->where('events.department_id', $department['d_id'])->count_all_results('events');
+            if($isAdmin){
+                $total_rows = $this->event_model->count_index($isAdmin, NULL, $search_string);
+            } else {
+                $total_rows = $this->event_model->count_index($isAdmin, $user_depts, $search_string);
             }
+
+            //Check $sort_by string is a field that exists in db
+            $fields = array(
+				'Eventnavn' => 'e_name',
+				'Afdeling' => 'd_name'
+            );
+            //Default to 'e_name'
+            $sort_by = (in_array($sort_by, $fields)) ? $sort_by : 'e_name';
+
 
             //Pagination config
             $config['base_url'] = base_url("events/index/$per_page/$order_by/$sort_by");
@@ -26,11 +40,15 @@
             $this->pagination->initialize($config);
 
             //Data variables
-            $data['title'] = "Event oversigt";
-            $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset, $sort_by, $order_by);
+            $data['title'] = "Eventoversigt";
+            $data['events'] = $this->event_model->get_event(NULL, $user_depts, $isAdmin, $config['per_page'], $offset, $sort_by, $order_by, $search_string);
             $data['offset'] = $offset;
             $data['per_page'] = $per_page;
-            $data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
+            $data['order_by'] = $order_by;
+            $data['sort_by'] = $sort_by;
+            $data['fields'] = $fields;
+            $data['search_string'] = $search_string;
+
             $pagination['per_page'] = ($total_rows >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $total_rows;
@@ -281,11 +299,21 @@
 
             //Run if the user is a member of the events department or is admin
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
+                //Get and store search string in session
+                $search_string = $this->store_search_string();
+                
                 //Total_rows prep
-                //How many assignments in department
-                $ass_count = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
-                //How many assignments in event
-                $event_ass_count = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
+                // if(!empty($search_string)){
+                //     //How many assignments in department
+                //     $ass_count = $this->db->where('assignments.department_id', $event['d_id'])->like('title', $search_string)->or_like('notes', $search_string)->count_all_results('assignments');
+                //     //How many assignments in event
+                //     $event_ass_count = $this->db->where('event_id', $e_id)->like('title', $search_string)->or_like('notes', $search_string)->count_all_results('event_assignments');
+                // } else {
+                    //How many assignments in department
+                    $ass_count = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
+                    //How many assignments in event
+                    $event_ass_count = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
+                // }
                 $total_rows = $ass_count - $event_ass_count;
 
                 //Pagination config
@@ -301,6 +329,7 @@
                 //Set data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
+                //Add search_string parameter
                 $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset, $sort_by, $order_by);
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
@@ -331,7 +360,10 @@
             $ismember = $this->check_has_department($event);
 
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
-                    //Pagination config
+                //Get and store search string in session
+                $search_string = $this->store_search_string();
+
+                //Pagination config
                 $config['base_url'] = base_url("events/assignments/view/$e_id/$per_page/$order_by/$sort_by");
                 $config['total_rows'] = $this->db->where('event_assignments.event_id', $e_id)->count_all_results('event_assignments');
                 $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
@@ -344,10 +376,14 @@
                     //Data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
+                //Add search_string parameter
                 $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset, $sort_by, $order_by);
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
+                $data['sort_by'] = $sort_by;
                 $data['per_page'] = $per_page;
+                $data['search_string'] = $search_string;
+
                 $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
                 $pagination['offset'] = $offset;
                 $pagination['total_rows'] = $config['total_rows'];
@@ -892,5 +928,18 @@
                 }
             }
             return FALSE;
+        }
+
+
+        private function store_search_string(){
+            //Get search string from form or userdata
+			$search_string = $this->input->post('search_string');
+			//check if new search string was submitted
+            $newsearch = (isset($search_string)) ? TRUE : FALSE;
+			//give value of new search string, or search string stored in session if no new search string was submitted
+			$search_string = ($newsearch) ? $this->input->post('search_string') : $this->session->userdata('search');
+            //Store search string in session
+            $this->session->set_userdata('search', $search_string);
+            return $search_string;
         }
     }

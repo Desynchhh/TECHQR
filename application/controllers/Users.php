@@ -1,44 +1,66 @@
 <?php
     class Users extends CI_Controller{
-        public function index($search_string = NULL, $per_page = 10, $order_by = 'asc', $sort_by = 'username', $offset = 0){
-                //Check is admin
+        public function index($per_page = 10, $order_by = 'asc', $sort_by = 'username', $offset = 0){
+            //Check is admin
             if($this->session->userdata('permissions') != 'Admin'){
                 redirect('home');
             }
-                //Pagination config
-            $config['base_url'] = base_url("users/index/$search_string/$per_page/$order_by/$sort_by");
-            $config['total_rows'] = $this->db->count_all_results('users');
+            //Get search word from form or userdata
+            $search_string = $this->input->post('search_string');
+            //check if new search string was submitted
+            $newsearch = (isset($search_string)) ? TRUE : FALSE;
+            //give value of new search string, or search string stored in session if no new search string was submitted
+            $search_string = ($newsearch) ? $this->input->post('search_string') : $this->session->userdata('search');
+
+            //Store search string in session
+            $this->session->set_userdata('search', $search_string);
+
+            //Check $sort_by string is a field that exists in db
+            $fields = array(
+                'Brugernavn' => 'username',
+                'Type' => 'permissions',
+                'Email' => 'email'
+            );
+            //Default to 'username'
+            $sort_by = (in_array($sort_by, $fields)) ? $sort_by : 'username';
+
+            //Count total rows for search
+            if(isset($search_string)){
+                $total_rows = $this->db->like('email', $search_string)->or_like('permissions', $search_string)->count_all_results('users');
+            } else {
+                //No search. Count all rows.
+                $total_rows = $this->db->count_all_results('users');
+            }
+
+            //Pagination config
+            $config['base_url'] = base_url("users/index/$per_page/$order_by/$sort_by");
+            $config['total_rows'] = $total_rows;
             $config['per_page'] = (is_numeric($per_page)) ? $per_page : $config['total_rows'];
-            $config['uri_segment'] = 7;
+            $config['uri_segment'] = 6;
             $config['attributes'] = array('class' => 'pagination-link');
             $config['first_link'] = 'Første';
             $config['last_link'] = 'Sidste';
             $this->pagination->initialize($config);
 
-                //Set data array
+            //Set data array
             $data['title'] = 'Bruger oversigt';
+            $data['users'] = $this->user_model->get_users($config['per_page'], $offset, $sort_by, $order_by, $search_string);
             $data['offset'] = $offset;
-            $data['per_page'] = $per_page;
-            $data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
+            $data['per_page'] = $config['per_page'];
+            //$data['order_by'] = ($order_by == 'desc') ? 'asc' : 'desc';
+            $data['order_by'] = $order_by;
             $data['sort_by'] = $sort_by;
-            
-            if(!empty($this->input->post('search_string'))){
-                $search_string = $this->input->post('search_string');
-                $data['users'] = $this->user_model->search($search_string, $config['per_page'], $offset, $sort_by, $order_by);
-            } else {
-                $data['users'] = $this->user_model->get_users($config['per_page'], $offset, $sort_by, $order_by);
-            }
-            $data['search_string'] = (isset($search_string)) ? $search_string : ' ';
-
+            $data['search_string'] = $search_string;
             foreach($data['users'] as $user){
                 $data['user_depts'][] = $this->user_department_model->get_user_departments($user['u_id']);
             }
+            $data['fields'] = $fields;
 
+            //Set pagination array
             $pagination['per_page'] = ($config['total_rows'] >= 5) ? $per_page : NULL;
             $pagination['offset'] = $offset;
             $pagination['total_rows'] = $config['total_rows'];
 
-            //echo '.  CONTINUE WORK ON SEARCH FIELD';
             //Load page
             $this->load->view('templates/header');
             $this->load->view('users/index', $data);
@@ -46,7 +68,7 @@
         }
 
 
-            //View details about an individual user
+        //View details about an individual user
         public function view($u_id){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
@@ -105,22 +127,25 @@
         }
 
 
-            //Clear session->userdata
+        //Clear session->userdata
         public function logout(){
             if(!$this->session->userdata('logged_in')){
                 redirect('login');
             }
-
-            $this->session->unset_userdata('u_id');
-            $this->session->unset_userdata('username');
-            $this->session->unset_userdata('permissions');
-            $this->session->unset_userdata('departments');
-            $this->session->unset_userdata('logged_in');
+            $session_items = array(
+                'u_id', 
+                'username', 
+                'permissions', 
+                'departments', 
+                'logged_in', 
+                'search'
+            );
+            $this->session->unset_userdata($session_items);
             redirect('users/login');
         }
 
 
-            //Create new user in DB
+        //Create new user in DB
         public function register(){
             if(!$this->session->userdata('logged_in')){
                 if($this->session->userdata('permissions') != 'Admin'){
@@ -129,7 +154,7 @@
                 redirect('login');
             }
 
-            $data['title'] = 'Opret Bruger';
+            $data['title'] = 'Opret bruger';
             $data['departments'] = $this->department_model->get_department();
             
             $this->form_validation->set_rules('username','"brugernavn"','required|callback_check_space|callback_check_user_exists');
@@ -181,7 +206,6 @@
                 $this->load->view('templates/footer');
             } else {
                 //Check if the username was changed
-                if($this->input->post('username') != $this->input->post('old_username') || $this->input->post('email') != $this->input->post('old_email')){
                     //Check if the user has created any assignments, and change its "created_by" field accordingly
                     if($this->assignment_model->check_created_by($this->input->post('old_username'))){
                         $this->assignment_model->update_created_by($this->input->post('username'), $this->input->post('old_username'));
@@ -196,7 +220,6 @@
                     }
                     //Update 'users' table in DB
                     $this->user_model->edit_user($u_id);
-                }
                 //Change password if validation for new password passed
                 if($newpass){
                     $enc_pass = $this->hash_password($this->input->post('password'));
@@ -284,7 +307,7 @@
                 'username' => $username,
                 'permissions' => $dbinfo['permissions'],
                 'departments' => $departments,
-                'logged_in' => true
+                'logged_in' => TRUE
             );
             $this->session->set_userdata($userdata);
         }
@@ -296,10 +319,10 @@
 
             if(strpos($str, ' ') !== FALSE){
                 //If the string does not contain a space
-                return false;
+                return FALSE;
             } else {
                 //If the string contains a space
-                return true;
+                return TRUE;
             }
         }
 
@@ -310,15 +333,15 @@
             //If the "new" username address is still the same as the old one, it'll pass
             if($this->input->post('old_username')){
                 if($this->input->post('old_username') === $username){
-                    return true;
+                    return TRUE;
                 }
             }
             //This part is used when a new user is being registered OR when an existing user's username is changed
             //Ensure the new email address does not already exist within the DB
              if($this->user_model->check_user_exists($username)){
-                 return false;
+                 return FALSE;
              } else {
-                 return true;
+                 return TRUE;
              }
         }
 
@@ -329,15 +352,15 @@
             //If the "new" email address is still the same as the old one, it'll pass
             if($this->input->post('old_email')){
                 if($this->input->post('old_email') === $email){
-                    return true;
+                    return TRUE;
                 }
             }
             //This part is used when a new user is being registered OR when an existing user's email is changed
             //Ensure the new email address does not already exist within the DB
             if($this->user_model->check_email_exists($email)){
-                return false;
+                return FALSE;
             } else {
-                return true;
+                return TRUE;
             }
         }
     }

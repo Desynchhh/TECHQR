@@ -12,7 +12,7 @@
     <dd class="event-dd">
         <?= count($event_asses) ?> - 
         <a href="<?= base_url("events/assignments/view/$event[e_id]/10/asc/title"); ?>">
-            <button class="btn btn-sm btn-primary">Tilføj / Fjern</button>
+            <button class="btn btn-sm btn-primary">Tilføj / fjern</button>
         </a>
     </dd>
     <dt>Maks point:</dt>
@@ -21,7 +21,7 @@
     <dd class="event-dd">
         <?= count($teams) ?> - 
         <a href="<?= base_url("teams/view/$event[e_id]/10/asc/number"); ?>">
-            <button class="btn btn-sm btn-primary">Opret / Vis</button>
+            <button class="btn btn-sm btn-primary">Opret / vis</button>
         </a>
     </dd>
 </div>
@@ -37,7 +37,7 @@
     <!-- Manage buttons -->
 <div>
     <button class="btn btn-warning" onclick="submitHidden('inputRename', 'formRename')">Omdøb</button>
-    <a href="<?= base_url('events/manage/'.$event['e_id']); ?>"><button type="button" class="btn btn-warning">Event Håndtering</button></a>
+    <a href="<?= base_url('events/manage/'.$event['e_id']); ?>"><button type="button" class="btn btn-warning">Event håndtering</button></a>
     <button class="btn btn-danger" onclick="submitHidden('inputDelete', 'formDelete', 'eventet')">Slet event</button>
 </div>
 
