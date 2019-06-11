@@ -1,3 +1,5 @@
+//SCRIPT IS MEANT TO BE USED ON events/stats ONLY!!
+
 //Works as a global counter for the percentage calculation
 let count = 0;
 //Set colors
