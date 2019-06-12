@@ -18,14 +18,12 @@ NOTE: Man kan kun tilføje opgaver i samme afdeling som eventet.</h5>
 </div>
 
 <!-- Search field -->
-<!--
 <?= form_open(); ?>
     <label for="search_string">Søg efter opgavenavn eller notater:</label>
     <input type="text" id="search_string" name="search_string" placeholder="Søg" value="<?= (isset($search_string)) ? $search_string : ''; ?>">
     <input type="submit" class="btn btn-secondary" value="Søg">
 <?= form_close(); ?>
--->
-
+              
 <br>
 
     <!-- Table -->

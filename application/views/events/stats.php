@@ -54,8 +54,8 @@ Datoen læses: ÅÅÅÅ-MM-DD tt:mm:ss</h5>
 <script type="text/javascript" src="<?= base_url('assets/js/imports/Chart.js')?>"></script>
 <script type="text/javascript">
         //Convert PHP arrays to JSON objects, so JS can use it
-    var teamAns = <?= json_encode($team_ans) ?>;
-    var eventAss = <?= json_encode($event_ass) ?>;
-    var eventAns = <?= json_encode($event_ans) ?>;
+    const teamAns = <?= json_encode($team_ans) ?>;
+    const eventAss = <?= json_encode($event_ass) ?>;
+    const eventAns = <?= json_encode($event_ans) ?>;
 </script>
 <script type="text/javascript" src="<?= base_url('assets/js/chart.js')?>"></script>

@@ -60,14 +60,28 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne, hvis der er mange hold eller
     <div class="col-md-4 form-group">
             <!-- Create team PDF -->
         <h4>Lav PDF</h4>
-        <label for="create-team-btn">Lav PDF til ALLE hold</label>
+        <label>Lav PDF til ALLE hold</label>
         <br>
-        <a href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-team-btn">Lav hold</button></a>
+        <!--
+        <a type="button" class="btn btn-secondary" id="create-team-btn" href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>">
+            Lav hold
+        </a>
+        -->
+        <a href="<?= base_url('events/create_team_pdf/'.$event['e_id']); ?>">
+            <button type="button" class="btn btn-secondary" id="create-team-btn">Lav hold</button>
+        </a>
         <br><br>
             <!-- Create assignment PDF -->
         <label for="create-ass-btn">Lav PDF til ALLE opgaver</label>
         <br>
-        <a href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>"><button class="btn btn-secondary" id="create-ass-btn">Lav opgaver</button></a>
+        <!--
+        <a type="button" class="btn btn-secondary" id="create-ass-btn" href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>">
+            Lav opgaver
+        </a>
+        -->
+        <a href="<?= base_url('events/create_ass_pdf/'.$event['e_id']); ?>">
+            <button type="button" class="btn btn-secondary" id="create-ass-btn">Lav opgaver</button>
+        </a>
     </div>
 
 </div>

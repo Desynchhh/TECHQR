@@ -17,13 +17,11 @@
 <br>
 
 <!-- Search bar -->
-<!--
 <?= form_open("events/assignments/view/$e_id/$per_page/$order_by/$sort_by/0"); ?>
     <label for="search_string">Søg efter opgavenavn eller notater:</label>
     <input type="text" id="search_string" name="search_string" placeholder="Søg" value="<?= ((isset($search_string)) ? $search_string : '') ?>">
     <input type="submit" value="Søg" class="btn btn-secondary">
 <?= form_close(); ?>
--->
 
     <!-- Table -->
 <div>

@@ -17,28 +17,35 @@
                 assignments.notes,
                 departments.name,
                 event_assignments.last_answered
-            ')
-            ->where('event_id', $e_id)
-            ->join('assignments','assignments.id = event_assignments.assignment_id')
-            ->join('departments','departments.id = assignments.department_id')
-            ->order_by($sort_by, $order_by);
+            ');
+            $this->db->where('event_id', $e_id);
             if(!empty($search_string)){
                 $this->db->like('title', $search_string)
-                ->or_like('notes', $search_string);
+                ->or_like('notes', $search_string)
+                //This is the same statement as above. Without this line a 2nd time, the code will get any assignments in the event_assignments table, 100% disregaring the event_id
+                ->where('event_id', $e_id);
             }
+            $this->db->join('assignments','assignments.id = event_assignments.assignment_id')
+            ->join('departments','departments.id = assignments.department_id')
+            ->order_by($sort_by, $order_by);
             $this->db->from('event_assignments');
             $query = $this->db->get();
             return $query->result_array();
         }
 
 
-        //Get all assignments not in the specified event
-        public function get_ass_not_event($e_id, $d_id, $limit = FALSE, $offset = FALSE, $sort_by = 'title', $order_by = 'DESC', $search_string = NULL){
-            //Sub Query
+        public function not_in_event_subquery($e_id){
             $this->db->select('assignment_id')
             ->from('event_assignments')
             ->where('event_id', $e_id);
-            $subQuery = $this->db->get_compiled_select();
+            return $this->db->get_compiled_select();
+        }
+
+
+        //Get all assignments not in the specified event
+        public function get_ass_not_event($e_id, $d_id, $limit = FALSE, $offset = FALSE, $sort_by = 'title', $order_by = 'DESC', $search_string = NULL){
+            //Subquery
+            $subQuery = $this->not_in_event_subquery($e_id);
             
             //Main Query with limit
             if($limit){
@@ -56,11 +63,45 @@
             ->where("assignments.id NOT IN ($subQuery)", NULL, FALSE);
             if(!empty($search_string)){
                 $this->db->like('assignments.title', $search_string)
-                ->or_like('assignments.notes', $search_string);
+                ->or_like('assignments.notes', $search_string)
+                ->where('assignments.department_id', $d_id);
             }
             $this->db->order_by($sort_by, $order_by);
             $query = $this->db->get();
             return $query->result_array();
+        }
+
+
+        //Returns amount of assignments that haven't been added to the event
+        public function count_ass_not_event($e_id, $d_id, $search = NULL){
+            if($search){
+                //Subquery
+                $subQuery = $this->not_in_event_subquery($e_id);
+
+                //How many assignments in department
+                $this->db->join('departments', 'departments.id = assignments.department_id')
+                ->where('assignments.department_id', $d_id)
+                ->where("assignments.id NOT IN ($subQuery)", NULL, FALSE)
+                ->like('assignments.title', $search)
+                ->or_like('assignments.notes', $search)
+                ->from('assignments');
+                $ass_query = $this->db->get();
+            } else {
+                //How many assignments in department
+                $this->db->where('department_id', $d_id)
+                ->from('assignments');
+                $ass_query = $this->db->get();
+            }
+            //How many assignments in event
+            $this->db->where('event_id', $e_id)
+            ->from('event_assignments');
+            $event_ass_query = $this->db->get();
+            
+            //Calculate and return
+            $ass_count = $ass_query->num_rows();
+            $event_ass_count = $event_ass_query->num_rows();
+            $total_rows = $ass_count - $event_ass_count;
+            return $total_rows;
         }
 
 

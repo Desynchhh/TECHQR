@@ -4,15 +4,15 @@
 let count = 0;
 //Set colors
 colorArray = [
-    'rgb(255, 0, 0)',
-    'rgb(0, 255, 0)',
-    'rgb(0, 0, 255)',
-    'rgb(127, 127, 127)',
-    'rgb(127, 127, 255)',
-    'rgb(255, 127, 0)',
-    'rgb(255, 255, 0)',
-    'rgb(0, 255, 255)',
-    'rgb(255, 0, 255)'
+    '#3c3c3b',
+    '#dd052b',
+    '#9d9d9c',
+    '#8fbac0',
+    '#927c8b',
+    '#556972',
+    '#f7c14f ',
+    '#ef7a78',
+    '#a5b8ac'
 ];
 
 for(let index = 0; index < eventAss.length; index++){
@@ -59,7 +59,7 @@ for(let index = 0; index < eventAss.length; index++){
                 label: "This is a label. I don't quite understand why it's here.",
                 //Set colors for diagram
                 backgroundColor: usedColors,
-                borderColor: 'rgb(0, 0, 0)',
+                borderColor: '#000',
                 //Display pick percentage for each answer
                 data: data
             }]

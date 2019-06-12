@@ -155,6 +155,11 @@
 
 
         public function stats($e_id, $per_page = 5, $offset = 0){
+            //Check user is logged in
+            if(!$this->session->userdata('logged_in')){
+                redirect('login');
+            }
+
             //Pagination config
             $config['base_url'] = base_url()."events/stats/$e_id/$per_page";
             $config['total_rows'] = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
@@ -186,7 +191,7 @@
             
             //Set data variables
             $event = $this->event_model->get_event($e_id);
-            $data['title'] = 'Stats - '.$event['e_name'];
+            $data['title'] = 'Opgavestatistik - '.$event['e_name'];
             $data['total_teams'] = $this->db->where('teams.event_id', $e_id)->count_all_results('teams');
             $data['answered_array'] = $answered_array;
             $data['e_id'] = $e_id;
@@ -303,18 +308,11 @@
                 $search_string = $this->store_search_string();
                 
                 //Total_rows prep
-                // if(!empty($search_string)){
-                //     //How many assignments in department
-                //     $ass_count = $this->db->where('assignments.department_id', $event['d_id'])->like('title', $search_string)->or_like('notes', $search_string)->count_all_results('assignments');
-                //     //How many assignments in event
-                //     $event_ass_count = $this->db->where('event_id', $e_id)->like('title', $search_string)->or_like('notes', $search_string)->count_all_results('event_assignments');
-                // } else {
-                    //How many assignments in department
-                    $ass_count = $this->db->where('assignments.department_id', $event['d_id'])->count_all_results('assignments');
-                    //How many assignments in event
-                    $event_ass_count = $this->db->where('event_id', $e_id)->count_all_results('event_assignments');
-                // }
-                $total_rows = $ass_count - $event_ass_count;
+                if(!empty($search_string)){
+                    $total_rows = $this->event_assignment_model->count_ass_not_event($e_id, $event['d_id'], $search_string);
+                } else {
+                    $total_rows = $this->event_assignment_model->count_ass_not_event($e_id, $event['d_id']);
+                }
 
                 //Pagination config
                 $config['base_url'] = base_url("events/assignments/add/$e_id/$per_page/$order_by/$sort_by");
@@ -329,8 +327,8 @@
                 //Set data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = "Tilføj opgave - ".$event['e_name'];
-                //Add search_string parameter
-                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset, $sort_by, $order_by);
+
+                $data['asses'] = $this->event_assignment_model->get_ass_not_event($e_id, $event['d_id'], $config['per_page'], $offset, $sort_by, $order_by, $search_string);
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
                 $data['per_page'] = $per_page;
@@ -373,11 +371,10 @@
                 $config['last_link'] = 'Sidste';
                 $this->pagination->initialize($config);
 
-                    //Data variables
+                //Data variables
                 $data['e_id'] = $e_id;
                 $data['title'] = 'Opgave oversigt - '.$event['e_name'];
-                //Add search_string parameter
-                $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset, $sort_by, $order_by);
+                $data['asses'] = $this->event_assignment_model->get_ass($e_id, $config['per_page'], $offset, $sort_by, $order_by, $search_string);
                 $data['offset'] = $offset;
                 $data['order_by'] = ($order_by == 'asc') ? 'desc' : 'asc';
                 $data['sort_by'] = $sort_by;
@@ -389,12 +386,12 @@
                 $pagination['total_rows'] = $config['total_rows'];
                 $pagination['id'] = $e_id;
 
-                    //Load page
+                //Load page
                 $this->load->view('templates/header');
                 $this->load->view('events/assignments_view', $data);
                 $this->load->view('templates/footer', $pagination);
             } else {
-                    //User is not member or admin
+                //User is not member or admin
                 redirect('events/index/10/asc/e_name');
             }
         }
@@ -581,7 +578,7 @@
             $path_location = APPPATH.'../assets/gen-files/'.$eventfolder.'/'.$path_location.'/'.$filename;
             //Set the HTML to be able to read/view a PDF file
             header('Content-type: application/pdf');
-            header("Content-disposition: inline; filename=".$filename);
+            header("Content-disposition: inline; filename=$filename");
             header('Expires: 0');
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             //Open the file at the specified path
