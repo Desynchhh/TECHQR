@@ -39,11 +39,11 @@
         <!-- Buttons -->
         <div class="row">  
                 <!-- Edit button -->
-            <div style="margin-left:1.33%;">
+            <div class="view-btn">
                 <a href="<?= base_url('assignments/edit/'.$ass['ass_id']); ?>"><button type="button" class="btn btn-warning">Rediger opgave</button></a>
             </div>
                 <!-- Delete button -->
-            <div style="margin-left:1.33%;">
+            <div class="view-btn">
                 <button type="button" class="btn btn-danger" onclick="submitHidden('input', 'inputForm', 'opgaven');">Slet opgave</button>
                     
                     <!-- Hidden form to be submitted in case the assignments title contains an illegal URI character -->
@@ -54,7 +54,7 @@
         </div>
         <div class="row">
             <!-- Back button -->
-            <div style="margin-left:1.33%">
+            <div class="view-btn">
                 <a href="<?= base_url("assignments/index/10/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
             </div>
         </div>

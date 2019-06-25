@@ -7,7 +7,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne, hvis der er mange hold eller
 <div class="row">
 
         <!-- Select / Open Team PDF -->
-    <div class="col-md-4" style="border-right:1px solid lightgrey;">
+    <div class="col-md-4" id="team-pdf">
         <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/team-pdf', array('target' => '_blank')); ?>
             <h4>Hold PDF</h4>
             <label>Vælg hold</label>
@@ -27,7 +27,7 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne, hvis der er mange hold eller
     </div>
 
         <!-- Select / Open Assignment PDF -->
-    <div class="col-md-4" style="border-right:1px solid lightgrey;">
+    <div class="col-md-4" id="ass-pdf">
         <?= form_open('events/open_pdf/'.url_title($event['e_name'].'-'.$e_id).'/assignment-pdf', array('target' => '_blank')); ?>
             <h4>Opgave PDF</h4>
             <label>Vælg opgave</label>
@@ -88,5 +88,5 @@ OBS!: Det kan tage op til 1 minut at lave PDF'erne, hvis der er mange hold eller
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("events/view/$event[e_id]"); ?>"><button class="btn btn-primary">Tilbage til event</button></a>
+    <a href="<?= base_url("events/view/$event[e_id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>

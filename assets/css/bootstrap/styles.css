@@ -1,9 +1,63 @@
-.same-line{
-    display:inline-block;
+h5 {
+    color: #000;
+}    
+
+
+.btn {
+    color: #FFF;
 }
 
-.error-field{
+.same-line {
+display:inline-block;
+}
+
+.intro {
+    margin: 0 0 2.5em 0;
+}
+
+.error-field {
     border-color: crimson;
+}
+
+.ass-input {
+    margin-bottom: 0.7em;
+}
+
+.view-btn {
+    margin-left: 1.33%;
+}
+
+#user-man-btn {
+    margin: 0.7em 0em;
+}
+
+#mng-update-btn {
+    margin: 0.7em 0em;
+}
+
+#teams-missing {
+    color: crimson;
+}
+
+#teams-filled {
+    color: green;
+}
+
+#check-teams {
+    border-right: solid #f2f2f2;
+    border-left: solid #f2f2f2;
+}
+
+#mng-points {
+    width: 3.3em;
+}
+
+#team-pdf {
+    border-right:1px solid #f2f2f2;
+}
+
+#ass-pdf {
+    border-right:1px solid #f2f2f2;
 }
 
 dt {
@@ -20,11 +74,11 @@ dt {
     margin-left: 10%;
 }
 
-.ass-dd{
+.ass-dd {
     margin-left: 32%;
 }
 
-.event-dd{
+.event-dd {
     margin-left:10%;
 }
 
@@ -34,18 +88,18 @@ dt {
     padding: 10px;
 }
 
-.pagination-links{
+.pagination-links {
     text-align: center;
 }
 
-.pagination-links strong{
+.pagination-links strong {
     padding: 8px 13px;
     background: #373A3C;
     color: white;
     border: 1px #ccc solid;
 }
 
-a.pagination-link{
+a.pagination-link {
     padding: 8px 13px;
     margin: 1px;
     background: #388AE5;
@@ -53,20 +107,20 @@ a.pagination-link{
     border: 1px #ccc solid;
 }
 
-table{
+table {
     border-collapse: collapse;
     width: 100%;
 }
   
-th, td{
+th, td {
     text-align: left;
     padding: 8px;
 }
 
-tr:nth-child(even){
+tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
-.thick-hr{
+.thick-hr {
     border: 0.5px solid black 
 }

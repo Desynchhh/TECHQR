@@ -13,7 +13,7 @@
 
     <!-- Delete button -->
 <div>
-    <button class="btn btn-danger" onclick="deleteTeam('<?= base_url('teams/delete/'.$e_id); ?>')">Slet hold</button>
+    <button type="button" class="btn btn-danger" onclick="deleteTeam('<?= base_url('teams/delete/'.$e_id); ?>')">Slet hold</button>
 </div>
 <br>
 
@@ -51,5 +51,5 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("events/view/$e_id"); ?>"><button class="btn btn-primary">Tilbage til event</button></a>
+    <a href="<?= base_url("events/view/$e_id"); ?>"><button type="button" class="btn btn-primary">Tilbage til event</button></a>
 </div>

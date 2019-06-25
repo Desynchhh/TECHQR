@@ -1,18 +1,9 @@
-	<!-- JS -->
-<script>
-	$(document).ready(function(){
-		$('#answerAmount').change(function(){
-			//Selected value
-			var optionsAmount = $(this).val();
-			window.location = '<?= base_url("assignments/edit/".$ass["ass_id"]); ?>/'+optionsAmount;
-		});
-	});
-</script>
-		
+	<!-- Import JavaScript -->
+<script src="<?= base_url('assets/js/assignments.js')?>"></script>
+
 	<!-- Title -->
 <h2><?= $title ?></h2>
-<h5><strong>NOTE: Hvis du ændre på dit antal svar muligheder, forsvinder dine indtastede oplysninger!</strong><br>
-Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
+<h5>Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL udfyldes</h5>
 <hr>
 
 	<!-- Form -->
@@ -31,11 +22,17 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 			<div class="form-group">
 				<label>Antal svarmuligheder:</label>
 					<!-- Fill the combobox with available number of answers an assignment can have -->
-				<select id="answerAmount" class="form-control">
+				<select id="answerAmount" name="answerAmount" class="form-control" onchange="changeFields()">
 					<option selected hidden><?= $options['optionsAmount'] ?></option>
-					<?php foreach(range(1, $options['maxOptions']) as $option):?>
-						<option value="<?=$option?>"><?=$option?></option>
-					<?php endforeach; ?> 
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
 				</select>
 			</div>
 		</div>
@@ -61,25 +58,29 @@ Notats feltet er valgfri at udfylde. Alle Svarmuligheds- og Point felter SKAL ud
 	</div>
 
 		<!-- Create as many input fields as the assignment has answers -->
-	<div class="row">
+	<div class="row" id="inputFields">
 		<?php $count = 1; foreach(range(1, $options['optionsAmount']) as $option):?>
 			<div class="col-md-4">
 				<div class="form-group">
 					<label>Svarmulighed <?= $count ?>:</label>
 						<!-- check if the answer's index exists. if it does, insert it in the value attribute -->
-					<input type="text" name="answer<?= $count ?>" id="answer<?= $count ?>" placeholder="Svarmulighed <?= $count ?>" value="<?= (isset($ass[0][$count-1]) ? $ass[0][$count-1]['answer'] : '')?>" class="form-control"/>
-					<label style="padding-top:1.8%;">Point <?= $count ?>:</label>	<!-- subtract one from $count in the above and below input fields value attribute to get the correct index for the answer -->
-					<input type="text" name="points<?= $count ?>" id="points<?= $count ?>" placeholder="Point <?= $count ?>" value="<?= (isset($ass[0][$count-1]) ? $ass[0][$count-1]['points'] : '')?>" class="form-control"/>
+					<input type="text" id="answer<?= $count ?>" name="answer<?= $count ?>" placeholder="Svarmulighed <?= $count ?>" class="form-control ass-input" value="<?= (isset($ass[0][$count-1]) ? $ass[0][$count-1]['answer'] : '')?>"/>
+					<label>Point <?= $count ?>:</label>	<!-- subtract one from $count in the above and below input fields value attribute to get the correct index for the answer -->
+					<input type="text" id="points<?= $count ?>" name="points<?= $count ?>" placeholder="Point <?= $count ?>" class="form-control ass-input" value="<?= (isset($ass[0][$count-1]) ? $ass[0][$count-1]['points'] : '')?>"/>
 				</div>
 				<br>
 			</div>
 		<?php $count++; endforeach; ?>
 	</div>
 		<!-- Submit button -->
-	<button onclick="checkFields(<?= $options['optionsAmount'] ?>, 'formEdit')" type="button" class="btn btn-secondary">Bekræft</button>
+	<button onclick="checkFields('formEdit')" type="button" class="btn btn-secondary">Bekræft</button>
 <?= form_close(); ?>
 
 	<!-- Back button -->
 <div>
 	<a href="<?= base_url("assignments/view/$ass[ass_id]"); ?>"><button type="button" class="btn btn-primary">Fortryd</button></a>
 </div>
+
+<script type="text/javascript">
+	const originalAnswers = <?= json_encode($ass[0]) ?>;
+</script>

@@ -30,5 +30,5 @@
 
     <!-- Back button -->
 <div>
-    <a href="<?= base_url("events/index/10/asc/e_name"); ?>"><button class="btn btn-primary">Tilbage til oversigt</button></a>
+    <a href="<?= base_url("events/index/10/asc/e_name"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

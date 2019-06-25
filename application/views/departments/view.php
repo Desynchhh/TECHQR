@@ -20,11 +20,11 @@
             <!-- Buttons -->
         <div class="row">
                 <!-- Add user to department -->
-            <div class="md-col-1" style="margin-left:1.33%;">
+            <div class="md-col-1 view-btn">
             <a href="<?= base_url('departments/add/'.$department['d_id']); ?>"><button type="button" class="btn btn-warning">Tilføj bruger</button></a>
             </div>
                 <!-- Delete department -->
-            <div class="md-col-1" style="margin-left:1%;">
+            <div class="md-col-1 view-btn">
                 <button type="button" class="btn btn-danger" onclick="submitHidden('input', 'inputForm', 'afdelingen')">Slet afdeling</button>
                     
                     <!-- Hidden form to submit name when deleting the department -->
@@ -36,7 +36,7 @@
         </div>
             <!-- Back button -->
         <div class="row">
-            <div style="margin-left:1.33%">
+            <div class="view-btn">
                 <a href="<?= base_url('departments/index'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
             </div>
         </div>

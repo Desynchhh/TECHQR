@@ -158,9 +158,17 @@
                 redirect('login');
 			}
 			
+			//Temp options array (rm pls)
+			$answerAmount = $this->input->post('answerAmount');
+			$options = array(
+				'optionsAmount' => (!empty($answerAmount)) ? $answerAmount : 1,
+				'maxOptions' => 9
+			);
+
 			//Set data variables
 			$data['title'] = 'Opret opgave';
-			$data['options'] = $this->set_answer_amount($answerAmount);
+			//$data['options'] = $this->set_answer_amount($answerAmount);
+			$data['options'] = $options;
 			$data['departments'] = ($this->session->userdata('permissions') == 'Admin') ? $this->department_model->get_department() : $this->session->userdata('departments');
 			$data['events'] = $this->event_model->get_event(NULL, $data['departments']);
 			//Set form validation
@@ -194,17 +202,26 @@
 		public function edit($ass_id, $optionsAmount = NULL){
 			if(!$this->session->userdata('logged_in')){
                 redirect('login');
-            }
-
+			}
+			
+			//Temp options array (rm pls)
+			$answerAmount = $this->input->post('answerAmount');
+			$options = array(
+				'optionsAmount' => (!empty($answerAmount)) ? $answerAmount : 1,
+				'maxOptions' => 9
+			);
 			$data['title'] = "Rediger opgave";
 			//Get info about assignment from DB
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			if($optionsAmount){
 				//Set the amount of answers to the user specified amount
-				$data['options'] = $this->set_answer_amount($optionsAmount);
+				//$data['options'] = $this->set_answer_amount($optionsAmount);
+				$data['options'] = $options;
 			} else {
 				//Get the amount of answers to the assignment from the DB
-				$data['options'] = $this->set_answer_amount(count($data['ass'][0]));
+				//$data['options'] = $this->set_answer_amount(count($data['ass'][0]));
+				$options['optionsAmount'] = count($data['ass'][0]);
+				$data['options'] = $options;
 			}
 
 			$this->form_validation->set_rules('title','"opgave titel"','required');
@@ -229,26 +246,5 @@
 				$this->session->set_flashdata('ass_edited','Opgaven er blevet redigeret');
 				redirect("assignments/view/$ass_id");
 			}
-		}
-
-
-		public function set_answer_amount($answerAmount = 1){
-			$minOptions = 1;
-			//increase $maxOptions to increase the max amount of answers an assignment can have
-			$maxOptions = 9;
-			//Ensure the user didn't somehow request a too large or too small amount of fields
-			if($answerAmount < $minOptions){
-				$answerAmount = $minOptions;
-			}
-			else if($answerAmount > $maxOptions){
-				$answerAmount = $maxOptions;
-			}
-			//Put values into an array to return them
-			$options = array(
-				'optionsAmount' => $answerAmount,
-				'maxOptions' => $maxOptions
-			);
-			//Return values to page (preferably into a $data array)
-			return $options;
 		}
 	}

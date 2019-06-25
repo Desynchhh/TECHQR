@@ -212,16 +212,6 @@
 
         //Load manage options and data
         public function manage($e_id, $empty_teams = NULL){
-            /*
-            //TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-            $date = new DateTime();
-            $date->add(new DateInterval('P2D'));
-            var_dump($date->format('Y-m-d H:i:s')); // formatted
-            echo '<br><br>';
-            var_dump($date->format('U')); // timestamp
-            */
-
-
             //Check if any students cookie has expired
             $this->team_model->check_expire_date();
 
@@ -575,7 +565,7 @@
             
             //Get PDF path
             $filename = $this->input->post('filename');
-            $path_location = APPPATH.'../assets/gen-files/'.$eventfolder.'/'.$path_location.'/'.$filename;
+            $path_location = APPPATH."../assets/gen-files/$eventfolder/$path_location/$filename";
             //Set the HTML to be able to read/view a PDF file
             header('Content-type: application/pdf');
             header("Content-disposition: inline; filename=$filename");

@@ -6,16 +6,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" >
 	<link rel="shortcut icon" type="image/png" href="<?= base_url('assets/favicon.png')?>"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script src="<?= base_url('assets/js/main.js')?>"></script>
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/bootstrap.min.css')?>">
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap/styles.css')?>"/>
 </head>
 
 <body>
-<!--	USED FOR DEBUGGING
-	<?php var_export($this->session->userdata()); ?>
-	-->
-	
+
 	<!-- students and teachers/admins get different navbars, for security reasons -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<?php if(!isset($_COOKIE['TechQR'])):?>
@@ -172,4 +170,10 @@
 <?php endif; ?>
 <?php if($this->session->flashdata('illegal_search_string')): ?>
 	<?= '<p class="alert alert-danger">'.$this->session->flashdata('illegal_search_string').'</p>'; ?>
+<?php endif; ?>
+<?php if($this->session->flashdata('upload_success')): ?>
+	<?= '<p class="alert alert-success">'.$this->session->flashdata('upload_success').'</p>'; ?>
+<?php endif; ?>
+<?php if($this->session->flashdata('upload_failed')): ?>
+	<?= '<p class="alert alert-danger">'.$this->session->flashdata('upload_failed').'</p>'; ?>
 <?php endif; ?>

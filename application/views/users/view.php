@@ -26,12 +26,12 @@
     <!-- Admin control panel -->
 <div class="row">
         <!-- Edit button -->
-    <div class="md-col-1" style="margin-left:1.33%;">
+    <div class="md-col-1 view-btn">
         <a href="<?= base_url('users/edit/'.$user['u_id']); ?>"><button type="button" class="btn btn-warning">Rediger bruger</button></a>
     </div>
         <!-- Delete button (admins can't delete themselves)-->
     <?php if($this->session->userdata('u_id') != $user['u_id']):?>
-        <div class="md-col-1" style="margin-left:1%;">
+        <div class="md-col-1 view-btn">
             <button class="btn btn-danger" onclick="submitHidden('inputDelete', 'formDelete', 'brugeren')">Slet Bruger</button>
         </div>
             <!-- Hidden delete form -->

@@ -22,7 +22,7 @@
                 <!-- Form -->
             <?= form_open('events/manage_points/'.$e_id); ?>
                 <p class="same-line">Tildel </p>
-                <input style="width:50px;" type="text" name="points" placeholder="point" class="same-line" /> 
+                <input id="mng-points" type="text" name="points" placeholder="point" class="same-line" /> 
                 <p class="same-line"> point til hold </p>
                     <!-- Team dropdown -->
                 <select name="t_id" class="same-line">
@@ -39,24 +39,24 @@
     </div>
 
         <!-- Check Hold -->
-    <div class="col-md-4" style="border-right:solid lightgrey;border-left:solid lightgrey;">
+    <div class="col-md-4" id="check-teams">
         <div>
             <h4>Disse hold har ingen medlemmer:</h4>
             <h5>Genindlæs siden for at opdatere listen.</h5>
-            <a href="<?= base_url("events/manage/$e_id") ?>"><button type="button" class="btn btn-secondary">Opdater</button></a>
+            <a href="<?= base_url("events/manage/$e_id") ?>"><button type="button" class="btn btn-secondary" id="mng-update-btn">Opdater</button></a>
         </div>
         <br>
         <?php if(!empty($empty_teams)): ?>
             <div class="row">
                 <?php foreach($empty_teams as $team): ?>
                     <div class="col-md-3">
-                        <p style="color:red;">Hold <?= $team ?></p>
+                        <p id="teams-missing">Hold <?= $team ?></p>
                     </div>
                     <br>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <p style="color:green;">Alle <?= count($teams) ?> hold bemandet.</p>
+            <p id="teams-filled">Alle <?= count($teams) ?> hold bemandet.</p>
         <?php endif; ?>
     </div>
 
@@ -65,7 +65,7 @@
         <h4>Reset event</h4>
         <h5>Start eventet forfra.</h5>
         <p>Dette vil ubemande alle hold, fjerne alle point, slette alle handlinger, og gøre alle opgaver besvarlige igen.</p>
-        <button class="btn btn-danger" onclick="resetEvent('<?= base_url('events/reset/'.$e_id); ?>')">Reset</button>
+        <button type="button" class="btn btn-danger" onclick="resetEvent('<?= base_url('events/reset/'.$e_id); ?>')">Reset</button>
     </div>
 </div>
 

@@ -7,7 +7,7 @@ NOTE: Man kan kun tilføje opgaver i samme afdeling som eventet.</h5>
 
     <!-- Create assignment button -->
 <div>
-    <a href="<?= base_url("assignments/create/"); ?>" target="_blank"><button type="button" class="btn btn-warning">Opret ny opgave</button></a>
+    <a href="<?= base_url("assignments/create/"); ?>" ><button type="button" class="btn btn-warning">Opret ny opgave</button></a>
 </div>
 
 <br>
@@ -40,7 +40,7 @@ NOTE: Man kan kun tilføje opgaver i samme afdeling som eventet.</h5>
                 <!-- Table data -->
             <?php foreach($asses as $ass):?>
             <tr>
-                <td><a target="_blank" href="<?= base_url("assignments/view/$ass[ass_id]"); ?>" ><?= $ass['title'] ?></a></td>
+                <td><a href="<?= base_url("assignments/view/$ass[ass_id]"); ?>" ><?= $ass['title'] ?></a></td>
                 <td><?= $ass['d_name'] ?></td>
                 <td><?= $ass['notes'] ?></td>
                 <td>

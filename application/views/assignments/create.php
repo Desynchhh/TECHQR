@@ -1,18 +1,9 @@
-	<!-- JS -->
-<script>
-	$(document).ready(function(){
-		$('#answerAmount').change(function(){
-			//Selected value
-			var optionsAmount = $(this).val();
-			window.location = '<?= base_url("assignments/create/"); ?>'+optionsAmount;
-		});
-	});
-</script>
+	<!-- Import JavaScript -->
+<script src="<?= base_url('assets/js/assignments.js')?>"></script>
 
-	<!-- Title -->
+<!-- Title -->
 <h2><?= $title ?></h2>
-<h5><strong>NOTE: Hvis du ændrer på antallet af svarmuligheder, forsvinder dine indtastede oplysninger!</strong><br>
-Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfyldes.</h5>
+<h5>Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfyldes.</h5>
 <hr>
 
 	<!-- Form -->
@@ -31,11 +22,17 @@ Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfy
 			<div class="form-group">
 				<label>Antal svarmuligheder:</label>
 					<!-- Fill the combobox with available number of answers an assignment can have -->
-				<select id="answerAmount" class="form-control">
+				<select id="answerAmount" name="answerAmount" class="form-control" onchange="changeFields()">
 					<option selected hidden><?= $options['optionsAmount'] ?></option>
-					<?php foreach(range(1, $options['maxOptions']) as $option):?>
-						<option value="<?=$option?>"><?=$option?></option>
-					<?php endforeach; ?> 
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
 				</select>
 			</div>
 		</div>
@@ -61,20 +58,18 @@ Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfy
 	</div>
 		
 		<!-- Create as many input fields as the user requests -->
-	<div class="row">
-		<?php foreach(range(1, $options['optionsAmount']) as $option):?>
-			<div class="col-md-4">	<!-- Fit 3 answers per row -->
-				<div class="form-group">
-					<label>Svarmulighed <?= $option ?>:</label>
-					<input type="text" name="answer<?= $option ?>" id="answer<?= $option ?>" placeholder="Svarmulighed <?= $option ?>" class="form-control"/>
-					<label style="padding-top:1.8%;">Point <?= $option ?>:</label>
-					<input type="text" name="points<?= $option ?>" id="points<?= $option ?>" placeholder="Point <?= $option ?>" class="form-control"/>
-				</div>
-				<br>
+	<div class="row" id="inputFields">
+		<div class="col-md-4">	<!-- Fit 3 answers per row -->
+			<div class="form-group">
+				<label>Svarmulighed 1:</label>
+				<input type="text" id="answer1" name="answer1" placeholder="Svarmulighed 1" class="form-control ass-input">
+				<label>Point 1:</label>
+				<input type="text" id="points1" name="points1" placeholder="Point 1" class="form-control ass-input">
 			</div>
-		<?php endforeach; ?>
+			<br>
+		</div>
 	</div>
-
+	
 	<!-- Dropdown for immediatly adding the assignment to an event -->
 	<?php if(isset($events)): ?>
 		<div class="row">
@@ -92,15 +87,15 @@ Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfy
 		</div>
 	<?php endif;?>
 		<!-- Submit buttom -->
-	<button onclick="checkFields(<?= $options['optionsAmount'] ?>, 'formCreate')" type="button" class="btn btn-secondary">Opret</button>
+	<button onclick="checkFields('formCreate')" type="button" class="btn btn-secondary">Opret</button>
 <?= form_close(); ?>
 
 	<!-- Back button -->
 <div>
 	<a href="<?= base_url("assignments/index/10/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
+
 <script type="text/javascript">
     //Convert PHP arrays to JSON objects, so JS can use it
-	var events = <?= json_encode($events) ?>;
+	const events = <?= json_encode($events) ?>;
 </script>
-<!-- <script type="text/javascript" src="<?= ''//base_url('assets/js/create-assignment-event-dropdown.js')?>"></script> -->
