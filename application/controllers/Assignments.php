@@ -94,7 +94,7 @@
 			//Only users who are in the same department as the assignment can view it.
 			$ismember = FALSE;
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
-				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
+				if($this->session->userdata['departments'][$i]['d_name'] == $data['ass']['department']){
 					$ismember = TRUE;
 					break;
 				}
@@ -124,7 +124,7 @@
 			$ismember = FALSE;
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			for($i = 0; $i < count($this->session->userdata('departments')); $i++){	
-				if($this->session->userdata['departments'][$i]['name'] == $data['ass']['department']){
+				if($this->session->userdata['departments'][$i]['d_name'] == $data['ass']['department']){
 					$ismember = TRUE;
 					break;
 				}
@@ -151,7 +151,7 @@
 			}
 		}
 
-
+		//Create assignment and store in DB
 		public function create($answerAmount = 1){
 			//Check logged in
             if(!$this->session->userdata('logged_in')){
@@ -167,7 +167,6 @@
 
 			//Set data variables
 			$data['title'] = 'Opret opgave';
-			//$data['options'] = $this->set_answer_amount($answerAmount);
 			$data['options'] = $options;
 			$data['departments'] = ($this->session->userdata('permissions') == 'Admin') ? $this->department_model->get_department() : $this->session->userdata('departments');
 			$data['events'] = $this->event_model->get_event(NULL, $data['departments']);
@@ -201,7 +200,7 @@
 
 		public function edit($ass_id, $optionsAmount = NULL){
 			if(!$this->session->userdata('logged_in')){
-                redirect('login');
+				redirect('login');
 			}
 			
 			//Temp options array (rm pls)
@@ -211,6 +210,7 @@
 				'maxOptions' => 9
 			);
 			$data['title'] = "Rediger opgave";
+			$data['departments'] = ($this->session->userdata('permissions') == 'Admin') ? $this->department_model->get_department() : $this->session->userdata('departments');
 			//Get info about assignment from DB
 			$data['ass'] = $this->assignment_model->get_ass_view($ass_id);
 			if($optionsAmount){

@@ -124,3 +124,8 @@ tr:nth-child(even) {
 .thick-hr {
     border: 0.5px solid black 
 }
+
+.message-container p,
+.task-container p {
+    margin: 0;
+}

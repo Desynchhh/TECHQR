@@ -50,7 +50,7 @@
 			<?php endif;?>
 		</ul>
 	<?php else: ?>
-	<a class="navbar-brand" href="<?php $cookie = unserialize($_COOKIE['TechQR']); echo base_url("teams/status/$cookie[e_id]"); ?>">TECHQR</a>
+	<a class="navbar-brand" href="<?php $cookie = unserialize($_COOKIE['TechQR']); base_url("teams/status/$cookie[e_id]"); ?>">TECHQR</a>
 	<?php endif;?>
 </nav>
 <div class="container">
@@ -126,8 +126,8 @@
 <?php if($this->session->flashdata('teams_deleted')): ?>
 	<?= '<p class="alert alert-success">'.$this->session->flashdata('teams_deleted').'</p>'; ?>
 <?php endif; ?>
-<?php if($this->session->flashdata('event_created')): ?>
-	<?= '<p class="alert alert-success">'.$this->session->flashdata('event_created').'</p>'; ?>
+<?php if($this->session->flashdata('event_create_success')): ?>
+	<?= '<p class="alert alert-success">'.$this->session->flashdata('event_create_success').'</p>'; ?>
 <?php endif; ?>
 <?php if($this->session->flashdata('event_delete_fail')): ?>
 	<?= '<p class="alert alert-danger">'.$this->session->flashdata('event_delete_fail').'</p>'; ?>

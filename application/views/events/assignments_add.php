@@ -44,7 +44,9 @@ NOTE: Man kan kun tilføje opgaver i samme afdeling som eventet.</h5>
                 <td><?= $ass['d_name'] ?></td>
                 <td><?= $ass['notes'] ?></td>
                 <td>
-                    <a href="<?= base_url("events/add_ass/$e_id/$ass[ass_id]"); ?>"><button type="button" class="btn btn-sm btn-secondary">Tilføj</button></a>
+                    <a href="<?= base_url("events/add_ass/$e_id/$ass[ass_id]"); ?>">
+                        <button type="button" id="assAdd<?= $ass['ass_id'] ?>" class="btn btn-sm btn-secondary" onclick="disableButton('assAdd<?= $ass['ass_id'] ?>')">Tilføj</button>
+                    </a>
                 </td>
             </tr>
             <?php endforeach;?>

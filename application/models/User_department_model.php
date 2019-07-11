@@ -17,7 +17,7 @@
         public function get_user_departments($u_id){
             $this->db->select('
                 departments.id as d_id,
-                departments.name
+                departments.name as d_name
             ')
             ->where('user_id', $u_id)
             ->join('departments','departments.id = user_departments.department_id')

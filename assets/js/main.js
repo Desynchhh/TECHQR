@@ -13,6 +13,17 @@ const deleteTeam = url => {
     }
 }
 
+const disableButton = (btnID, formID = null) => {
+    document.querySelector(`#${btnID}`).disabled = true;
+    if(formID){
+        document.querySelector(`#${formID}`).submit();
+    }
+}
+
+const enableButton = btnID => {
+    document.querySelector(`#${btnID}`).disabled = false;
+}
+
 //View more results per page
 const pagPerPage = (id = null) => {
     const offset = 0;

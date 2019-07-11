@@ -19,8 +19,8 @@
                     <!-- get all departments for each individual user and show them in the table -->
                 <td><?= $department['d_name'] ?></td>
                 <td>
-                    <?= form_open("departments/add/$department[d_id]/$per_page/0/$user[u_id]"); ?>
-                        <input type="submit" class="btn btn-sm btn-secondary" value="Tilføj" />
+                    <?= form_open("departments/add/$department[d_id]/$per_page/0/$user[u_id]", array('id' => 'formAdd'.$user['u_id'])); ?>
+                        <input type="submit" id="submitBtn<?= $user['u_id'] ?>" class="btn btn-sm btn-secondary" value="Tilføj" onclick="disableButton('submitBtn<?= $user['u_id'] ?>', 'formAdd<?= $user['u_id'] ?>')" />
                     <?= form_close(); ?>
                 </td>
             </tr>

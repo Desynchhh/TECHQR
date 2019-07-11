@@ -49,7 +49,7 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 					<?php endforeach;?>
 					<td>
 						<?php foreach($user_depts[array_search($user, $users)] as $department):?>
-							<a href="<?= base_url("departments/view/$department[d_id]"); ?>" ><?= $department['name'] ?></a><br>
+							<a href="<?= base_url("departments/view/$department[d_id]"); ?>" ><?= $department['d_name'] ?></a><br>
 						<?php endforeach;?>
 					</td>
 				</tr>

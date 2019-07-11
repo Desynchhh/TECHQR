@@ -5,7 +5,7 @@
         }
 
 
-            //Create team
+        //Create team
         public function create_team($e_id, $t_num){
             $data = array(
                 'event_id' => $e_id,
@@ -15,7 +15,7 @@
         }
         
 
-            //Get a specific team
+        //Get a specific team
         public function get_team($t_id){
             $this->db->select('
                 teams.id as t_id,
@@ -32,7 +32,7 @@
         }
 
 
-            //Get either all teams in an event
+        //Get either all teams in an event
         public function get_teams($e_id, $limit = FALSE, $offset = FALSE, $sort_by = 'number', $order_by = 'ASC'){
                     //Sub Query
                 $this->db->select('team_id')
@@ -64,7 +64,7 @@
         }
         
 
-            //Create a student for a team + insert the expiredate for the cookie
+        //Create a student for a team + insert the expiredate for the cookie
         public function join_team($t_id, $expiredate){
             $data = array(
                 'team_id' => $t_id,

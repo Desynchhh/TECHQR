@@ -25,6 +25,9 @@ const editDropdown = () => {
 
 //Check fields in assignments/create.php and assignments/edit.php are not empty
 const checkFields = formID => {
+    //Disable submit button, so the user doesn't accidentally click twice
+    const submitBtn = document.querySelector("#submitBtn");
+    submitBtn.disabled = true;
     //Get requested amount of answers
     const amount = document.querySelector("#answerAmount").value;
     //Check title
@@ -70,6 +73,9 @@ const checkFields = formID => {
         sessionStorage.clear();
         //If empty, submit create form
         document.querySelector(`#${formID}`).submit();
+    } else {
+        //Re-enable submit button if form validation failed
+        submitBtn.disabled = false;
     }
 }
 

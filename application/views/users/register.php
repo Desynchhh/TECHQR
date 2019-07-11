@@ -6,7 +6,7 @@
 		<hr>
 			<!-- Form -->
 		<?= validation_errors(); ?>
-		<?= form_open('users/register'); ?>
+		<?= form_open('users/register', array('id' => 'createForm')); ?>
 			<!-- Username -->
 		<div class="form-group">
 			<label>Brugernavn:</label>
@@ -45,7 +45,7 @@
 			</select>
 		</div>
 			<!-- Submit button -->
-		<input type="submit" value="Opret" class="btn btn-secondary" />
+		<input type="submit" id="submitBtn" value="Opret" class="btn btn-secondary" onclick="disableButton('submitBtn', 'createForm')" />
 		<?= form_close(); ?>
 	</div>
 </div>

@@ -87,7 +87,7 @@
 		</div>
 	<?php endif;?>
 		<!-- Submit buttom -->
-	<button onclick="checkFields('formCreate')" type="button" class="btn btn-secondary">Opret</button>
+	<button type="button" id="submitBtn" class="btn btn-secondary" onclick="checkFields('formCreate')">Opret</button>
 <?= form_close(); ?>
 
 	<!-- Back button -->

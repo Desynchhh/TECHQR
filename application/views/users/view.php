@@ -9,7 +9,7 @@
     <dt>Afdelinger:</dt>
     <dd class="user-dd">
         <?php foreach($departments as $department): ?>
-                <a target="_blank" href="<?= base_url('departments/view/'.$department['d_id']); ?>"><?= $department['name'] ?></a><br>
+                <a href="<?= base_url('departments/view/'.$department['d_id']); ?>"><?= $department['d_name'] ?></a><br>
         <?php endforeach; ?>
     </dd>
     <dt>Type:</dt>

@@ -9,7 +9,7 @@ Efterlad afdelings feltet tomt hvis du ikke ønsker at tildele brugeren endnu en
 <div class="row">
 	<div class="col-md-4 offset-md-1">
 		<?= validation_errors(); ?>
-		<?= form_open('users/edit/'.$user['u_id']); ?>
+		<?= form_open('users/edit/'.$user['u_id'], array('id' => 'editForm')); ?>
         <input type="hidden" name="u_id" value="<?= $user['u_id'] ?>"/>
         <input type="hidden" name="old_username" value="<?= $user['username'] ?>" />
         <input type="hidden" name="old_email" value="<?= $user['email'] ?>" />
@@ -53,7 +53,7 @@ Efterlad afdelings feltet tomt hvis du ikke ønsker at tildele brugeren endnu en
 			</select>
 		</div>
 			<!-- Submit button -->
-		<input type="submit" value="Gem" class="btn btn-secondary" />
+		<input type="submit" id="submitBtn" value="Gem" class="btn btn-secondary" onclick="disableButton('submitBtn', 'editForm')" />
 		<?= form_close(); ?>
 	</div>
 </div>

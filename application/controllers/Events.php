@@ -11,7 +11,8 @@
             
             //Prep
             $isAdmin = ($this->session->userdata('permissions') == 'Admin') ? TRUE : FALSE;
-			$user_depts = $this->session->userdata('departments');
+            $user_depts = ($isAdmin === TRUE ) ? $this->department_model->get_department() : $this->session->userdata('departments');
+            
             //Count all rows in all the users department
             $total_rows = 0;
             if($isAdmin){
@@ -67,10 +68,15 @@
             }
 
             $data['title'] = "Opret event";
-
+            if($this->session->userdata('permissions') === 'Admin'){
+                $data['departments'] = $this->department_model->get_department();
+            } else {
+                $data['departments'] = $this->session->userdata('departments');
+            }
             //Set validation rules
             $this->form_validation->set_rules('event_name','"eventnavn"','required');
-            
+            $this->form_validation->set_rules('d_id', '"afdeling"', 'required');
+
             if($this->form_validation->run() === FALSE){
                 //Validation fail
                 $this->load->view('templates/header');
@@ -80,7 +86,7 @@
                 //Validation success
                 //Create event in the DB
                 $this->event_model->create_event();
-                $this->session->set_flashdata('event_created','Event oprettet');
+                $this->session->set_flashdata('event_create_success','Event oprettet');
                 redirect('events/index/10/asc/e_name');
             }
         }
@@ -401,7 +407,7 @@
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->remove_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_removed_ass','Opgave fjernet fra eventet');
-                redirect("events/assignments/view/$e_id");
+                redirect("events/assignments/view/$e_id/10/asc/title");
             } else {
                 redirect('events/index/10/asc/e_name');
             }
@@ -421,7 +427,7 @@
             if($ismember || $this->session->userdata('permissions') == 'Admin'){
                 $this->event_assignment_model->add_ass($e_id, $ass_id);
                 $this->session->set_flashdata('event_added_ass','Opgave tilføjet til eventet');
-                redirect("events/assignments/add/$e_id");
+                redirect("events/assignments/add/$e_id/10/asc/title");
             } else {
                 redirect('events/index/10/asc/e_name');
             }

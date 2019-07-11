@@ -10,7 +10,7 @@
             <!-- Action & Timestamp -->
         <?php if(isset($action['ass_title'])): ?>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-12 task-container">
                 <p>Seneste besvaret opgave: <?=$action['ass_title'] ?></p>
                 <p>I tjente <?= (isset($action['points'])) ? $action['points'] : 0; ?> point på dette!</p>
             </div>
@@ -27,9 +27,11 @@
         <!-- Message -->
         <?php if(!empty($message['message'])):?>
                 <!-- Show message, if one has been sent -->
-            <div>
+            <div class="message-container">
                 <p>Besked:</p> 
-                <?= $message['message'] ?>
+                <p class="message">
+                    <?= $message['message'] ?>
+                </p> 
             </div>
         <?php endif;?>
     </div>

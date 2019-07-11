@@ -155,7 +155,7 @@
             } else {
                 //User has been selected. Add them to the department
                 $this->user_department_model->assign_user_to_department($u_id, $d_id);
-                $this->session->set_flashdata('department_user_added','Brugeren er blevet tilføjet til '.$data['department']['name']);
+                $this->session->set_flashdata('department_user_added','Brugeren er blevet tilføjet til '.$data['department']['d_name']);
                 //Reload department details page
                 redirect("departments/view/$d_id");
             }

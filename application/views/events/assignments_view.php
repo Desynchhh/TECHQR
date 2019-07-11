@@ -40,7 +40,11 @@
                     <td><a href="<?= base_url("assignments/view/$ass[ass_id]"); ?>"><?= $ass['title'] ?></a></td>
                     <td><?= $ass['name'] ?></td>
                     <td><?= $ass['notes'] ?></td>
-                    <td><a href="<?= base_url("events/remove_ass/$e_id/$ass[ass_id]"); ?>"><button type="button" class="btn btn-sm btn-danger">Fjern</button></a></td>
+                    <td>
+                        <a href="<?= base_url("events/remove_ass/$e_id/$ass[ass_id]"); ?>">
+                            <button type="button" id="assRm<?= $ass['ass_id'] ?>" class="btn btn-sm btn-danger" onclick="disableButton('assRm<?= $ass['ass_id'] ?>')">Fjern</button>
+                        </a>
+                    </td>
                 </tr>
             <?php endforeach;?>
         </tbody>

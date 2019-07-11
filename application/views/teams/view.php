@@ -4,10 +4,10 @@
 
     <!-- Create field & button -->
 <div>
-    <?= form_open("teams/create/$e_id"); ?>
+    <?= form_open("teams/create/$e_id", array('id' => 'createForm')); ?>
         <label>Antal hold:</label>
         <input type="text" name="teams" placeholder="Antal hold" />
-        <input type="submit" class="btn btn-secondary" value="Opret hold" />
+        <input type="submit" id="submitBtn" class="btn btn-secondary" value="Opret hold" onclick="disableButton('submitBtn', 'createForm')" />
     <?= form_close(); ?>
 </div>
 

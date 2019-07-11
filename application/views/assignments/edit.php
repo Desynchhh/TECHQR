@@ -44,13 +44,13 @@
 			</div>
 		</div>
 			<!-- Department dropdown -->
-		<div class="col-md-3">
+			<div class="col-md-3">
 			<div class="form-group">
 				<label>Afdeling:</label>
-				<select name="d_id" class="form-control">
-					<option selected hidden value="<?= $ass['d_id'] ?>"><?= $ass['department'] ?></option>
-					<?php foreach($this->session->userdata('departments') as $department):?>
-						<option value="<?= $department['d_id'] ?>"><?= $department['name'] ?></option>
+				<select name="d_id" id="departmentbox" class="form-control" onchange="editDropdown()">
+					<option selected hidden value="<?= $departments[0]['d_id'] ?>"><?= $departments[0]['d_name'] ?></option>
+					<?php foreach($departments as $department):?>
+						<option value="<?= $department['d_id'] ?>"><?= $department['d_name'] ?></option>
 					<?php endforeach;?>
 				</select>
 			</div>
@@ -73,7 +73,7 @@
 		<?php $count++; endforeach; ?>
 	</div>
 		<!-- Submit button -->
-	<button onclick="checkFields('formEdit')" type="button" class="btn btn-secondary">Bekræft</button>
+	<button type="button" id="submitBtn" class="btn btn-secondary" onclick="checkFields('formEdit')" >Bekræft</button>
 <?= form_close(); ?>
 
 	<!-- Back button -->

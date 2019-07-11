@@ -5,12 +5,12 @@
 
 	<!-- Form -->
 <?= validation_errors(); ?>
-<?= form_open('departments/create'); ?>
+<?= form_open('departments/create', array('id' => 'createForm')); ?>
 <div class="row">
 	<div class="col-md-3 offset-md-1">
 			<label>Afdelingsnavn:</label>
 			<input type="text" name="name" placeholder="Afdelingsnavn"/>
-			<input type="submit" value="Opret" class="btn btn-secondary" />
+			<input type="submit" id="submitBtn" value="Opret" class="btn btn-secondary" onclick="disableButton('submitBtn', 'createForm')" />
 	</div>
 </div>
 <?= form_close(); ?>
