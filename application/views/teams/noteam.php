@@ -8,12 +8,12 @@
 </head>
 
 <body>
-    <div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <h2><b><?= $title ?></b></h2>
-            <div>
-                <h3>Du er ikke meldt til et hold! Kontakt din underviser for at blive tilmeldt et hold!</h3>
-            </div>
-        </div>
-    </div>
+	<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<h2><b><?= $title ?></b></h2>
+			<div>
+				<h3>Du er ikke meldt til et hold! Kontakt din underviser for at blive tilmeldt et hold!</h3>
+			</div>
+		</div>
+	</div>

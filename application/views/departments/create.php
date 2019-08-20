@@ -1,9 +1,9 @@
-	<!-- Title -->
+<!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Opret ny afdeling i systemet.</h5>
 <hr>
 
-	<!-- Form -->
+<!-- Form -->
 <?= validation_errors(); ?>
 <?= form_open('departments/create', array('id' => 'createForm')); ?>
 <div class="row">
@@ -15,7 +15,7 @@
 </div>
 <?= form_close(); ?>
 
-	<!-- Back button -->
+<!-- Back button -->
 <div>
 	<a href="<?= base_url('departments/index'); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

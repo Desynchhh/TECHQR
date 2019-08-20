@@ -1,34 +1,34 @@
-    <!-- Title -->
+<!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Tilføj en bruger til afdelingen.</h5>
 <br>
 
-    <!-- Table -->
+<!-- Table -->
 <table class="table">
 	<tbody>
-            <!-- Table headers -->
+		<!-- Table headers -->
 		<tr>
 			<th>Brugernavn</th>
 			<th>Afdelinger</th>
-            <th>Tilføj</th>
+			<th>Tilføj</th>
 		</tr>
-            <!-- Table data -->
+		<!-- Table data -->
 		<?php foreach($users as $user): ?>
-            <tr>
-                <td><?= $user['username'] ?></td>
-                    <!-- get all departments for each individual user and show them in the table -->
-                <td><?= $department['d_name'] ?></td>
-                <td>
-                    <?= form_open("departments/add/$department[d_id]/$per_page/0/$user[u_id]", array('id' => 'formAdd'.$user['u_id'])); ?>
-                        <input type="submit" id="submitBtn<?= $user['u_id'] ?>" class="btn btn-sm btn-secondary" value="Tilføj" onclick="disableButton('submitBtn<?= $user['u_id'] ?>', 'formAdd<?= $user['u_id'] ?>')" />
-                    <?= form_close(); ?>
-                </td>
-            </tr>
+			<tr>
+				<td><?= $user['username'] ?></td>
+				<!-- Get all departments for each individual user and show them in the table -->
+				<td><?= $department['d_name'] ?></td>
+				<td>
+					<?= form_open("departments/add/$department[d_id]/$per_page/0/$user[u_id]", array('id' => 'formAdd'.$user['u_id'])); ?>
+						<input type="submit" id="submitBtn<?= $user['u_id'] ?>" class="btn btn-sm btn-secondary" value="Tilføj" onclick="disableButton('submitBtn<?= $user['u_id'] ?>', 'formAdd<?= $user['u_id'] ?>')" />
+					<?= form_close(); ?>
+				</td>
+			</tr>
 		<?php endforeach;?>
 	</tbody>
 </table>
 
-    <!-- Back button -->
+<!-- Back button -->
 <div>
-    <a href="<?= base_url("departments/view/$department[d_id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
+	<a href="<?= base_url("departments/view/$department[d_id]"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>

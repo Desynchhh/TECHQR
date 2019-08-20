@@ -43,19 +43,19 @@
 	</div>
 
 	<div class="col-md-6">
-	<!-- Table of users -->
+		<!-- Table of users -->
 		<div>
-		<h3>Medlemmer</h3>
+			<h3>Medlemmer</h3>
 			<table class="table">
 				<tbody>
-						<!-- Table headers -->
+					<!-- Table headers -->
 					<tr>
 						<?php foreach($fields as $header => $data): ?>
 							<th><?= $header ?></th>
 						<?php endforeach; ?>
 						<th>Værktøj</th>
 					</tr>
-						<!-- Table data -->
+					<!-- Table data -->
 					<?php foreach($users as $user):?>
 						<tr>
 							<?php foreach($fields as $header => $data): ?>
@@ -75,7 +75,7 @@
 				</tbody>
 			</table>
 
-				<!-- Pagination -->
+			<!-- Pagination -->
 			<div class="pagination-links">
 				<?= $this->pagination->create_links(); ?>
 			</div>

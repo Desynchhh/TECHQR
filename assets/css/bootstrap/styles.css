@@ -129,3 +129,7 @@ tr:nth-child(even) {
 .task-container p {
     margin: 0;
 }
+
+.event-reset-button {
+    margin: 1em 0;
+}

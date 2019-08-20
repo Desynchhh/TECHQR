@@ -1,10 +1,10 @@
-	<!-- Title -->
+<!-- Title -->
 <h2><?= $title ?></h2>
 <h5>Oversigt over alle brugere.<br/>
 Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</h5>
 <hr>
 
-	<!-- link to register new user -->
+<!-- Link to register new user -->
 <div>
 	<a href="<?= base_url('users/register');?>"><button type="button" class="btn btn-warning">Opret ny bruger</button></a>
 </div>
@@ -22,7 +22,7 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 <div>
 	<table class="table">
 		<tbody>
-				<!-- Table headers -->
+			<!-- Table headers -->
 			<tr>
 				<?php foreach($fields as $header => $data): ?>
 					<th>
@@ -33,7 +33,7 @@ Klik på en brugers brugernavn for at se flere detaljer om eller redigere dem.</
 				<?php endforeach;?>
 				<th>Afdeling</th>
 			</tr>
-				<!-- Table data -->
+			<!-- Table data -->
 			<?php foreach($users as $user): ?>
 				<tr>
 					<?php foreach($fields as $header => $data): ?>

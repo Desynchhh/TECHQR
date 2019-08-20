@@ -6,22 +6,22 @@
 <h5>Notatfeltet er valgfrit at udfylde. Alle svarmuligheds- og pointfelter SKAL udfyldes.</h5>
 <hr>
 
-	<!-- Form -->
+<!-- Form -->
 <?= validation_errors(); ?>
 <?= form_open("assignments/create/$options[optionsAmount]", array('id' => 'formCreate')); ?>
 	<div class="row">
-			<!-- Title box -->
+		<!-- Title box -->
 		<div class="col-md-3">
 			<div class="form-group">
-				<label>Opgavetitel:</label>
-				<input type="text" id="title" name="title" placeholder="Opgavetitel" class="form-control"/>
+				<label>Opgavenavn:</label>
+				<input type="text" id="title" name="title" placeholder="Opgavenavn" class="form-control"/>
 			</div>
 		</div>
-			<!-- Amount of answers dropdown -->
+		<!-- Amount of answers dropdown -->
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Antal svarmuligheder:</label>
-					<!-- Fill the combobox with available number of answers an assignment can have -->
+				<!-- Fill the combobox with available number of answers an assignment can have -->
 				<select id="answerAmount" name="answerAmount" class="form-control" onchange="changeFields()">
 					<option selected hidden><?= $options['optionsAmount'] ?></option>
 					<option value="1">1</option>
@@ -36,14 +36,14 @@
 				</select>
 			</div>
 		</div>
-			<!-- Note field box -->
+		<!-- Note field box -->
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Notater (Valgfri):</label>
 				<input type="text" id="notes" name="notes" placeholder="Notater" class="form-control"/>
 			</div>
 		</div>
-			<!-- Department dropdown -->
+		<!-- Department dropdown -->
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Afdeling:</label>
@@ -57,7 +57,7 @@
 		</div>
 	</div>
 		
-		<!-- Create as many input fields as the user requests -->
+	<!-- Create as many input fields as the user requests -->
 	<div class="row" id="inputFields">
 		<div class="col-md-4">	<!-- Fit 3 answers per row -->
 			<div class="form-group">
@@ -86,16 +86,16 @@
 			</div>
 		</div>
 	<?php endif;?>
-		<!-- Submit buttom -->
+	<!-- Submit buttom -->
 	<button type="button" id="submitBtn" class="btn btn-secondary" onclick="checkFields('formCreate')">Opret</button>
 <?= form_close(); ?>
 
-	<!-- Back button -->
+<!-- Back button -->
 <div>
 	<a href="<?= base_url("assignments/index/10/asc/title"); ?>"><button type="button" class="btn btn-primary">Tilbage til oversigt</button></a>
 </div>
 
 <script type="text/javascript">
-    //Convert PHP arrays to JSON objects, so JS can use it
+	//Convert PHP arrays to JSON objects, so JS can use it
 	const events = <?= json_encode($events) ?>;
 </script>
