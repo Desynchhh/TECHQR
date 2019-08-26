@@ -195,7 +195,7 @@
 			//Check if the department has users who only have 1 department
 			//DO NOT DELETE DEPARTMENT IF THIS IS TRUE
 			$dep_users = $this->user_department_model->get_department_members($d_id);
-			foreach($dep_users as $user){
+			foreach($dep_users['result_array'] as $user){
 				if(count($this->user_department_model->get_user_departments($user['u_id'])) <= 1){
 					//One or more users only has 1 department
 					$this->session->set_flashdata('department_delete_fail','Afdelingen kunne ikke slettes, da <strong>'.$user['username'].'</strong> kun har 1 afdeling');

@@ -7,7 +7,7 @@
 		<div class="intro">
 			<h2>Velkommen til TECHQR!</h2>
 			<h5>TECHQR er den førende teknologi indenfor QR-kode-baseret tourneringshåndteringssystem i Nordjylland!<br>
-			Mangler De et login, kan De kontakte Kommunikation og marketing på tlf. nr. XXXX XXXX.<br>
+			Mangler De et login, kan De kontakte Lise hos Kommunikation og marketing på tlf. nr. 7250 5147.<br>
 			Hvis De allerede er i besiddelse af et login, kan De simpelt klikke på "Log ind" knappen øverst i højre hjørne på siden!
 			</h5>
 		</div>
